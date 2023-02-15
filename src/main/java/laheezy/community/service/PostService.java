@@ -1,7 +1,8 @@
 package laheezy.community.service;
 
-import laheezy.community.domain.User;
-import laheezy.community.repository.UserRepository;
+import laheezy.community.domain.Member;
+import laheezy.community.domain.Post;
+import laheezy.community.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,16 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class UserService {
-
-    private final UserRepository userRepository;
+public class PostService {
+    private final PostRepository postRepository;
 
     @Transactional
-    public Long saveUser(String name) {
-        User user = User.makeUser(name);
-        userRepository.save(user);
+    public Post writePost(Post post) {
+        //validate
+        Post savedPost = postRepository.save(post);
         //log.info("coupon:{}", coupon.getDiscount(),coupon.getDiscountType());
-        return user.getId();
+        return savedPost;
     }
 
 }
