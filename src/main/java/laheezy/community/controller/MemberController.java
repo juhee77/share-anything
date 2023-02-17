@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import laheezy.community.domain.Member;
-import laheezy.community.dto.UserMakeDto;
+import laheezy.community.dto.requestMakeMemberDto;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +28,16 @@ public class MemberController {
 
     @PostMapping("/api/user-add")
     @Operation(summary = "유저 생성", description = "유저 생성후 userID 반환.")
-    public Member makeUser(@Valid @RequestBody UserMakeDto userMakeDto) {//TODO: 리턴값 DTO로 수정 해야함(무한 루프 돌것임)
-        log.info("userRequestInfo={}",userMakeDto);
-        Member member = Member.makeUser(userMakeDto.getLoginId(), userMakeDto.getPassword(), userMakeDto.getName(), userMakeDto.getNickname());
-        Member joinedMember = memberService.join(member);
-        return joinedMember;
+    public Member makeUser(@Valid @RequestBody requestMakeMemberDto userMakeDto) {//TODO: 리턴값 DTO로 수정 해야함(무한 루프 돌것임)
+        log.info("userRequestInfo={}", userMakeDto);
+        Member.MemberBuilder memberBuilder = Member.builder()
+                .email(userMakeDto.getEmail())
+                .name(userMakeDto.getName())
+                .loginId(userMakeDto.getLoginId())
+                .password(userMakeDto.getPassword())
+                .nickname(userMakeDto.getNickname());
+
+        Member member = memberBuilder.build();
+        return memberService.join(member);
     }
 }
