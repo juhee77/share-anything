@@ -20,17 +20,24 @@ public class MemberService {
     @Transactional
     public Member join(Member member) {
         //validate
-        Member savedMember = memberRepository.save(member);
         //log.info("coupon:{}", coupon.getDiscount(),coupon.getDiscountType());
-        return savedMember;
+        validateDuplicateNickname(member);
+        return memberRepository.save(member);
+    }
+
+    public void validateDuplicateNickname(Member member) {
+        Optional<Member> byNickname = memberRepository.findByNickname(member.getNickname());
+        if (byNickname.isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 이름 입니다.");
+        }
     }
 
     public Member findByNickname(String writerNickname) {
-        Member findMember = memberRepository.findByNickname(writerNickname);
-        if (findMember == null) {
-            log.error("id = {}",writerNickname);
+        Optional<Member> findMember = memberRepository.findByNickname(writerNickname);
+        if (findMember.isEmpty()) {
+            log.error("id = {}", writerNickname);
             throw new RuntimeException("없는 회원입니다.");
         }
-        return findMember;
+        return findMember.get();
     }
 }

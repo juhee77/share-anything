@@ -1,7 +1,7 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import laheezy.community.dto.UserMakeDto;
+import laheezy.community.dto.requestMakeMemberDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,7 +33,7 @@ class MemberControllerTest {
     @Test
     public void 유저객체생성확인() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        UserMakeDto userMakeDto = new UserMakeDto("id", "password","test",  "nick");
+        requestMakeMemberDto userMakeDto = new requestMakeMemberDto("id", "password","test",  "nick","bo@google.com");
         String requestBody = objectMapper.writeValueAsString(userMakeDto);
 
         mockMvc.perform(post("/api/user-add")
@@ -43,7 +43,8 @@ class MemberControllerTest {
                 .andExpect(jsonPath("name").value("test"))
                 .andExpect(jsonPath("loginId").value("id"))
                 .andExpect(jsonPath("password").value("password"))
-                .andExpect(jsonPath("nickname").value("nick"));
+                .andExpect(jsonPath("nickname").value("nick"))
+                .andExpect(jsonPath("email").value("bo@google.com"));
 
     }
 }

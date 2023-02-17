@@ -1,55 +1,108 @@
 package laheezy.community.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
-//import javax.persistence.*;
-//import javax.persistence.Entity;
-
 @NoArgsConstructor
-@Data
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 @Entity
 @Schema(description = "유저")
 public class Member {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "ID")
     @Column(name = "member_id")
     private Long id;
 
     private String loginId;
-
     private String name;
-
     private String nickname;
-
     private String password;
+    private String email;
+    private LocalDateTime joinDate;
 
-    @OneToMany(fetch = LAZY,mappedBy = "member")
+    @OneToMany(fetch = LAZY, mappedBy = "member")
     @Schema(description = "유저의 게시글")
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(fetch = LAZY,mappedBy = "member")
+    @OneToMany(fetch = LAZY, mappedBy = "member")
     @Schema(description = "댓글")
     private List<Comment> comments = new ArrayList<>();
 
+    /*연관관계 주인*/
+    @ManyToOne
+    @JoinColumn
+    @JsonIgnore //순환 참조 문제 -> [CHECK] 테이블 분리 고려
+    private Member follower = this;
+
+    /*연관관계 주인*/
+    @ManyToOne
+    @JoinColumn
+    @JsonIgnore
+    private Member following = this;
+
+    @JsonIgnore
+    @OneToMany(fetch = LAZY, mappedBy = "following", cascade = CascadeType.ALL)
+    private List<Member> followings = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(fetch = LAZY, mappedBy = "follower", cascade = CascadeType.ALL)
+    private List<Member> followers = new ArrayList<>();
+
+    //생성 메서드(빌터 패턴 사용)
+//    public static Member makeUser(String loginId, String password, String name, String nickname, String email) {
+//        MemberBuilder member = Member.builder().
+//                loginId(loginId)
+//                .password(password)
+//                .name(name)
+//                .nickname(nickname)
+//                .email(email);
+//
+//        return this;
+//    }
+
     //생성 메서드
-    public static Member makeUser(String loginId, String password, String name, String nickname) {
-        Member member = new Member();
-        member.setName(name);
-        member.setLoginId(loginId);
-        member.setNickname(nickname);
-        member.setPassword(password);
-        return member;
+    @Builder
+    public Member(String loginId, String name, String nickname, String password, String email) {
+        this.loginId = loginId;
+        this.name = name;
+        this.nickname = nickname;
+        this.password = password;
+        this.email = email;
+        this.joinDate = LocalDateTime.now();
     }
 
+    //연관관계 매핑
+    public void addFollowingUser(Member following) {
+        this.followings.add(following);
 
+        if (!following.getFollowers().contains(this)) {
+            following.getFollowers().add(this);
+        }
+        //연관관계의 주인을 통한 확인
+        if (!following.getFollower().getFollowers().contains(this)) {
+            following.getFollower().getFollowers().add(this);
+        }
+    }
 
+    public void addFollowerUser(Member follower) {
+        this.followers.add(follower);
+
+        if (follower.getFollowings().contains(this)) {
+            follower.getFollowings().add(this);
+        }
+        //연관관계의 주인을 통한 확인
+        if (!follower.getFollowing().getFollowings().contains(this)) {
+            follower.getFollowing().getFollowings().add(this);
+        }
+    }
 }
