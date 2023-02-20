@@ -2,20 +2,20 @@ package laheezy.community.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
+@Getter
 @Entity
 @Schema(description = "게시글")
 public class Post {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy =  GenerationType.AUTO)
     @Schema(description = "ID")
     @Column(name = "post_id") //게시글의 Id
     private Long id;
@@ -28,6 +28,11 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>(); //게시물의 댓글
 
+
+    private boolean isOpen; //공개 비공개
+    private int heart; // 좋아요
+    private int view; // 조회수
+
     private String title;
     private String text;
     private LocalDateTime writeDate;
@@ -39,12 +44,14 @@ public class Post {
     }
 
     //생성 메서드
-    public static Post createPost( Member member,String title, String text) {
-        Post post = new Post();
-        post.setMember(member);
-        post.setTitle(title);
-        post.setText(text);
-        post.setWriteDate(LocalDateTime.now());
-        return post;
+    @Builder
+    public Post(Member member, String title, String text, boolean isOpen) {
+        setMember(member);
+        this.title = title;
+        this.text = text;
+        this.writeDate = LocalDateTime.now();
+        this.isOpen=isOpen;
+        this.heart=0;
+        this.view=0;
     }
 }

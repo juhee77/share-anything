@@ -38,6 +38,7 @@ public class MemberController {
                 .nickname(userMakeDto.getNickname());
 
         Member member = memberBuilder.build();
+
         return memberService.join(member);
     }
 }

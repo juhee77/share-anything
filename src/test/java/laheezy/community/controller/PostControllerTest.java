@@ -33,16 +33,25 @@ class PostControllerTest {
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                         .param("writerNickname", member.getNickname())
                         .param("title", "title")
-                        .param("text", "text"))
+                        .param("text", "text")
+                        .param("open","true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("writerNickname").value(member.getNickname()))
                 .andExpect(jsonPath("title").value("title"))
-                .andExpect(jsonPath("text").value("text"));
+                .andExpect(jsonPath("text").value("text"))
+                .andExpect(jsonPath("open").value("true"));
 
     }
 
     private Member makeTestUser() {
-        Member member = Member.makeUser("id", "gogo", "test", "test");
+        Member member = Member.builder()
+                .nickname("nick")
+                .password("pass")
+                .loginId("loginId")
+                .name("name")
+                .email("email")
+                .build();
+
         memberRepository.save(member);
         return member;
     }
