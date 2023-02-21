@@ -105,4 +105,17 @@ public class Member {
             follower.getFollowing().getFollowings().add(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", loginId='" + loginId + '\'' +
+                ", name='" + name + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", joinDate=" + joinDate +
+                '}';
+    }
 }

@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import laheezy.community.domain.Member;
-import laheezy.community.dto.requestMakeMemberDto;
+import laheezy.community.dto.RequestMakeMemberDto;
 import laheezy.community.service.MemberService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -28,17 +30,27 @@ public class MemberController {
 
     @PostMapping("/api/user-add")
     @Operation(summary = "유저 생성", description = "유저 생성후 userID 반환.")
-    public Member makeUser(@Valid @RequestBody requestMakeMemberDto userMakeDto) {//TODO: 리턴값 DTO로 수정 해야함(무한 루프 돌것임)
+    public MemberResponseDto makeUser(@Valid @RequestBody RequestMakeMemberDto userMakeDto) {
         log.info("userRequestInfo={}", userMakeDto);
-        Member.MemberBuilder memberBuilder = Member.builder()
+        Member member = Member.builder()
                 .email(userMakeDto.getEmail())
                 .name(userMakeDto.getName())
                 .loginId(userMakeDto.getLoginId())
                 .password(userMakeDto.getPassword())
-                .nickname(userMakeDto.getNickname());
+                .nickname(userMakeDto.getNickname()).build();
 
-        Member member = memberBuilder.build();
-
-        return memberService.join(member);
+        Member savedMember = memberService.join(member);
+        return new MemberResponseDto(savedMember.getName(), savedMember.getNickname(), savedMember.getLoginId(), savedMember.getPassword(), savedMember.getEmail());
     }
+
+    @Data
+    @AllArgsConstructor
+    private static class MemberResponseDto {
+        private String name;
+        private String nickname;
+        private String loginId;
+        private String password;
+        private String email;
+    }
+
 }

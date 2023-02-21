@@ -2,7 +2,10 @@ package laheezy.community.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ import java.util.List;
 @Schema(description = "게시글")
 public class Post {
     @Id
-    @GeneratedValue(strategy =  GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Schema(description = "ID")
     @Column(name = "post_id") //게시글의 Id
     private Long id;
@@ -50,8 +53,22 @@ public class Post {
         this.title = title;
         this.text = text;
         this.writeDate = LocalDateTime.now();
-        this.isOpen=isOpen;
-        this.heart=0;
-        this.view=0;
+        this.isOpen = isOpen;
+        this.heart = 0;
+        this.view = 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", member=" + member +
+                ", isOpen=" + isOpen +
+                ", heart=" + heart +
+                ", view=" + view +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", writeDate=" + writeDate +
+                '}';
     }
 }
