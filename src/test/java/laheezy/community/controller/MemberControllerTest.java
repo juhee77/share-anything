@@ -1,7 +1,7 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import laheezy.community.dto.requestMakeMemberDto;
+import laheezy.community.dto.RequestMakeMemberDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,7 +33,7 @@ class MemberControllerTest {
     @Test
     public void 유저객체생성확인() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        requestMakeMemberDto userMakeDto = new requestMakeMemberDto("id", "password","test",  "nick","bo@google.com");
+        RequestMakeMemberDto userMakeDto = new RequestMakeMemberDto("id", "password", "test", "nick", "bo@google.com");
         String requestBody = objectMapper.writeValueAsString(userMakeDto);
 
         mockMvc.perform(post("/api/user-add")

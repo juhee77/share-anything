@@ -17,4 +17,5 @@ public class PostForm {
     private String title;
     @NotEmpty
     private String text;
+    private boolean open;
 }
