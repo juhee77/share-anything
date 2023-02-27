@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @Entity
 @Schema(description = "유저")
+@Builder
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +25,19 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    private String loginId;
     private String name;
-    private String nickname;
+    private String nickname;//loginId대신 사용 (중복 안되도록 설계한다)(영어로만)
+
+    @JsonIgnore
     private String password;
     private String email;
-    private LocalDateTime joinDate;
+    private final LocalDateTime joinDate = LocalDateTime.now();
+
+    @JsonIgnore
+    private boolean activated;
+
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
 
     @OneToMany(fetch = LAZY, mappedBy = "member")
     @Schema(description = "유저의 게시글")
@@ -58,28 +67,6 @@ public class Member {
     @OneToMany(fetch = LAZY, mappedBy = "follower", cascade = CascadeType.ALL)
     private List<Member> followers = new ArrayList<>();
 
-    //생성 메서드(빌터 패턴 사용)
-//    public static Member makeUser(String loginId, String password, String name, String nickname, String email) {
-//        MemberBuilder member = Member.builder().
-//                loginId(loginId)
-//                .password(password)
-//                .name(name)
-//                .nickname(nickname)
-//                .email(email);
-//
-//        return this;
-//    }
-
-    //생성 메서드
-    @Builder
-    public Member(String loginId, String name, String nickname, String password, String email) {
-        this.loginId = loginId;
-        this.name = name;
-        this.nickname = nickname;
-        this.password = password;
-        this.email = email;
-        this.joinDate = LocalDateTime.now();
-    }
 
     //연관관계 매핑
     public void addFollowingUser(Member following) {
@@ -110,7 +97,6 @@ public class Member {
     public String toString() {
         return "Member{" +
                 "id=" + id +
-                ", loginId='" + loginId + '\'' +
                 ", name='" + name + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
@@ -118,4 +104,5 @@ public class Member {
                 ", joinDate=" + joinDate +
                 '}';
     }
+
 }

@@ -33,18 +33,19 @@ dependencies {
 
     //swagger 3.0
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 
     //mockito
     testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
 
     //implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
 
-//    // Swagger gradle
-//    implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
-//    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
-//
-//    /*hiberante 4 module 프록시 객체를 json으로 생성 가능해짐*/
-//    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+    //spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 }
 
 tasks.named('test') {
