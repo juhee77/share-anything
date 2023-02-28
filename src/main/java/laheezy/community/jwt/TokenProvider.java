@@ -17,29 +17,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static laheezy.community.common.AuthConstants.AUTH_HEADER;
+
 
 @Slf4j
 @Component
-public class TokenProvider implements InitializingBean {
+public class TokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;//30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; //7일
 
-    private final String secret;
-    private final long tokenValidityInSeconds;
     private Key key;
 
-
-    public TokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
-        this.secret = secret;
-        this.tokenValidityInSeconds = tokenValidityInSeconds * 1000;
+    public TokenProvider(@Value("${jwt.secret}") String secret) {
+        byte[] decode = Decoders.BASE64.decode(secret);
+        this.key = Keys.hmacShaKeyFor(decode);
     }
 
     public TokenDto generateTokenDto(Authentication authentication) {
@@ -49,10 +44,11 @@ public class TokenProvider implements InitializingBean {
         //access token 생성
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTH_HEADER, authorities)
-                .setExpiration(accessTokenExpiresIn)
-                .signWith(key, SignatureAlgorithm.HS512)
+//                .setHeader(header)
+                .setSubject(authentication.getName()) //payload
+                .claim(AUTHORITIES_KEY, authorities) //payload
+                .setExpiration(accessTokenExpiresIn)//payload
+                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
         //refresh token 생성
         String refreshToken = Jwts.builder()
@@ -61,7 +57,7 @@ public class TokenProvider implements InitializingBean {
                 .compact();
 
         return TokenDto.builder()
-                .grantType(AuthConstants.TOKEN_TYPE)
+                .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
@@ -72,12 +68,12 @@ public class TokenProvider implements InitializingBean {
         // 토큰 복호화
         Claims claims = parseClaims(accessToken);
 
-        if (claims.get(AUTH_HEADER) == null) {
+        if (claims.get(AUTHORITIES_KEY) == null) {
             throw new RuntimeException("권한이 없는 토큰 입니다");
         }
 
         //권환이 있는 경우이다
-        List<SimpleGrantedAuthority> authorities = Arrays.stream(claims.get(AUTH_HEADER).toString().split(","))
+        List<? extends SimpleGrantedAuthority> authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
@@ -108,11 +104,5 @@ public class TokenProvider implements InitializingBean {
             log.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        byte[] decode = Decoders.BASE64.decode(secret);
-        this.key = Keys.hmacShaKeyFor(decode);
     }
 }

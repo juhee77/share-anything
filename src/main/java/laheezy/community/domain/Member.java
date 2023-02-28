@@ -26,6 +26,7 @@ public class Member {
     private Long id;
 
     private String name;
+    @Column(nullable = false,unique = true)
     private String nickname;//loginId대신 사용 (중복 안되도록 설계한다)(영어로만)
 
     @JsonIgnore

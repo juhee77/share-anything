@@ -6,6 +6,7 @@ import laheezy.community.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
@@ -35,9 +38,14 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                 .requestMatchers("/v3/api-docs")
                 .requestMatchers("/swagger-resources/**")
-                .requestMatchers("/swagger-ui.html")
+                .requestMatchers("/swagger-ui/**")
                 .requestMatchers("/webjars/**")
-                .requestMatchers("/swagger/**", "/**");
+                .requestMatchers("/swagger/**")
+                .requestMatchers("/api-docs/**")
+                //.requestMatchers("/**")
+                .requestMatchers("/swagger-ui/**")
+                .requestMatchers("/auth/**")
+                ;
     }
 
     @Bean
@@ -66,9 +74,13 @@ public class SecurityConfig {
                 // 로그인, 회원가입 API 는 토큰이 없는 상태에서 요청이 들어오기 때문에 permitAll 설정
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/api").permitAll()
-                .requestMatchers("/api/authenticate").permitAll()
-                .requestMatchers("/api/signup").permitAll()
+                //.requestMatchers("/**").permitAll()
+                .requestMatchers("/auth/findToken").permitAll()
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()//인증 관련 모두 통과 시킨다.
+                //.requestMatchers("/api/get-allmember").hasAnyAuthority("ROLE_MEMBER", "ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET,"/api").hasAnyAuthority("ROLE_MEMBER", "ROLE_ADMIN")
+//                .requestMatchers("/api/authenticate").permitAll()
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
                 // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용

@@ -1,53 +1,40 @@
 package laheezy.community.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import laheezy.community.common.AuthConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@OpenAPIDefinition(
-        info = @Info(title = "채팅서비스 API 명세서",
-                description = "헥사고날 아키텍처 기반 채팅 서비스 API 명세서",
-                version = "v1"))
+import java.util.Arrays;
+import java.util.List;
+
+//@OpenAPIDefinition(info = @Info(title = "커뮤니티",  description = "커뮤니티 서비스", version = "v1")) //application.properties에 선언해서 bean 형태로 주입도 가능
 @RequiredArgsConstructor
 @Configuration
 public class swaggerConfig {
-//    // JWT SecurityContext 구성
-//    private SecurityContext securityContext() {
-//        return SecurityContext.builder()
-//                .securityReferences(defaultAuth())
-//                .build();
-//    }
-//
-//    private List<SecurityReference> defaultAuth() {
-//        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-//        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-//        authorizationScopes[0] = authorizationScope;
-//        return List.of(new SecurityReference("Authorization", authorizationScopes));
-//    }
-//
-//    // ApiKey 정의
-//    private ApiKey apiKey() {
-//        return new ApiKey("Authorization", "Authorization", "header");
-//    }
 
-//    @Bean
-//    public GroupedOpenApi chatOpenApi() {
-//        String[] paths = {"/v1/**"};
-//
-//        return GroupedOpenApi.builder()
-//                .group("채팅서비스 API v1")
-//                .pathsToMatch(paths)
-//                .build();
-//    }
-//
-//    @Bean
-//    public OpenAPI customOpenAPI() {
-//        return new OpenAPI()
-//                .components(new Components()
-//                        .addSecuritySchemes("bearer-key",
-//                                new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
-//    }
+    @Bean
+    public OpenAPI openAPI(@Value("${springdoc.version}") String appVersion) {
+        Info info = new Info()
+                .title("community API doc").version(appVersion)
+                .description("Spring Boot를 이용한 웹 애플리케이션 API입니다.");
+
+        SecurityScheme securityScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
+                .in(SecurityScheme.In.HEADER).name("Authorization");
 
 
+        SecurityRequirement schemeRequirement = new SecurityRequirement().addList("bearerAuth");
+
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes("Authorization", securityScheme))
+                .security(List.of(schemeRequirement))
+                .info(info);
+    }
 }
