@@ -36,15 +36,15 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/v3/api-docs")
-                .requestMatchers("/swagger-resources/**")
-                .requestMatchers("/swagger-ui/**")
-                .requestMatchers("/webjars/**")
+//                .requestMatchers("/v3/api-docs")
+//                .requestMatchers("/swagger-resources/**")
+//                .requestMatchers("/swagger-ui/**")
+//                .requestMatchers("/webjars/**")
                 .requestMatchers("/swagger/**")
                 .requestMatchers("/api-docs/**")
-                //.requestMatchers("/**")
+                .requestMatchers("/**")
                 .requestMatchers("/swagger-ui/**")
-                .requestMatchers("/auth/**")
+                //.requestMatchers("/auth/**")
                 ;
     }
 
@@ -74,13 +74,14 @@ public class SecurityConfig {
                 // 로그인, 회원가입 API 는 토큰이 없는 상태에서 요청이 들어오기 때문에 permitAll 설정
                 .and()
                 .authorizeHttpRequests()
+                .requestMatchers("/v3/api-docs","/swagger-resources/**","/swagger-ui/**","/api-docs/**","/swagger-ui/**").permitAll()
+
                 //.requestMatchers("/**").permitAll()
                 .requestMatchers("/auth/findToken").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()//인증 관련 모두 통과 시킨다.
                 //.requestMatchers("/api/get-allmember").hasAnyAuthority("ROLE_MEMBER", "ROLE_ADMIN")
-                .requestMatchers(HttpMethod.GET,"/api").hasAnyAuthority("ROLE_MEMBER", "ROLE_ADMIN")
-//                .requestMatchers("/api/authenticate").permitAll()
+                .requestMatchers(HttpMethod.GET,"/get-allmember").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
                 // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용

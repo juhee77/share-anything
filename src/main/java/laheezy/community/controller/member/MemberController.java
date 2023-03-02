@@ -24,7 +24,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping(value = "/")
+@RequestMapping
 @Tag(name = "Member", description = "Member Controller")
 @Slf4j
 @RequiredArgsConstructor
@@ -59,6 +59,7 @@ public class MemberController {
 //    }
 
 
+    //admin권한에서 테스트 용
     @GetMapping("/get-allmember")
     public List<MemberResponseDto> findAll(){
         List<Member> allMember = memberService.findAllMember();

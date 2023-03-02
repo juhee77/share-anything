@@ -27,6 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
+            log.info("{}", authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
     }
@@ -35,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             String trim = bearerToken.split(" ")[1].trim();
-            log.info("{}" + trim);
+            log.info("{}", trim);
             return trim;
         }
         return null;
