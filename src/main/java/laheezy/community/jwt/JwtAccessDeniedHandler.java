@@ -10,9 +10,9 @@ import java.io.IOException;
 
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
-
+    //권환 없이 접근 하려 하는 경우 403
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN); //권환 없이 접근 하려 하는 경우 403
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 }

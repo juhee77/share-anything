@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -26,7 +27,7 @@ public class Member {
     private Long id;
 
     private String name;
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String nickname;//loginId대신 사용 (중복 안되도록 설계한다)(영어로만)
 
     @JsonIgnore
@@ -37,8 +38,11 @@ public class Member {
     @JsonIgnore
     private boolean activated;
 
-    @Enumerated(EnumType.STRING)
-    private Authority authority;
+    @ManyToMany
+    @JoinTable(name = "member_authority",
+            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
+            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+    private Set<Authority> authorities;
 
     @OneToMany(fetch = LAZY, mappedBy = "member")
     @Schema(description = "유저의 게시글")

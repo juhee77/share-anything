@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Configuration
 public class swaggerConfig {
+    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Bean
     public OpenAPI openAPI(@Value("${springdoc.version}") String appVersion) {
@@ -27,14 +28,15 @@ public class swaggerConfig {
 
         SecurityScheme securityScheme = new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
-                .in(SecurityScheme.In.HEADER).name("Authorization");
+                .in(SecurityScheme.In.HEADER).name(AUTHORIZATION_HEADER );
 
 
         SecurityRequirement schemeRequirement = new SecurityRequirement().addList("bearerAuth");
 
         return new OpenAPI()
-                .components(new Components().addSecuritySchemes("Authorization", securityScheme))
+                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .security(List.of(schemeRequirement))
                 .info(info);
     }
+
 }

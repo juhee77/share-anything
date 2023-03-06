@@ -47,7 +47,6 @@ class PostControllerTest {
         Member member = Member.builder()
                 .nickname("nick")
                 .password("pass")
-                .loginId("loginId")
                 .name("name")
                 .email("email")
                 .build();

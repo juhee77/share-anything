@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +35,13 @@ public class CustomUserDetailService implements UserDetailsService {
         if (!member.isActivated()) {
             throw new RuntimeException(nickName + "-> 활성화 되어 있지 않습니다");
         }
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
+        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
+                .collect(Collectors.toList());
 
-        return new User(member.getNickname(), member.getPassword(), Collections.singleton(grantedAuthority));
+        //GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthorities().toString());
+
+        //유저 객체가 활성화 되어있다면 만들어서 리턴해준다.
+        return new User(member.getNickname(), member.getPassword(), grantedAuthorities);
     }
 }

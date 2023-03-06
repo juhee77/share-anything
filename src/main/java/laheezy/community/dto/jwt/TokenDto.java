@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class TokenDto {
+public class TokenDto { //token
     private String grantType;
     private String accessToken;
     private String refreshToken;
