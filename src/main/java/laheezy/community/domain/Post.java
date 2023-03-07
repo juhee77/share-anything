@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,10 +32,10 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>(); //게시물의 댓글
 
-
     private boolean isOpen; //공개 비공개
-    private int heart; // 좋아요
-    private int view; // 조회수
+
+    @ColumnDefault("0")
+    private Integer view; // 조회수
 
     private String title;
     private String text;
@@ -54,8 +55,6 @@ public class Post {
         this.text = text;
         this.writeDate = LocalDateTime.now();
         this.isOpen = isOpen;
-        this.heart = 0;
-        this.view = 0;
     }
 
     @Override
@@ -64,11 +63,12 @@ public class Post {
                 "id=" + id +
                 ", member=" + member +
                 ", isOpen=" + isOpen +
-                ", heart=" + heart +
                 ", view=" + view +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
                 ", writeDate=" + writeDate +
                 '}';
     }
+
+
 }

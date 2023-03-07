@@ -1,18 +1,15 @@
 package laheezy.community.service;
 
-import laheezy.community.domain.Authority;
 import laheezy.community.dto.jwt.RefreshToken;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.jwt.TokenProvider;
-import laheezy.community.repository.MemberRepository;
 import laheezy.community.repository.jwt.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +26,7 @@ public class TokenService {
     public TokenDto makeTestToken() {
         //https://kimtaesoo99.tistory.com/119 해당 블로그 참고
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
-        LoginDto loginDto = new LoginDto("juhee", "string");
+        LoginDto loginDto = new LoginDto("string2", "string2");
         UsernamePasswordAuthenticationToken authenticationToken = loginDto.toAuthentication();
 
         // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분

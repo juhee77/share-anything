@@ -22,9 +22,7 @@ public class TokenController {
     @GetMapping("/findToken")
     @Operation(summary = "포스트 생성", description = "포스트 생성")
     public ResponseEntity<TokenDto> makeToken() {
-        log.info("ok");
         TokenDto tokenDto = tokenService.makeTestToken();
-        log.error("{}",tokenDto);
         return ResponseEntity.ok(tokenDto);
     }
 }
