@@ -12,6 +12,7 @@ import laheezy.community.dto.jwt.TokenRequestDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.dto.member.MemberResponseDto;
+import laheezy.community.exception.Fail;
 import laheezy.community.jwt.JwtFilter;
 import laheezy.community.jwt.TokenProvider;
 import laheezy.community.service.MemberService;
@@ -24,10 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -39,11 +37,20 @@ public class MemberAuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberService memberService;
 
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Exception.class)
+    public Fail checkLogin(Exception e) {
+
+        return new Fail( HttpStatus.NOT_FOUND,e.getMessage());
+    }
+
+
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "회원 가입 API")
     @ApiResponse(responseCode = "200", description = "successfulOperation", content = @Content(schema = @Schema(implementation = MemberRequestDto.class)))
     //@ApiResponse(responseCode = "400", description = "failOperation", content = @Content(schema = @Schema(implementation = MemberResponseDto.class)))
-    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto memberRequestDto) {
+    public ResponseEntity<MemberResponseDto> signup(@RequestBody @Valid MemberRequestDto memberRequestDto) {
         Member savedMember = memberService.signup(memberRequestDto);
         MemberResponseDto memberResponseDto = MemberResponseDto.builder()
                 .email(savedMember.getEmail())
@@ -79,7 +86,7 @@ public class MemberAuthController {
 
     @PostMapping("/reissue")
     @Operation(summary = "토큰 재 발급")
-    public ResponseEntity<TokenDto> reissue(@RequestBody TokenRequestDto tokenRequestDto) {
+    public ResponseEntity<TokenDto> reissue(@RequestBody @Valid TokenRequestDto tokenRequestDto) {
         return ResponseEntity.ok(memberService.reissue(tokenRequestDto));
     }
 
