@@ -1,14 +1,20 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.RequestMakeCommentDto;
+import laheezy.community.dto.jwt.TokenDto;
+import laheezy.community.dto.member.LoginDto;
+import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.repository.MemberRepository;
 import laheezy.community.repository.PostRepository;
-import lombok.extern.slf4j.Slf4j;
+import laheezy.community.service.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -22,13 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Slf4j
 class CommentControllerTest {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberService memberService;
     @Autowired
     private PostRepository postRepository;
 
@@ -36,17 +41,18 @@ class CommentControllerTest {
     public void 댓글객체생성확인() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         Member member = makeTestUser();
-        log.info("member={}", member.toString());
+        TokenDto login = memberService.login(new LoginDto("nick", "pass"));
+
         Post post = makeTestPost(member);
-        log.info("post={}", post.toString());
-        RequestMakeCommentDto commentDto = new RequestMakeCommentDto("nick", post.getId(), "text", true);
+        RequestMakeCommentDto commentDto = new RequestMakeCommentDto(post.getId(), "text", true);
         String requestBody = objectMapper.writeValueAsString(commentDto);
 
-        mockMvc.perform(post("/api/comment-add")
+        mockMvc.perform(post("/api/comment/add")
+                        .header("Authorization","Bearer "+login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("writerNickname").value("nick"))
+                .andExpect(jsonPath("writerNickname").value(member.getNickname()))
                 .andExpect(jsonPath("postId").value(post.getId()))
                 .andExpect(jsonPath("text").value("text"))
                 .andExpect(jsonPath("open").value(true));
@@ -54,24 +60,14 @@ class CommentControllerTest {
     }
 
     private Member makeTestUser() {
-        Member member = Member.builder()
-                .nickname("nick")
-                .password("pass")
-                .loginId("loginId")
-                .name("name")
-                .email("email")
-                .build();
-
-        memberRepository.save(member);
-        return member;
+        return  memberService.signup(new MemberRequestDto("pass", "name", "nick", "go@go"));
     }
 
     private Post makeTestPost(Member member) {
         Post post = Post.builder()
                 .title("post title")
-                .member(member).build();
+                .member(member).isOpen(true).build();
 
-        postRepository.save(post);
-        return post;
+        return postRepository.save(post);
     }
 }

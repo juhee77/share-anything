@@ -30,20 +30,20 @@ class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
+@Test
     public void 유저객체생성확인() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         MemberRequestDto userMakeDto = new MemberRequestDto("password", "test", "nick", "bo@google.com");
         String requestBody = objectMapper.writeValueAsString(userMakeDto);
 
-        mockMvc.perform(post("/api/user-add")
+        mockMvc.perform(post("/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("name").value("test"))
-                .andExpect(jsonPath("password").value("password"))
                 .andExpect(jsonPath("nickname").value("nick"))
                 .andExpect(jsonPath("email").value("bo@google.com"));
 
     }
+
 }

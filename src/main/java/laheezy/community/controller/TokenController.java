@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Template", description = "템플릿 API Document")
+@Tag(name = "test", description = "test용")
 @Slf4j
 @RequiredArgsConstructor
 public class TokenController {
     private final TokenService tokenService;
 
     @GetMapping("/findToken")
-    @Operation(summary = "포스트 생성", description = "포스트 생성")
-    public ResponseEntity<TokenDto> makeToken() {
+    @Operation(summary = "테스트 토큰을 생성", description = "테스트 토큰 생성")
+    public String makeToken() {
         TokenDto tokenDto = tokenService.makeTestToken();
-        return ResponseEntity.ok(tokenDto);
+        return tokenDto.getAccessToken();
     }
 }

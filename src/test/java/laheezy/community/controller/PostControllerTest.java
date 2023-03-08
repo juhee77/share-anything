@@ -1,7 +1,10 @@
 package laheezy.community.controller;
 
 import laheezy.community.domain.Member;
-import laheezy.community.repository.MemberRepository;
+import laheezy.community.dto.jwt.TokenDto;
+import laheezy.community.dto.member.LoginDto;
+import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.service.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,17 +27,19 @@ class PostControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberService memberService;
+
     @Test
     public void 포스트객체생성확인() throws Exception {
         Member member = makeTestUser();
+        TokenDto login = memberService.login(new LoginDto("nick", "pass"));
 
-        mockMvc.perform(post("/api/post-add")
+        mockMvc.perform(post("/api/post/add")
+                        .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                        .param("writerNickname", member.getNickname())
                         .param("title", "title")
                         .param("text", "text")
-                        .param("open","true"))
+                        .param("open", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("writerNickname").value(member.getNickname()))
                 .andExpect(jsonPath("title").value("title"))
@@ -44,14 +49,6 @@ class PostControllerTest {
     }
 
     private Member makeTestUser() {
-        Member member = Member.builder()
-                .nickname("nick")
-                .password("pass")
-                .name("name")
-                .email("email")
-                .build();
-
-        memberRepository.save(member);
-        return member;
+        return memberService.signup(new MemberRequestDto("pass", "name", "nick", "go@go"));
     }
 }

@@ -32,7 +32,8 @@ public class Member {
     @JsonIgnore
     private String password;
     private String email;
-    private final LocalDateTime joinDate = LocalDateTime.now();
+    @Builder.Default
+    private LocalDateTime joinDate = LocalDateTime.now();
 
     @JsonIgnore
     private boolean activated;
@@ -44,10 +45,12 @@ public class Member {
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
 
+    @Builder.Default
     @OneToMany(fetch = LAZY, mappedBy = "member")
     @Schema(description = "유저의 게시글")
     private List<Post> posts = new ArrayList<>();
 
+    @Builder.Default //builder로 선언 하는 경우 없는값이라고 null을 넣는다 따라서 이렇게 해야함
     @OneToMany(fetch = LAZY, mappedBy = "member")
     @Schema(description = "댓글")
     private List<Comment> comments = new ArrayList<>();
@@ -107,6 +110,7 @@ public class Member {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", joinDate=" + joinDate +
+                ", Post=" + posts.size() +
                 '}';
     }
 
