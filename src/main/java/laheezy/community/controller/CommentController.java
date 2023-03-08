@@ -6,6 +6,7 @@ import laheezy.community.domain.Comment;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.RequestMakeCommentDto;
+import laheezy.community.exception.Fail;
 import laheezy.community.service.CommentService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
@@ -13,13 +14,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/")
+@RequestMapping(value = "/api/comment")
 @Tag(name = "CommentController", description = "댓글 API Document")
 @Slf4j
 @RequiredArgsConstructor
@@ -28,12 +27,18 @@ public class CommentController {
     private final PostService postService;
     private final MemberService memberService;
 
-    @PostMapping("/api/comment-add")
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Exception.class)
+    public Fail checkLogin(Exception e) {
+        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @PostMapping("/add")
     public CommentResponseDto makeComment(@Valid @RequestBody RequestMakeCommentDto requestMakeCommentDto) {
-        Member author = memberService.findByNickname(requestMakeCommentDto.getNickname());
+        Member nowLogin = memberService.getMemberWithAuthorities().get();
         Post post = postService.findById(requestMakeCommentDto.getPostId());
         Comment comment = Comment.builder()
-                .member(author)
+                .member(nowLogin)
                 .text(requestMakeCommentDto.getText())
                 .post(post)
                 .isOpen(requestMakeCommentDto.isOpen())
@@ -50,6 +55,4 @@ public class CommentController {
         private String text;
         private boolean open;
     }
-
-
 }
