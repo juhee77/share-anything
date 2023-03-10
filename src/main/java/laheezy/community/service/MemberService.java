@@ -2,6 +2,7 @@ package laheezy.community.service;
 
 import laheezy.community.domain.Authority;
 import laheezy.community.domain.Member;
+import laheezy.community.domain.Post;
 import laheezy.community.dto.jwt.RefreshToken;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.jwt.TokenRequestDto;
@@ -17,10 +18,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class MemberService {
     }
 
     public Member findByNickname(String writerNickname) {
-        Optional<Member> findMember = memberRepository.findOneWithAuthoritiesByNickname(writerNickname);
+        Optional<Member> findMember = memberRepository.findByNickname(writerNickname);
         if (findMember.isEmpty()) {
             log.error("id = {}", writerNickname);
             throw new RuntimeException("없는 회원입니다.");
@@ -144,4 +145,15 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
+    public List<Post> getMyPost(Member member) {
+        return member.getPosts();
+    }
+
+    public Member findById(Long memberId) {
+        Optional<Member> findMember = memberRepository.findById(memberId);
+        if(findMember.isPresent()){
+            return findMember.get();
+        }
+        throw new RequestRejectedException("없는 멤버 입니다");
+    }
 }

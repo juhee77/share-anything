@@ -21,7 +21,7 @@ public class PostHeartService {
         if (checkAlreadyHeart(member, post)) {
             throw new IllegalArgumentException("이미 좋아요 된 게시글 입니다");
         }
-        return postHeartRepository.save(PostHeart.builder().post(post).member(member).build());
+        return postHeartRepository.save(new PostHeart(member, post));
     }
 
     @Transactional
@@ -35,7 +35,8 @@ public class PostHeartService {
     public boolean checkAlreadyHeart(Member member, Post post) {
         if (postHeartRepository.findByMemberAndPost(member, post).isPresent()) {
             return true;
-        } else return false;
+        }
+        return false;
     }
 
 }

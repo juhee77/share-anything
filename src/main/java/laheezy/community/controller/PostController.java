@@ -34,8 +34,9 @@ public class PostController {
     @ExceptionHandler(Exception.class)
     public Fail checkLogin(Exception e) {
 
-        return new Fail( HttpStatus.NOT_FOUND,e.getMessage());
+        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
     }
+
     //@PostMapping(value="/api/post-add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(value = "/add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "포스트 생성", description = "포스트 생성")
@@ -43,11 +44,11 @@ public class PostController {
 
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         Post post = Post.builder()
-                .member(nowLogin)
                 .text(postForm.getText())
                 .title(postForm.getTitle())
                 .isOpen(postForm.isOpen())
                 .build();
+        post.setMember(nowLogin);
 
         Post savedPost = postService.writePost(post);
 
@@ -62,7 +63,7 @@ public class PostController {
 
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         List<Post> myPost = memberService.getMyPost(nowLogin);
-        List<PostViwResponseDto> responseDtos = myPost.stream().map(o -> new PostViwResponseDto(o.getId(),o.getTitle(), o.getText(), o.isOpen(), o.getView(), o.getWriteDate())).collect(Collectors.toList());
+        List<PostViwResponseDto> responseDtos = myPost.stream().map(o -> new PostViwResponseDto(o.getId(), o.getTitle(), o.getText(), o.isOpen(), o.getView(), o.getWriteDate())).collect(Collectors.toList());
 
         return responseDtos;
     }
@@ -72,7 +73,7 @@ public class PostController {
     @Operation(summary = "해당 포스트 자세히 보기", description = "postID포스트 확인")//페이징 기능 넣어야 한다.
     public PostViwResponseDto makePost(@PathVariable("postId") Long postId) {
         Post post = postService.findById(postId);
-        PostViwResponseDto responseDto = new PostViwResponseDto(post.getId(),post.getTitle(), post.getText(), post.isOpen(), post.getView(), post.getWriteDate());
+        PostViwResponseDto responseDto = new PostViwResponseDto(post.getId(), post.getTitle(), post.getText(), post.isOpen(), post.getView(), post.getWriteDate());
 
         return responseDto;
     }
@@ -93,7 +94,7 @@ public class PostController {
         private String title; //제목
         private String text; //내용
         private boolean isOpen; //공개 비공개
-        private Integer view; // 조회수
+        private long view; // 조회수
         private LocalDateTime writeDate; //작성 날짜
     }
 

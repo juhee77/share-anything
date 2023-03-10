@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -43,18 +44,19 @@ public class MemberController {
     //admin권한에서 테스트 용
     @GetMapping("/user/{nickname}")
     //  @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<Member> getUserInfo(@PathVariable String nickname) {
-        return ResponseEntity.ok(memberService.getMemberWithAuthorities(nickname).get());
+    public ResponseEntity<MemberResponseDto> getUserInfo(@PathVariable String nickname) {
+        Member findMember = memberService.getMemberWithAuthorities(nickname).get();
+        return ResponseEntity.ok(new MemberResponseDto(findMember.getName(), findMember.getNickname(), findMember.getPassword(), findMember.getEmail()));
     }
 
     @PostMapping("/user")
     // @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<Member> getMyMemberInfo() {
-        return ResponseEntity.ok(memberService.getMemberWithAuthorities().get());
+    public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
+        Member findMember = memberService.getMemberWithAuthorities().get();
+        return ResponseEntity.ok(new MemberResponseDto(findMember.getName(), findMember.getNickname(), findMember.getPassword(), findMember.getEmail()));
     }
 
     @GetMapping("/get-allmember")
-    // @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public List<MemberResponseDto> findAll() {
         List<Member> allMember = memberService.findAllMember();
         List<MemberResponseDto> responseDto = new ArrayList<>();
@@ -63,7 +65,6 @@ public class MemberController {
         }
         return responseDto;
     }
-
 
     @Data
     @ToString
