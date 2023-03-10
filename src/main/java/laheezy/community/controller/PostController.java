@@ -15,8 +15,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/post")
@@ -51,6 +54,29 @@ public class PostController {
         return new PostResponseDto(nowLogin.getNickname(), savedPost.getTitle(), savedPost.getText(), savedPost.isOpen());
     }
 
+
+    //이럴때는 포스트야 겟이야..?
+    @GetMapping(value = "/get-mypost")
+    @Operation(summary = "본인의 작성 포스트 확인", description = "자신의 포스트 확인")//페이징 기능 넣어야 한다.
+    public List<PostViwResponseDto> makePost() {
+
+        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        List<Post> myPost = memberService.getMyPost(nowLogin);
+        List<PostViwResponseDto> responseDtos = myPost.stream().map(o -> new PostViwResponseDto(o.getId(),o.getTitle(), o.getText(), o.isOpen(), o.getView(), o.getWriteDate())).collect(Collectors.toList());
+
+        return responseDtos;
+    }
+
+    //이럴때는 포스트야 겟이야..?
+    @GetMapping(value = "/get/{postId}")
+    @Operation(summary = "해당 포스트 자세히 보기", description = "postID포스트 확인")//페이징 기능 넣어야 한다.
+    public PostViwResponseDto makePost(@PathVariable("postId") Long postId) {
+        Post post = postService.findById(postId);
+        PostViwResponseDto responseDto = new PostViwResponseDto(post.getId(),post.getTitle(), post.getText(), post.isOpen(), post.getView(), post.getWriteDate());
+
+        return responseDto;
+    }
+
     @Data
     @AllArgsConstructor
     private static class PostResponseDto {
@@ -58,6 +84,17 @@ public class PostController {
         private String title;
         private String text;
         private boolean open;
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class PostViwResponseDto {
+        private Long postId;
+        private String title; //제목
+        private String text; //내용
+        private boolean isOpen; //공개 비공개
+        private Integer view; // 조회수
+        private LocalDateTime writeDate; //작성 날짜
     }
 
 }

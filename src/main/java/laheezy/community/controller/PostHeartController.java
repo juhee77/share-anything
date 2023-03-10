@@ -30,13 +30,10 @@ public class PostHeartController {
         return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    //@PostMapping(value="/api/post-add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(value = "/like/{postId}")
     @Operation(summary = "포스트 좋아요", description = "포스트 좋아요")
     public PostHeart addPostHeart(@PathVariable("postId") Long postId) {
-        log.info("postId {}", postId);
         Post heartPost = postService.findById(postId);
-        log.info("hearPost : {}", heartPost);
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         log.info("{}", nowLogin);
 

@@ -34,8 +34,7 @@ public class Post {
 
     private boolean isOpen; //공개 비공개
 
-    @ColumnDefault("0")
-    private Integer view; // 조회수
+    private Integer view = 0; // 조회수
 
     private String title;
     private String text;
@@ -55,6 +54,7 @@ public class Post {
         this.text = text;
         this.writeDate = LocalDateTime.now();
         this.isOpen = isOpen;
+        this.view = 0;
     }
 
     @Override

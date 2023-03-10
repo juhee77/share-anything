@@ -26,7 +26,7 @@ public class PostService {
     public Post findById(long id) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isEmpty()) {
-            throw new IllegalArgumentException("없는 포스트 아이디 입니다.");
+            throw new IllegalArgumentException("삭제 됐거나 없는 포스트 아이디 입니다.");
         }
         return post.get();
     }
