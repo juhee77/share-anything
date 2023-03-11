@@ -55,15 +55,15 @@ public class Member {
     private List<Comment> comments = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(fetch = LAZY, mappedBy = "member")
+    @OneToMany(fetch = LAZY, mappedBy = "member", cascade = CascadeType.ALL)
     private List<PostHeart> postHearts = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(fetch = LAZY, mappedBy = "memberA")
+    @OneToMany(fetch = LAZY, mappedBy = "memberA", cascade = CascadeType.ALL)
     private List<Following> following = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(fetch = LAZY, mappedBy = "memberB")
+    @OneToMany(fetch = LAZY, mappedBy = "memberB", cascade = CascadeType.ALL)
     private List<Following> follower = new ArrayList<>();
 
 

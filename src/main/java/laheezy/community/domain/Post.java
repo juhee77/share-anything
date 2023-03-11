@@ -29,7 +29,7 @@ public class Post {
     private Member member; //게시글 작성자
 
     @Builder.Default
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>(); //게시물의 댓글
 
     private boolean isOpen; //공개 비공개
@@ -43,7 +43,7 @@ public class Post {
     private LocalDateTime writeDate = LocalDateTime.now();
 
     @Builder.Default
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostHeart> postHearts = new ArrayList<>();
 
     //연관관계 메서드

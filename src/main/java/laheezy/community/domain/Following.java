@@ -10,6 +10,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor
 @Getter
 @Entity
+@ToString
 @Schema(description = "팔로우를 관리한다 ") //A->B를 팔로우한다.
 public class Following {
     @Id
@@ -17,13 +18,13 @@ public class Following {
     private Long id;
 
     @JsonIgnore
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "follower_id")
     private Member memberA;
 
     @JsonIgnore
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "following_id") //둘중 한곳에만 추가
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "following_id")
     private Member memberB;
 
     //연관관계 메서드
