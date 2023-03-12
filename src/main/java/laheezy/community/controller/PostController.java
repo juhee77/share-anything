@@ -63,19 +63,32 @@ public class PostController {
 
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         List<Post> myPost = memberService.getMyPost(nowLogin);
-        List<PostViwResponseDto> responseDtos = myPost.stream().map(o -> new PostViwResponseDto(o.getId(), o.getTitle(), o.getText(), o.isOpen(), o.getView(), o.getWriteDate())).collect(Collectors.toList());
+        List<PostViwResponseDto> responseDtos = getResponseDtos(myPost);
 
         return responseDtos;
     }
 
-    //이럴때는 포스트야 겟이야..?
     @GetMapping(value = "/get/{postId}")
     @Operation(summary = "해당 포스트 자세히 보기", description = "postID포스트 확인")//페이징 기능 넣어야 한다.
     public PostViwResponseDto makePost(@PathVariable("postId") Long postId) {
         Post post = postService.findById(postId);
-        PostViwResponseDto responseDto = new PostViwResponseDto(post.getId(), post.getTitle(), post.getText(), post.isOpen(), post.getView(), post.getWriteDate());
+        PostViwResponseDto responseDto = new PostViwResponseDto(post.getId(), post.getTitle(), post.getText(), post.isOpen(), post.getView(), post.getWriteDate(),post.getPostHearts().size());
 
         return responseDto;
+    }
+
+    @GetMapping(value = "/get/follow")
+    @Operation(summary = "내가 팔로우하는 사람들의 게시글만 본다.")//페이징 기능 넣어야 한다.
+    public List<PostViwResponseDto> getFollowPost() {
+        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        List<Post> followPost = postService.findFollowPost(nowLogin);
+        List<PostViwResponseDto> responseDtos = getResponseDtos(followPost);
+
+        return responseDtos;
+    }
+
+    private List<PostViwResponseDto> getResponseDtos(List<Post> myPost) {
+        return myPost.stream().map(o -> new PostViwResponseDto(o.getId(), o.getTitle(), o.getText(), o.isOpen(), o.getView(), o.getWriteDate(),o.getPostHearts().size())).collect(Collectors.toList());
     }
 
     @Data
@@ -96,6 +109,7 @@ public class PostController {
         private boolean isOpen; //공개 비공개
         private long view; // 조회수
         private LocalDateTime writeDate; //작성 날짜
+        private long heartCnt;
     }
 
 }
