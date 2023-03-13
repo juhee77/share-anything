@@ -46,14 +46,14 @@ public class MemberController {
     //  @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<MemberResponseDto> getUserInfo(@PathVariable String nickname) {
         Member findMember = memberService.getMemberWithAuthorities(nickname).get();
-        return ResponseEntity.ok(new MemberResponseDto(findMember.getName(), findMember.getNickname(), findMember.getPassword(), findMember.getEmail()));
+        return ResponseEntity.ok(new MemberResponseDto(findMember.getName(), findMember.getNickname(), findMember.getEmail()));
     }
 
-    @PostMapping("/user")
+    @GetMapping("/me-profile")
     // @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
         Member findMember = memberService.getMemberWithAuthorities().get();
-        return ResponseEntity.ok(new MemberResponseDto(findMember.getName(), findMember.getNickname(), findMember.getPassword(), findMember.getEmail()));
+        return ResponseEntity.ok(new MemberResponseDto(findMember.getName(), findMember.getNickname(), findMember.getEmail()));
     }
 
     @GetMapping("/get-allmember")
@@ -61,7 +61,7 @@ public class MemberController {
         List<Member> allMember = memberService.findAllMember();
         List<MemberResponseDto> responseDto = new ArrayList<>();
         for (Member member : allMember) {
-            responseDto.add(new MemberResponseDto(member.getName(), member.getNickname(), member.getPassword(), member.getEmail()));
+            responseDto.add(new MemberResponseDto(member.getName(), member.getNickname(), member.getEmail()));
         }
         return responseDto;
     }
@@ -72,7 +72,6 @@ public class MemberController {
     private static class MemberResponseDto {
         private String name;
         private String nickname;
-        private String password;
         private String email;
     }
 }

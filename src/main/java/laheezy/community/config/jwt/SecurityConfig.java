@@ -74,7 +74,7 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**").permitAll()
                 //.requestMatchers("/api/get-allmember").hasAnyAuthority("ROLE_MEMBER", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.GET,"/get-allmember","/user/{nickname}").hasAnyAuthority( "ROLE_ADMIN")
-                .requestMatchers("/user").permitAll()
+                //.requestMatchers("/user").permitAll()
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
                 // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
