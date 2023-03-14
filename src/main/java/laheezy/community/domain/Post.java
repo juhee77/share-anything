@@ -19,7 +19,7 @@ import java.util.List;
 @Schema(description = "게시글")
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "ID")
     @Column(name = "post_id") //게시글의 Id
     private Long id;
@@ -29,7 +29,7 @@ public class Post {
     private Member member; //게시글 작성자
 
     @Builder.Default
-    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>(); //게시물의 댓글
 
     private boolean isOpen; //공개 비공개
@@ -41,6 +41,7 @@ public class Post {
     private String text;
     @Builder.Default
     private LocalDateTime writeDate = LocalDateTime.now();
+    private LocalDateTime lastModifiedTime;
 
     @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)

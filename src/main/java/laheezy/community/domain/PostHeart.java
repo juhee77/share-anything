@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.FetchType.LAZY;
 
 @NoArgsConstructor
@@ -29,6 +31,8 @@ public class PostHeart {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    private LocalDateTime date = LocalDateTime.now();
 
     //이렇게 다 양방향 관계로 하는게 맞는걸까.
     //연관관계 메서드

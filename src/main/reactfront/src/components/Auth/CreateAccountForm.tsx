@@ -10,17 +10,17 @@ const CreateAccountForm = () => {
     const emailInputRef = useRef<HTMLInputElement>(null);
     const passwordInputRef = useRef<HTMLInputElement>(null);
     const nicknameInputRef = useRef<HTMLInputElement>(null);
-    const nameInputRef = useRef<HTMLInputElement>(null);
+    const loginIdInputRef = useRef<HTMLInputElement>(null);
 
     const submitHandler = (event: React.FormEvent) => {
         event.preventDefault();
 
-        const entereName = nameInputRef.current!.value;
+        const entereLoginId = loginIdInputRef.current!.value;
         const enteredEmail = emailInputRef.current!.value;
         const enteredPassword = passwordInputRef.current!.value;
         const enteredNickname = nicknameInputRef.current!.value;
 
-        authCtx.signup(enteredEmail, enteredPassword, enteredNickname, entereName);
+        authCtx.signup(enteredEmail, enteredPassword, enteredNickname, entereLoginId);
 
         if (authCtx.isSuccess) {
             return navigate("/", {replace: true});
@@ -38,8 +38,8 @@ const CreateAccountForm = () => {
                     <input type='email' id='email' required ref={emailInputRef}/>
                 </div>
                 <div>
-                    <label htmlFor='name'>Your name</label>
-                    <input type='name' id='name' required ref={nameInputRef}/>
+                    <label htmlFor='loginId'>Your loginId</label>
+                    <input type='loginId' id='loginId' required ref={loginIdInputRef}/>
                 </div>
                 <div>
                     <label htmlFor="password">Your password</label>

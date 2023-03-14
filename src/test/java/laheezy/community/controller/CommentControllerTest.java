@@ -1,20 +1,16 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.RequestMakeCommentDto;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
-import laheezy.community.repository.MemberRepository;
 import laheezy.community.repository.PostRepository;
 import laheezy.community.service.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -41,18 +37,18 @@ class CommentControllerTest {
     public void 댓글객체생성확인() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         Member member = makeTestUser();
-        TokenDto login = memberService.login(new LoginDto("nick", "pass"));
+        TokenDto login = memberService.login(new LoginDto("name", "pass"));
 
         Post post = makeTestPost(member);
         RequestMakeCommentDto commentDto = new RequestMakeCommentDto(post.getId(), "text", true);
         String requestBody = objectMapper.writeValueAsString(commentDto);
 
         mockMvc.perform(post("/api/comment/add")
-                        .header("Authorization","Bearer "+login.getAccessToken())
+                        .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("writerNickname").value(member.getNickname()))
+                .andExpect(jsonPath("writerNickname").value(member.getLoginId()))
                 .andExpect(jsonPath("postId").value(post.getId()))
                 .andExpect(jsonPath("text").value("text"))
                 .andExpect(jsonPath("open").value(true));
@@ -60,7 +56,7 @@ class CommentControllerTest {
     }
 
     private Member makeTestUser() {
-        return  memberService.signup(new MemberRequestDto("pass", "name", "nick", "go@go"));
+        return memberService.signup(new MemberRequestDto("pass", "name", "nick", "go@go.com"));
     }
 
     private Post makeTestPost(Member member) {

@@ -41,7 +41,6 @@ public class MemberAuthController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.class)
     public Fail checkLogin(Exception e) {
-
         return new Fail( HttpStatus.NOT_FOUND,e.getMessage());
     }
 
@@ -54,7 +53,7 @@ public class MemberAuthController {
         Member savedMember = memberService.signup(memberRequestDto);
         MemberResponseDto memberResponseDto = MemberResponseDto.builder()
                 .email(savedMember.getEmail())
-                .name(savedMember.getName())
+                .loginId(savedMember.getLoginId())
                 .nickname(savedMember.getNickname())
                 .joinDateTime(savedMember.getJoinDate())
                 .build();
@@ -65,7 +64,7 @@ public class MemberAuthController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authorize(@Valid @RequestBody LoginDto loginDto) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getNickname(), loginDto.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getLoginId(), loginDto.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);

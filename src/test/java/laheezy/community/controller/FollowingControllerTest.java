@@ -41,10 +41,10 @@ class FollowingControllerTest {
 
     @BeforeEach
     void initMember() {
-        memberA = memberService.signup(new MemberRequestDto("pass", "name", "nick", "go@go"));
+        memberA = memberService.signup(new MemberRequestDto("pass", "name", "nick", "go1@go"));
         memberB = memberService.signup(new MemberRequestDto("pass2", "name2", "nick2", "go2@go"));
-        loginA = memberService.login(new LoginDto("nick", "pass"));
-        loginB = memberService.login(new LoginDto("nick2", "pass2"));
+        loginA = memberService.login(new LoginDto("name", "pass"));
+        loginB = memberService.login(new LoginDto("name2", "pass2"));
     }
 
 
@@ -54,7 +54,7 @@ class FollowingControllerTest {
                         .header("Authorization", "Bearer " + loginA.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nickname", memberB.getNickname()).exists())
+                .andExpect(jsonPath("$[0].nickname", memberB.getLoginId()).exists())
                 .andExpect(jsonPath("$[0].userId", memberB.getId()).exists());
     }
 
@@ -77,7 +77,7 @@ class FollowingControllerTest {
                         .header("Authorization", "Bearer " + loginB.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nickname", memberA.getNickname()).exists())
+                .andExpect(jsonPath("$[0].nickname", memberA.getLoginId()).exists())
                 .andExpect(jsonPath("$[0].userId", memberA.getId()).exists());
         assertThat(memberB.getFollower().size()).isEqualTo(1);
     }
@@ -90,7 +90,7 @@ class FollowingControllerTest {
                         .header("Authorization", "Bearer " + loginA.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nickname", memberB.getNickname()).exists())
+                .andExpect(jsonPath("$[0].nickname", memberB.getLoginId()).exists())
                 .andExpect(jsonPath("$[0].userId", memberB.getId()).exists());
         assertThat(memberA.getFollowing().size()).isEqualTo(1);
     }

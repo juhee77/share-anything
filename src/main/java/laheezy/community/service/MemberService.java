@@ -22,7 +22,6 @@ import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,35 +36,43 @@ public class MemberService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
-//    @Transactional
-//    public Member join(Member member) {
-//        //validate
-//        //log.info("coupon:{}", coupon.getDiscount(),coupon.getDiscountType());
-//        validateDuplicateNickname(member);
-//        return memberRepository.save(member);
-//    }
-
     @Transactional
     public Member signup(MemberRequestDto memberRequestDto) {
         //validate
         //log.info("coupon:{}", coupon.getDiscount(),coupon.getDiscountType());
         validateDuplicateNickname(memberRequestDto);//중복 닉네임 확인
-        log.info("log: {}",memberRequestDto.getNickname());
-
-        Authority authority = Authority.builder().authorityName("ROLE_USER").build();
+        validateDuplicateEmail(memberRequestDto);//중복 닉네임 확인
+        validateDuplicateLoginId(memberRequestDto);//중복 닉네임 확인
+        log.info("log: {}", memberRequestDto.getNickname());
 
         Member member = Member.builder()
                 .email(memberRequestDto.getEmail())
-                .name(memberRequestDto.getName())
+                .loginId(memberRequestDto.getLoginId())
+                .nickname(memberRequestDto.getNickname())
                 .password(passwordEncoder.encode(memberRequestDto.getPassword()))
                 .activated(true)
-                .authorities(Collections.singleton(authority))
+                .authority(Authority.ROLE_USER)
                 .nickname(memberRequestDto.getNickname()).build();
+
         return memberRepository.save(member);
     }
 
+    private void validateDuplicateLoginId(MemberRequestDto member) {
+        Optional<Member> byNickname = memberRepository.findByLoginId(member.getLoginId());
+        if (byNickname.isPresent()) {
+            throw new RuntimeException("이미 존재하는 아이디 입니다.");
+        }
+    }
+
+    private void validateDuplicateEmail(MemberRequestDto member) {
+        Optional<Member> byNickname = memberRepository.findByEmail(member.getEmail());
+        if (byNickname.isPresent()) {
+            throw new RuntimeException("이미 존재하는 이메일 입니다.");
+        }
+    }
+
     public void validateDuplicateNickname(MemberRequestDto member) {
-        Optional<Member> byNickname = memberRepository.findOneWithAuthoritiesByNickname(member.getNickname());
+        Optional<Member> byNickname = memberRepository.findByNickname(member.getNickname());
         if (byNickname.isPresent()) {
             throw new RuntimeException("이미 존재하는 이름 입니다.");
         }
@@ -81,13 +88,13 @@ public class MemberService {
     }
 
     //해당 이름의 회원의 유저정보와 권환정보
-    public Optional<Member> getMemberWithAuthorities(String nickname) {
-        return memberRepository.findOneWithAuthoritiesByNickname(nickname);
+    public Optional<Member> getMemberWithAuthorities(String loginId) {
+        return memberRepository.findOneWithAuthoritiesByLoginId(loginId);
     }
 
     //현재 시큐리티 컨텍스에 있는 유저정보와 권환 정보를 준다
-    public Optional<Member> getMemberWithAuthorities(){
-        return SecurityUtil.getCurrentUserNickname().flatMap(memberRepository::findOneWithAuthoritiesByNickname);
+    public Optional<Member> getMemberWithAuthorities() {
+        return SecurityUtil.getCurrentUserLoginId().flatMap(memberRepository::findOneWithAuthoritiesByLoginId);
     }
 
     @Transactional
@@ -151,9 +158,29 @@ public class MemberService {
 
     public Member findById(Long memberId) {
         Optional<Member> findMember = memberRepository.findById(memberId);
-        if(findMember.isPresent()){
+        if (findMember.isPresent()) {
             return findMember.get();
         }
         throw new RequestRejectedException("없는 멤버 입니다");
+    }
+
+
+    @Transactional
+    public Member modifyNickname(Member findMember, String nickname) {
+        if (findMember.getLoginId().equals(nickname)) {
+            throw new RequestRejectedException("현재 닉네임과 같은 네임으로는 수정이 불가능 합니다");
+        }
+        if (memberRepository.findByNickname(nickname).isPresent()) {
+            throw new RequestRejectedException("이미 사용되고 있는 닉네임 입니다");
+        }
+        findMember.modifyNickname(nickname); //더티 체킹 --> 트랜젝셔널 .. 제발 확인
+
+        log.info(findMember.getNickname() + " " + findMember.getLastModified() + " " + nickname);
+        return memberRepository.findById(findMember.getId()).get();
+    }
+
+    public void setAdmin(Member admin) {
+        admin.setAdmin();
+        log.info("ROLE이 변경 되었다 [ROLE_ADMIN]");
     }
 }

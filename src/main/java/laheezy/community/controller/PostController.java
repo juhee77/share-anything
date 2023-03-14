@@ -33,7 +33,6 @@ public class PostController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.class)
     public Fail checkLogin(Exception e) {
-
         return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
@@ -52,7 +51,7 @@ public class PostController {
 
         Post savedPost = postService.writePost(post);
 
-        return new PostResponseDto(nowLogin.getNickname(), savedPost.getTitle(), savedPost.getText(), savedPost.isOpen());
+        return new PostResponseDto(nowLogin.getLoginId(), savedPost.getTitle(), savedPost.getText(), savedPost.isOpen());
     }
 
 
@@ -63,18 +62,14 @@ public class PostController {
 
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         List<Post> myPost = memberService.getMyPost(nowLogin);
-        List<PostViwResponseDto> responseDtos = getResponseDtos(myPost);
-
-        return responseDtos;
+        return getResponseDtos(myPost);
     }
 
     @GetMapping(value = "/get/{postId}")
     @Operation(summary = "해당 포스트 자세히 보기", description = "postID포스트 확인")//페이징 기능 넣어야 한다.
     public PostViwResponseDto makePost(@PathVariable("postId") Long postId) {
         Post post = postService.findById(postId);
-        PostViwResponseDto responseDto = new PostViwResponseDto(post.getId(), post.getTitle(), post.getText(), post.isOpen(), post.getView(), post.getWriteDate(),post.getPostHearts().size());
-
-        return responseDto;
+        return new PostViwResponseDto(post.getId(), post.getTitle(), post.getText(), post.isOpen(), post.getView(), post.getWriteDate(), post.getPostHearts().size());
     }
 
     @GetMapping(value = "/get/follow")
@@ -82,19 +77,18 @@ public class PostController {
     public List<PostViwResponseDto> getFollowPost() {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         List<Post> followPost = postService.findFollowPost(nowLogin);
-        List<PostViwResponseDto> responseDtos = getResponseDtos(followPost);
 
-        return responseDtos;
+        return getResponseDtos(followPost);
     }
 
     private List<PostViwResponseDto> getResponseDtos(List<Post> myPost) {
-        return myPost.stream().map(o -> new PostViwResponseDto(o.getId(), o.getTitle(), o.getText(), o.isOpen(), o.getView(), o.getWriteDate(),o.getPostHearts().size())).collect(Collectors.toList());
+        return myPost.stream().map(o -> new PostViwResponseDto(o.getId(), o.getTitle(), o.getText(), o.isOpen(), o.getView(), o.getWriteDate(), o.getPostHearts().size())).collect(Collectors.toList());
     }
 
     @Data
     @AllArgsConstructor
     private static class PostResponseDto {
-        private String writerNickname; //게시글 작성자
+        private String loginId; //게시글 작성자
         private String title;
         private String text;
         private boolean open;

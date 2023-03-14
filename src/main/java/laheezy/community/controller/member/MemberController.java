@@ -1,5 +1,7 @@
 package laheezy.community.controller.member;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Member;
@@ -12,11 +14,12 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 
 @RestController
@@ -42,18 +45,17 @@ public class MemberController {
     }
 
     //admin권한에서 테스트 용
-    @GetMapping("/user/{nickname}")
-    //  @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<MemberResponseDto> getUserInfo(@PathVariable String nickname) {
-        Member findMember = memberService.getMemberWithAuthorities(nickname).get();
-        return ResponseEntity.ok(new MemberResponseDto(findMember.getName(), findMember.getNickname(), findMember.getEmail()));
+    @GetMapping("/user/{loginId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public ResponseEntity<MemberResponseDto> getUserInfo(@PathVariable String loginId) {
+        Member findMember = memberService.getMemberWithAuthorities(loginId).get();
+        return ResponseEntity.ok(new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(), findMember.getEmail()));
     }
 
     @GetMapping("/me-profile")
-    // @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
         Member findMember = memberService.getMemberWithAuthorities().get();
-        return ResponseEntity.ok(new MemberResponseDto(findMember.getName(), findMember.getNickname(), findMember.getEmail()));
+        return ResponseEntity.ok(new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(), findMember.getEmail()));
     }
 
     @GetMapping("/get-allmember")
@@ -61,17 +63,26 @@ public class MemberController {
         List<Member> allMember = memberService.findAllMember();
         List<MemberResponseDto> responseDto = new ArrayList<>();
         for (Member member : allMember) {
-            responseDto.add(new MemberResponseDto(member.getName(), member.getNickname(), member.getEmail()));
+            responseDto.add(new MemberResponseDto(member.getNickname(), member.getLoginId(), member.getEmail()));
         }
         return responseDto;
+    }
+
+    @PostMapping("/member/modify/nickname")
+    public ResponseEntity<MemberResponseDto> modifyNickname(@RequestBody Map<String, String> nickname) throws JsonProcessingException {
+        log.info("modifyName");
+        Member findMember = memberService.getMemberWithAuthorities().get();
+        Member modified = memberService.modifyNickname(findMember, nickname.get("nickname"));
+
+        return ResponseEntity.ok(new MemberResponseDto(modified.getNickname(), modified.getLoginId(), modified.getEmail()));
     }
 
     @Data
     @ToString
     @AllArgsConstructor
     private static class MemberResponseDto {
-        private String name;
         private String nickname;
+        private String loginId;
         private String email;
     }
 }

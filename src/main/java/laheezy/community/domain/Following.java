@@ -3,7 +3,11 @@ package laheezy.community.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -26,6 +30,8 @@ public class Following {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "following_id")
     private Member memberB;
+
+    private LocalDateTime date = LocalDateTime.now();
 
     //연관관계 메서드
     public void setFollowing(Member memberA) {

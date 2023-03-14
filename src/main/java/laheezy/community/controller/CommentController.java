@@ -44,7 +44,7 @@ public class CommentController {
                 .isOpen(requestMakeCommentDto.isOpen())
                 .build();
         Comment savedCost = commentService.writeComment(comment);
-        return new CommentResponseDto(savedCost.getMember().getNickname(), savedCost.getPost().getId(), savedCost.getText(), savedCost.isOpen());
+        return new CommentResponseDto(savedCost.getMember().getLoginId(), savedCost.getPost().getId(), savedCost.getText(), savedCost.isOpen());
     }
 
     @Data

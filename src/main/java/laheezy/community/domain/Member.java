@@ -8,7 +8,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -25,24 +24,26 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    private String name;
     @Column(nullable = false, unique = true)
-    private String nickname;//loginId대신 사용 (중복 안되도록 설계한다)(영어로만)
+    private String nickname;
+    @Column(nullable = false, unique = true)
+    private String loginId;//loginId대신 사용 (중복 안되도록 설계한다)(영어로만)
 
-    @JsonIgnore
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false, unique = true)
     private String email;
+
     @Builder.Default
     private LocalDateTime joinDate = LocalDateTime.now();
+    @Builder.Default
+    private LocalDateTime lastModified = LocalDateTime.now();
 
     @JsonIgnore
     private boolean activated;
 
-    @ManyToMany
-    @JoinTable(name = "member_authority",
-            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
+    @Enumerated
+    private Authority authority;
 
     @Builder.Default
     @OneToMany(fetch = LAZY, mappedBy = "member")
@@ -67,13 +68,12 @@ public class Member {
     private List<Following> follower = new ArrayList<>();
 
 
-
     @Override
     public String toString() {
         return "Member{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", nickname='" + nickname + '\'' +
+                ", loginId='" + loginId + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", joinDate=" + joinDate +
@@ -81,4 +81,12 @@ public class Member {
                 '}';
     }
 
+    public void modifyNickname(String nickname) {
+        this.nickname = nickname;
+        this.lastModified = LocalDateTime.now();
+    }
+
+    public void setAdmin() {
+        this.authority = Authority.ROLE_ADMIN;
+    }
 }

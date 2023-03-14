@@ -17,9 +17,9 @@ public class MemberRequestDto {
     @NotBlank
     private String password;
 
-    @Schema(description = "이름", defaultValue = "name")
+    @Schema(description = "로그인아이디", defaultValue = "name")
     @NotBlank
-    private String name;
+    private String loginId;
 
     @Schema(description = "닉네임", defaultValue = "nickname")
     @NotNull

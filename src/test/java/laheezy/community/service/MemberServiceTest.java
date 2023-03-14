@@ -41,8 +41,8 @@ class MemberServiceTest {
         Member signup = memberService.signup(requestDto);
 
         assertThat(signup.getEmail()).isEqualTo("EMAIL@naver.com");
-        assertThat(signup.getName()).isEqualTo("NAME");
         assertThat(signup.getNickname()).isEqualTo("NICKNAME");
+        assertThat(signup.getLoginId()).isEqualTo("NAME");
         //password는 encode 타임 마다 다르게 나와서 우선 pass 추후에 확인 필요
     }
 

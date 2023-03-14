@@ -1,7 +1,6 @@
 package laheezy.community.dto.member;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -12,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 @NoArgsConstructor
 public class LoginDto {
     @NotBlank(message = "아이디/닉네임 입력")
-    private String nickname;
+    private String loginId;
 
 
     @NotBlank(message = "비밀번호 입력")
@@ -20,6 +19,6 @@ public class LoginDto {
     private String password;
 
     public UsernamePasswordAuthenticationToken toAuthentication() {
-        return new UsernamePasswordAuthenticationToken(nickname, password);
+        return new UsernamePasswordAuthenticationToken(loginId, password);
     }
 }

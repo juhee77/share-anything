@@ -18,7 +18,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Schema(description = "댓글")
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "ID")
     @Column(name = "comment_id")
     private Long id;
