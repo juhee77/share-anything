@@ -42,7 +42,7 @@ public class Member {
     @JsonIgnore
     private boolean activated;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private Authority authority;
 
     @Builder.Default

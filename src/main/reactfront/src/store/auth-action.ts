@@ -43,16 +43,16 @@ export const retrieveStoredToken = () => {
   }
 }
 
-export const signupActionHandler = (email: string, password: string, nickname: string, name:string) => {
+export const signupActionHandler = (email: string, password: string, nickname: string, loginId:string) => {
   const URL = '/auth/signup'
-  const signupObject = { email, password, nickname , name};
+  const signupObject = { email, password, nickname ,loginId};
 
   return POST(URL, signupObject, {});
 };
 
-export const loginActionHandler = (nickname:string, password: string) => {
+export const loginActionHandler = (loginId:string, password: string) => {
   const URL = '/auth/login';
-  const loginObject = { nickname, password };
+  const loginObject = { loginId, password };
   return POST(URL, loginObject, {});
 };
 
@@ -68,8 +68,8 @@ export const getUserActionHandler = (token:string) => {
 }
 
 export const changeNicknameActionHandler = ( nickname:string, token: string) => {
-  const URL = '/member/nickname';
-  const changeNicknameObj = { nickname };
+  const URL = '/member/modify/nickname';
+  const changeNicknameObj = { nickname : nickname };
   return POST(URL, changeNicknameObj, createTokenHeader(token));
 }
 
