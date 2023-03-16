@@ -1,24 +1,27 @@
 package laheezy.community.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import laheezy.community.domain.Comment;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
-import laheezy.community.dto.RequestMakeCommentDto;
+import laheezy.community.dto.comment.CommentResponseDto;
+import laheezy.community.dto.comment.CommentRequestDto;
 import laheezy.community.exception.Fail;
 import laheezy.community.service.CommentService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
-@RequestMapping(value = "/api/comment")
+@RequestMapping(value = "/comment")
 @Tag(name = "CommentController", description = "댓글 API Document")
 @Slf4j
 @RequiredArgsConstructor
@@ -34,7 +37,8 @@ public class CommentController {
     }
 
     @PostMapping("/add")
-    public CommentResponseDto makeComment(@Valid @RequestBody RequestMakeCommentDto requestMakeCommentDto) {
+    @Operation(summary = "댓글 생성")
+    public CommentResponseDto makeComment(@Valid @RequestBody CommentRequestDto requestMakeCommentDto) {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         Post post = postService.findById(requestMakeCommentDto.getPostId());
         Comment comment = Comment.builder()
@@ -47,12 +51,17 @@ public class CommentController {
         return new CommentResponseDto(savedCost.getMember().getLoginId(), savedCost.getPost().getId(), savedCost.getText(), savedCost.isOpen());
     }
 
-    @Data
-    @AllArgsConstructor
-    private static class CommentResponseDto {
-        private String writerNickname; //게시글 작성자
-        private long postId; //포스트 id
-        private String text;
-        private boolean open;
+    @GetMapping("/my")
+    @Operation(summary = "본인의 작성 댓글 확인", description = "자신의 댓글 확인")//페이징 기능 넣어야 한다.
+    public List<CommentResponseDto> makePost() {
+        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        List<Comment> myComments = memberService.getMyComment(nowLogin);
+        return changeResponseCommentDtos(myComments);
     }
+
+
+    private List<CommentResponseDto> changeResponseCommentDtos(List<Comment> comments) {
+        return comments.stream().map(o -> new CommentResponseDto(o.getMember().getNickname(), o.getPost().getId(), o.getText(), o.isOpen())).collect(Collectors.toList());
+    }
+
 }

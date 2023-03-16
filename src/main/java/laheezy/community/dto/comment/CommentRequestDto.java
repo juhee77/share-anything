@@ -1,4 +1,4 @@
-package laheezy.community.dto;
+package laheezy.community.dto.comment;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestMakeCommentDto {
+public class CommentRequestDto {
     @NotNull
     private Long postId;
     @NotEmpty
