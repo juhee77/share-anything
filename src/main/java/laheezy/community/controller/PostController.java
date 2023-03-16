@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/api/post")
+@RequestMapping(value = "/post")
 @Tag(name = "Post Api", description = "올리는 포스트 글과 관련된 API를 담당합니다.")
 @Slf4j
 @RequiredArgsConstructor
@@ -46,19 +46,17 @@ public class PostController {
                 .text(postForm.getText())
                 .title(postForm.getTitle())
                 .isOpen(postForm.isOpen())
+                .member(nowLogin)
                 .build();
-        post.setMember(nowLogin);
 
         Post savedPost = postService.writePost(post);
 
         return new PostResponseDto(nowLogin.getLoginId(), savedPost.getTitle(), savedPost.getText(), savedPost.isOpen());
     }
 
-
-    //이럴때는 포스트야 겟이야..?
-    @GetMapping(value = "/get-mypost")
+    @GetMapping(value = "/my")
     @Operation(summary = "본인의 작성 포스트 확인", description = "자신의 포스트 확인")//페이징 기능 넣어야 한다.
-    public List<PostViwResponseDto> makePost() {
+    public List<PostViwResponseDto> findMyPost() {
 
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         List<Post> myPost = memberService.getMyPost(nowLogin);
@@ -67,14 +65,14 @@ public class PostController {
 
     @GetMapping(value = "/get/{postId}")
     @Operation(summary = "해당 포스트 자세히 보기", description = "postID포스트 확인")//페이징 기능 넣어야 한다.
-    public PostViwResponseDto makePost(@PathVariable("postId") Long postId) {
+    public PostViwResponseDto findEachPost(@PathVariable("postId") Long postId) {
         Post post = postService.findById(postId);
         return new PostViwResponseDto(post.getId(), post.getTitle(), post.getText(), post.isOpen(), post.getView(), post.getWriteDate(), post.getPostHearts().size());
     }
 
-    @GetMapping(value = "/get/follow")
+    @GetMapping(value = "/follow")
     @Operation(summary = "내가 팔로우하는 사람들의 게시글만 본다.")//페이징 기능 넣어야 한다.
-    public List<PostViwResponseDto> getFollowPost() {
+    public List<PostViwResponseDto> findFollowPost() {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         List<Post> followPost = postService.findFollowPost(nowLogin);
 
