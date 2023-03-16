@@ -45,4 +45,8 @@ public class PostService {
         }
         return allPost;
     }
+
+    public List<Post> findAll() {
+        return postRepository.findAll();
+    }
 }

@@ -55,7 +55,7 @@ class PostControllerTest {
                         .param("text", "text")
                         .param("open", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("loginId").value(member.getLoginId()))
+                .andExpect(jsonPath("writer").value(member.getNickname()))
                 .andExpect(jsonPath("title").value("title"))
                 .andExpect(jsonPath("text").value("text"))
                 .andExpect(jsonPath("open").value("true"));

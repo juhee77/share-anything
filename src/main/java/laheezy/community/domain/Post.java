@@ -66,7 +66,7 @@ public class Post {
         this.view = view;
         this.title = title;
         this.text = text;
-        this.writeDate = writeDate;
+        this.writeDate = LocalDateTime.now();
     }
 
     @Override
