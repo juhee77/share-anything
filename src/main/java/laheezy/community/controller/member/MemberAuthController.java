@@ -62,19 +62,19 @@ public class MemberAuthController {
     }
 
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<String> authorize(@Valid @RequestBody LoginDto loginDto) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getLoginId(), loginDto.getPassword());
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.createToken(authentication);
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-        return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
-    }
+//    @PostMapping("/authenticate")
+//    public ResponseEntity<String> authorize(@Valid @RequestBody LoginDto loginDto) {
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getLoginId(), loginDto.getPassword());
+//
+//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        String jwt = tokenProvider.createToken(authentication);
+//
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+//        return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
+//    }
 
     @PostMapping("/login")
     @Operation(summary = "로그인")

@@ -89,4 +89,8 @@ public class Member {
     public void setAdmin() {
         this.authority = Authority.ROLE_ADMIN;
     }
+
+    public void modifyPassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

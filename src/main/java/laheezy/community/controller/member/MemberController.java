@@ -1,7 +1,6 @@
 package laheezy.community.controller.member;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Member;
@@ -75,6 +74,17 @@ public class MemberController {
         Member modified = memberService.modifyNickname(findMember, nickname.get("nickname"));
 
         return ResponseEntity.ok(new MemberResponseDto(modified.getNickname(), modified.getLoginId(), modified.getEmail()));
+    }
+
+    @PostMapping("/member/modify/password")
+    public void modifyPassword(@RequestBody Map<String, String> password) throws JsonProcessingException {
+        log.info("modifyPassword");
+        Member findMember = memberService.getMemberWithAuthorities().get();
+        //1. 비밀번호 일치 확인
+        memberService.checkPassword(findMember,password.get("exPassword"));
+
+        //2. 비밀번호 변경
+        memberService.modifyPassword(findMember,password.get("newPassword"));
     }
 
     @Data

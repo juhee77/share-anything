@@ -156,7 +156,6 @@ public class MemberService {
         throw new RequestRejectedException("없는 멤버 입니다");
     }
 
-
     @Transactional
     public Member modifyNickname(Member findMember, String nickname) {
         if (findMember.getLoginId().equals(nickname)) {
@@ -171,8 +170,20 @@ public class MemberService {
         return memberRepository.findById(findMember.getId()).get();
     }
 
+    @Transactional
     public void setAdmin(Member admin) {
         admin.setAdmin();
         log.info("ROLE이 변경 되었다 [ROLE_ADMIN]");
+    }
+
+    public void checkPassword(Member findMember, String exPassword) {
+        if(!passwordEncoder.matches(exPassword,findMember.getPassword()))
+            throw new RequestRejectedException("직전 비밀번호가 잘못 입력되었습니다");
+    }
+
+    @Transactional
+    public void modifyPassword(Member findMember, String newPassword) {
+        //token 삭제가 불가능 Redis로 변경하거나 JWT를 그냥 타임아웃하도록한다.
+        findMember.modifyPassword(passwordEncoder.encode(newPassword));
     }
 }
