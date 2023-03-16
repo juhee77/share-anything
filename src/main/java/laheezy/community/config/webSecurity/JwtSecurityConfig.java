@@ -1,4 +1,4 @@
-package laheezy.community.config.jwt;
+package laheezy.community.config.webSecurity;
 
 import laheezy.community.jwt.JwtFilter;
 import laheezy.community.jwt.TokenProvider;

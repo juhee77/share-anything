@@ -1,4 +1,4 @@
-package laheezy.community.config.jwt;
+package laheezy.community.config.webSecurity;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
