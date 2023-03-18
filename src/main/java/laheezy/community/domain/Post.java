@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,36 +21,28 @@ import java.util.List;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(description = "게시글의 ID")
     @Column(name = "post_id") //게시글의 Id
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    @Schema(description = "게시글의 작성자")
     private Member member; //게시글 작성자
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @Schema(description = "게시글의 댓글들")
     private List<Comment> comments = new ArrayList<>(); //게시물의 댓글
 
-    @Schema(description = "게시글의 공개/비공개")
     private boolean isOpen;
 
-    @Schema(description = "게시글의 조회수")
     private long view = 0; // 조회수
 
-    @Schema(description = "게시글의 제목")
     private String title;
-    @Schema(description = "게시글의 내용")
     private String text;
 
-    @Schema(description = "게시글의 작성날짜")
-    private LocalDateTime writeDate = LocalDateTime.now();
-    @Schema(description = "게시글의 수정날짜")
+    @CreationTimestamp
+    private LocalDateTime writeDate;
+    @UpdateTimestamp
     private LocalDateTime lastModifiedTime;
 
-    @Schema(description = "게시글의 좋아요")
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostHeart> postHearts = new ArrayList<>();
 

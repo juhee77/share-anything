@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,13 +36,13 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Builder.Default
-    private LocalDateTime joinDate = LocalDateTime.now();
-    @Builder.Default
-    private LocalDateTime lastModified = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime joinDate;
+    @UpdateTimestamp
+    private LocalDateTime lastModified;
 
     @JsonIgnore
-    private boolean activated;
+    private boolean activated; //현재 로그인 되어있는가(세션이 남아 있는가)
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
@@ -67,6 +69,9 @@ public class Member {
     @OneToMany(fetch = LAZY, mappedBy = "memberB", cascade = CascadeType.ALL)
     private List<Following> follower = new ArrayList<>();
 
+//    @Builder.Default
+//    @OneToMany(mappedBy = "member")
+//    private List<MemberChatroom> chatrooms = new ArrayList<>();
 
     @Override
     public String toString() {
