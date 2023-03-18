@@ -70,8 +70,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/auth/**").permitAll() //인증 관련 모두 통과 시킨다.
                 .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/post/all").permitAll()
                 //.requestMatchers("/api/get-allmember").hasAnyAuthority("ROLE_MEMBER", "ROLE_ADMIN")
-                .requestMatchers(HttpMethod.GET,"/get-allmember","/user/{nickname}").hasAnyAuthority( "ROLE_ADMIN")
+                //.requestMatchers(HttpMethod.GET,"/get-allmember","/user/{nickname}").hasAnyAuthority( "ROLE_ADMIN")
                 //.requestMatchers("/user").permitAll()
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
