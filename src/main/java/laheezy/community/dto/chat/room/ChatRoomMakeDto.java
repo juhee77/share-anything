@@ -16,8 +16,6 @@ public class ChatRoomMakeDto { //방을 만든다
     private String roomId;
     private String name;
 
-    private Set<WebSocketSession> sessions = new HashSet<>(); //연결 세션
-
     public static ChatRoomMakeDto create(String name) {
         ChatRoomMakeDto room = new ChatRoomMakeDto();
 

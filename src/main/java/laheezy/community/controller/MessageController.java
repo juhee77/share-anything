@@ -1,6 +1,5 @@
 package laheezy.community.controller;
 
-import laheezy.community.domain.ChatData;
 import laheezy.community.dto.chat.data.ChatDataRequestDto;
 import laheezy.community.dto.chat.data.ChatDataResponseDto;
 import laheezy.community.service.ChatDataService;
@@ -8,9 +7,7 @@ import laheezy.community.service.ChatRoomService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,11 +23,7 @@ public class MessageController {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
 
-
-    //@SendTo("/sub/chat/room/{roomId}")
-
-    @GetMapping("/pub/chat/enter")
-    @MessageMapping("/pub/chat/enter")
+    @MessageMapping("/chat/enter") //유저가 보낸 메세지를 받는다.
     public void enter(ChatDataRequestDto message) {
         message.setMessage(message.getWriter() + "님이 입장 하셨습니다");
 

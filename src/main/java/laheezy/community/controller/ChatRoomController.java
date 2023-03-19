@@ -1,6 +1,5 @@
 package laheezy.community.controller;
 
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import laheezy.community.domain.ChatRoom;
 import laheezy.community.domain.Member;
@@ -9,7 +8,6 @@ import laheezy.community.service.ChatRoomService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -40,10 +38,9 @@ public class ChatRoomController {
     }
 
     @GetMapping("/room/enter/{roomId}")
-    public String roomDetail(@PathVariable("roomId") String roomId, HttpServletResponse response) throws IOException {
+    public ChatRoomDetailDto roomDetail(@PathVariable("roomId") String roomId, HttpServletResponse response) throws IOException {
         log.info("findRoomDetail : {}", roomId);
-        response.sendRedirect("/chet/enter");
-        return "/chat/enter";
+        return ChatRoomDetailDto.chatRoomToDto(chatService.findByChatRoom(roomId));
     }
 
     @GetMapping("/room/{roomId}")

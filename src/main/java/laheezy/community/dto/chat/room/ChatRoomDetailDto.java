@@ -18,8 +18,6 @@ public class ChatRoomDetailDto { //방을 만든다
     private String name;
     private String writer;
 
-    private Set<WebSocketSession> sessions = new HashSet<>(); //연결 세션
-
     public static ChatRoomDetailDto chatRoomToDto(ChatRoom chatRoom) {
         ChatRoomDetailDto roomResponseDto = new ChatRoomDetailDto();
 
