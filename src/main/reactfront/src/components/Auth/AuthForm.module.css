@@ -1,7 +1,13 @@
-body {
+/* body {
     height: 100vh;
     margin: 0;
     display: grid;
     place-items: center;
-  }
+  } */
+
+.loginForm{
+  width: 80%;
+  display: flex;
+  justify-content: center;
+}
   

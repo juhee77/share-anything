@@ -18,11 +18,12 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/signup/" element={authCtx.isLoggedIn ? <Navigate to='/' /> : <CreateAccountPage />} />
-        <Route path="/login/*" 
+        <Route path="/login/*"
           element={authCtx.isLoggedIn ? <Navigate to='/' /> : <AuthPage />}
         />
         <Route path="/profile/" element={!authCtx.isLoggedIn ? <Navigate to='/' /> : <ProfilePage />} />
       </Routes>
+
     </Layout>
   );
 }

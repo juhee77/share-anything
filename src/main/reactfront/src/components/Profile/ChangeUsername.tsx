@@ -11,7 +11,7 @@ const ChangeUsername = () => {
   const authCtx = useContext(AuthContext);
   const nicknameInputRef = useRef<HTMLInputElement>(null);
 
-  
+
   const submitHandler = (event: React.FormEvent) => {
     event.preventDefault();
     const enteredNickname = nicknameInputRef.current!.value;
@@ -26,12 +26,12 @@ const ChangeUsername = () => {
 
   return (
     <form onSubmit={submitHandler} >
-      <div>
-        <label htmlFor='username'>New Nickname</label>
-        <input type='text' id='username'minLength={3} required ref={nicknameInputRef}/>
+      <div className="form-group">
+        <label htmlFor='username' >New Nickname</label>
+        <input type='text' id='username' className="form-control" minLength={3} required ref={nicknameInputRef} />
       </div>
       <div>
-        <button type='submit'>Change Username</button>
+        <button className="btn btn-primary btn" type='submit'>Change Username</button>
       </div>
     </form>
   );

@@ -1,15 +1,20 @@
-body {
-  height: 100vh;
-  margin: 0;
-  display: grid;
-  place-items: center;
+head{
+  width: 100%;  
 }
-
-home{
-
+body{
+  margin: 50px,50px,50px,50px;
+  width: 100%;  
+  justify-content: center;
+  display: block;
 }
-
-
+table{
+  padding: auto;
+  text-align: center;
+  justify-content: center;
+  width: 80%;
+  /**table-layout: fixed;**/
+  
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

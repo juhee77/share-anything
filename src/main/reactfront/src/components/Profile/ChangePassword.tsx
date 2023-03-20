@@ -34,31 +34,31 @@ const ChangePassword = () => {
 
   return (
     <form onSubmit={submitHandler}>
-      <div >
-      <label htmlFor='ex-password'>Old Password</label>
-        <input 
-          type='password' 
+      <div className="form-group" >
+        <label htmlFor='ex-password'>Old Password</label>
+        <input className="form-control"
+          type='password'
           id='ex-password'
-          minLength={8} 
-          ref={exPasswordInputRef} 
+          minLength={8}
+          ref={exPasswordInputRef}
         />
-        <label htmlFor='new-password'>New Password</label>
-        <input 
-          type='password' 
-          id='new-password'
-          minLength={8} 
-          ref={newPasswordInputRef}
-        />
-        <label htmlFor='new-password'>New Password Again</label>
-        <input 
-          type='password' 
+        <label htmlFor='new-password' >New Password</label>
+        <input className="form-control"
+          type='password'
           id='new-password'
           minLength={8}
-          ref={newPasswordAgainInputRef} 
+          ref={newPasswordInputRef}
+        />
+        <label htmlFor='new-password' >New Password Again</label>
+        <input className="form-control"
+          type='password'
+          id='new-password'
+          minLength={8}
+          ref={newPasswordAgainInputRef}
         />
       </div>
       <div>
-        <button type='submit'>Change Password</button>
+        <button type='submit' className="btn btn-primary btn">Change Password</button>
       </div>
     </form>
   );

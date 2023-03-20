@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../../store/auth-context';
-//import classes from './AuthForm.module.css';
+import './AuthForm.module.css';
 
 const AuthForm = () => {
 
@@ -30,21 +30,20 @@ const AuthForm = () => {
 }
 
     return (
-      <section>
+      <section className='loginForm'>
         <h1>Login</h1>
-        <form onSubmit={submitHandler}>
+        <form onSubmit={submitHandler} className="form-horizontal">
           <div >
-            <label htmlFor='nickname'>Your Name</label>
-            <input type='nickname' id='nickname' required ref={nicknameInputRef}/>
+            <label htmlFor='nickname'  className="col-sm-2 control-label" >Your Name</label>
+            <input type='nickname' id='nickname' className="form-control" required ref={nicknameInputRef}/>
           </div>
           <div >
-            <label htmlFor="password">Your password</label>
-            <input type='password' id='password' required ref={passwordInputRef}/>
+            <label htmlFor="password" className="col-sm-2 control-label">Your password</label>
+            <input type='password' id='password' className="form-control" required ref={passwordInputRef}/>
           </div>
           <div >
-            <button type='submit'>Login</button>
+            <button type='submit' className="btn btn-primary btn">Login</button>
             {isLoading && <p>Loading</p>}
-            <p>Create Account</p>
           </div>
         </form>
       </section>
