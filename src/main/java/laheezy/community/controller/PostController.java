@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.exception.Fail;
-import laheezy.community.form.PostForm;
+import laheezy.community.dto.post.PostForm;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
 import lombok.AllArgsConstructor;
@@ -38,9 +38,9 @@ public class PostController {
     }
 
     //@PostMapping(value="/api/post-add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @PostMapping(value = "/add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/add")
     @Operation(summary = "포스트 생성", description = "포스트 생성")
-    public PostViwResponseDto makePost(@Valid @ModelAttribute PostForm postForm) {
+    public PostViwResponseDto makePost(@Valid @RequestBody PostForm postForm) {
 
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         Post post = Post.builder()

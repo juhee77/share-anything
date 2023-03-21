@@ -78,6 +78,11 @@ const MainNavigation = () =>{
                 </Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link" to="/post/add">
+                  게시물 작성
+                </Link>
+              </li>
+              <li className="nav-item">
                 <button
                   className="btn btn-primary"
                   onClick={toggleLogoutHandler}

@@ -1,4 +1,4 @@
-package laheezy.community.form;
+package laheezy.community.dto.post;
 
 
 import jakarta.validation.constraints.NotEmpty;

@@ -23,7 +23,6 @@ const AuthForm = () => {
     setIsLoading(false);
 
     if (authCtx.isSuccess) {
-      console.log("nowHERE")
       navigate("/", { replace: true });
     }
     

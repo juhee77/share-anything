@@ -29,7 +29,8 @@ const AuthContext = React.createContext({
     changeNickname: (nickname: string) => {
     },
     changePassword: (exPassword: string, newPassword: string) => {
-    }
+    },
+    addPost: (title: string,text: string, isPublic:boolean) => {}
 });
 
 
@@ -135,6 +136,18 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
         });
     };
 
+    const addPostHandler =  (title: string, text: string, isPublic: boolean) => { 
+        setIsSuccess(false);
+        const data = authAction.addPostActionHandler(title,text,isPublic,token);
+        data.then((result) => {
+            if (result !== null) {
+                console.log("makePost");
+                setIsSuccess(true);
+            }
+        });
+    };
+
+
     useEffect(() => {
         if (tokenData) {
             console.log(tokenData.duration);
@@ -154,7 +167,8 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
         logout: logoutHandler,
         getUser: getUserHandler,
         changeNickname: changeNicknameHandler,
-        changePassword: changePaswordHandler
+        changePassword: changePaswordHandler,
+        addPost: addPostHandler
     }
 
     return (

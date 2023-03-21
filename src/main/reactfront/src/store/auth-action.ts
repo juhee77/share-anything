@@ -79,6 +79,17 @@ export const changePasswordActionHandler = (
   token: string
 ) => {
   const URL = '/member/modify/password';
-  const changePasswordObj = { exPassword, newPassword }
+  const changePasswordObj = { exPassword, newPassword };
   return POST(URL, changePasswordObj, createTokenHeader(token));
+}
+
+export const addPostActionHandler = (
+  title : string,
+  text : string,
+  open : boolean,
+  token :string,
+) => {
+  const URL = '/post/add';
+  const postObj = {title, text, open};
+  return POST(URL, postObj, createTokenHeader(token));
 }

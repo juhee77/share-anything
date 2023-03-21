@@ -1,10 +1,12 @@
 package laheezy.community.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.dto.post.PostForm;
 import laheezy.community.service.FollowingService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
@@ -46,14 +48,14 @@ class PostControllerTest {
     @Test
     public void 포스트객체생성확인() throws Exception {
         Member member = makeTestUser();
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostForm postForm = new PostForm("title", "text", true);
         TokenDto login = memberService.login(new LoginDto("loginId", "pass"));
 
         mockMvc.perform(post("/post/add")
                         .header("Authorization", "Bearer " + login.getAccessToken())
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                        .param("title", "title")
-                        .param("text", "text")
-                        .param("open", "true"))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(postForm)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("writer").value(member.getNickname()))
                 .andExpect(jsonPath("title").value("title"))

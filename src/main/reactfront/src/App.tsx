@@ -7,6 +7,7 @@ import CreateAccountPage from './pages/CreateAccountPage';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import AuthContext from './store/auth-context';
+import AddPostPage from 'pages/AddPostPage';
 
 function App() {
 
@@ -22,6 +23,8 @@ function App() {
           element={authCtx.isLoggedIn ? <Navigate to='/' /> : <AuthPage />}
         />
         <Route path="/profile/" element={!authCtx.isLoggedIn ? <Navigate to='/' /> : <ProfilePage />} />
+        <Route path="/post/add" element={!authCtx.isLoggedIn ? <Navigate to='/' /> : <AddPostPage />} />
+      
       </Routes>
 
     </Layout>
