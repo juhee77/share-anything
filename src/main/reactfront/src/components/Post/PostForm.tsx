@@ -1,8 +1,5 @@
-import { te } from 'date-fns/locale';
-import { text } from 'express';
-import { title } from 'process';
-import React, { useState, useContext, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useContext, useRef} from 'react';
+import {useNavigate} from 'react-router-dom';
 import AuthContext from '../../store/auth-context';
 
 
@@ -50,11 +47,11 @@ const PostForm = () => {
                 />
             </div>
             <div>
-                <label htmlFor="isPublic" className="col-sm-2 control-label" >Is Public</label>
+                <label htmlFor="isPublic" className="col-sm-2 control-label">Is Public</label>
                 <input
                     id="isPublic"
                     type="checkbox"
-                    ref = {publicInputRef}
+                    ref={publicInputRef}
                 />
             </div>
             <button type="submit" className="btn btn-primary btn">Submit</button>

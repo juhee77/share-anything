@@ -1,27 +1,24 @@
 package laheezy.community.config.webSocket;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
 
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
-    public static final String HTTP_LOCALHOST_8080 = "localhost:8080";
-      @Autowired private StompHandler stompHandler; // jwt 인증
+    public static final String HTTP_LOCALHOST_8080 = "*";
+    @Autowired
+    private StompHandler stompHandler; // jwt 인증
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
-        registry.addEndpoint("/ws").setAllowedOrigins(HTTP_LOCALHOST_8080).withSockJS();//추후에 도메인한정으로 수정해야한다.
-        registry.addEndpoint("/ws").setAllowedOrigins(HTTP_LOCALHOST_8080);//추후에 도메인한정으로 수정해야한다.
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();//추후에 도메인한정으로 수정해야한다.
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*");//추후에 도메인한정으로 수정해야한다.
         //registry.addEndpoint("/ws/stomp").setAllowedOrigins(HTTP_LOCALHOST_8080);//cors 방지를 위해서//추후에 도메인한정으로 수정해야한다.
 
     }
@@ -32,9 +29,9 @@ public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/pub"); //메세지 발행
     }
 
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        registration.interceptors(stompHandler);
-//    }
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(stompHandler);
+    }
 
 }
