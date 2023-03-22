@@ -1,4 +1,4 @@
-head{
+/* head{
   width: 100%;  
 }
 body{
@@ -12,9 +12,8 @@ table{
   text-align: center;
   justify-content: center;
   width: 80%;
-  /**table-layout: fixed;**/
-  
-}
+} 
+*/
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
