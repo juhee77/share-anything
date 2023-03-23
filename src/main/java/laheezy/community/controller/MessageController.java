@@ -5,7 +5,6 @@ import laheezy.community.service.ChatDataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,11 +15,34 @@ public class MessageController {
     private final SimpMessageSendingOperations sendingOperations;
     private final ChatDataService chatDataService;
 
-//    @MessageMapping("/chat/enter") //유저가 보낸 메세지를 받는다.
-//    public void enter(ChatDataRequestDto message) {
-//        log.info("enter: {}",message.getWriter());
-//        message.setMessage(message.getWriter() + "님이 입장 하셨습니다");
-//
+    @MessageMapping("/chat/enter") //유저가 보낸 메세지를 받는다.
+    public void enter(ChatDataRequestDto message) {
+        log.info("enter: {}", message.getWriter());
+        message.setMessage(message.getWriter() + "님이 입장 하셨습니다");
+
+        sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), message);
+        chatDataService.save(message);
+    }
+
+    @MessageMapping("/chat/out") //유저가 보낸 메세지를 받는다.
+    public void out(ChatDataRequestDto message) {
+        log.info("out: {}", message.getWriter());
+        message.setMessage(message.getWriter() + "님이 퇴장 하셨습니다");
+
+        sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), message);
+        chatDataService.save(message);
+    }
+
+    @MessageMapping(value = "/chat/send")
+    public void message(ChatDataRequestDto message) {
+        System.out.println(message);
+        sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), message);
+        chatDataService.save(message);
+    }
+
+
+    @MessageMapping(value = "/find/befor/message")
+    public void findBeforeMessage(ChatDataRequestDto message) {
 //        List<ChatDataResponseDto> chatList = chatDataService.findAllChatByRoomId(message.getRoomId());
 //        if (chatList != null) {
 //            for (ChatDataResponseDto c : chatList) {
@@ -28,14 +50,6 @@ public class MessageController {
 //                message.setMessage(c.getMessage());
 //            }
 //        }
-//        sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), message);
-//        chatDataService.save(message);
-//    }
-
-    @MessageMapping(value = "/chat")
-    public void message(ChatDataRequestDto message, SimpMessageHeaderAccessor accessor) {
-        System.out.println(message);
-        sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), message);
-        chatDataService.save(message);
     }
+
 }

@@ -1,6 +1,5 @@
 package laheezy.community.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
 import laheezy.community.domain.ChatRoom;
 import laheezy.community.domain.Member;
 import laheezy.community.dto.chat.room.ChatRoomDetailDto;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,22 +29,23 @@ public class ChatRoomController {
 
     @PostMapping("/room/create")
     public ChatRoomDetailDto createRoom(@RequestParam("name") String name) {
-        log.info("createRoome : {}",name);
+        log.info("createRoome : {}", name);
+        chatService.checkingDuplicateRoom(name);
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         ChatRoom room = chatService.createRoom(name, nowLogin);
         return ChatRoomDetailDto.chatRoomToDto(room);
     }
 
     @GetMapping("/room/enter/{roomId}")
-    public ChatRoomDetailDto roomDetail(@PathVariable("roomId") String roomId, HttpServletResponse response) throws IOException {
+    public ChatRoomDetailDto roomDetail(@PathVariable("roomId") String roomId) {
         log.info("findRoomDetail : {}", roomId);
-        return ChatRoomDetailDto.chatRoomToDto(chatService.findByChatRoom(roomId));
+        return ChatRoomDetailDto.chatRoomToDto(chatService.findRoomByRoomId(roomId));
     }
 
     @GetMapping("/room/{roomId}")
     public ChatRoomDetailDto findRoomById(@PathVariable("roomId") String roomId) {
         log.info("findRoom: {}", roomId);
-        return ChatRoomDetailDto.chatRoomToDto(chatService.findByChatRoom(roomId));
+        return ChatRoomDetailDto.chatRoomToDto(chatService.findRoomByRoomId(roomId));
     }
 
 }

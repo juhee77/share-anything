@@ -17,13 +17,14 @@ import java.util.Optional;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
-    public ChatRoom findByChatRoom(String id) {
-        return getRoomById(id);
+    public ChatRoom findRoomByRoomId(String id) {
+        return getRoomByRoomId(id);
     }
 
     @NotNull
-    private ChatRoom getRoomById(String id) {
-        Optional<ChatRoom> room = chatRoomRepository.findById(id);
+    private ChatRoom getRoomByRoomId(String id) {
+        Optional<ChatRoom> room = chatRoomRepository.findByRoomId(id);
+
         if (room.isPresent()) {
             return room.get();
         }
@@ -40,4 +41,8 @@ public class ChatRoomService {
         return chatRoomRepository.save(chatRoom);
     }
 
+    public void checkingDuplicateRoom(String name) {
+        if (chatRoomRepository.findByRoomName(name).isPresent())
+            throw new RequestRejectedException("중복된 이름의 채팅방이 이미 존재합니다.");
+    }
 }

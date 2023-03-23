@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import AuthContext from 'store/auth-context';
 import ChatRoomListForm from './ChatRoomListForm';
 
 
-interface ChatRoom {
+type ChatRoom = {
     id: string;
     name: string;
+    writer: string;
 }
 
 const ChatRoomList: React.FC = () => {
@@ -14,7 +15,7 @@ const ChatRoomList: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const [error, setError] = useState<string>('');
-    
+
     useEffect(() => {
         setLoading(true);
         const token = authCtx.token;
@@ -37,7 +38,7 @@ const ChatRoomList: React.FC = () => {
         return <div>{error}</div>;
     }
 
-    return <ChatRoomListForm chatRooms={chatRooms} />;
+    return <ChatRoomListForm chatRooms={chatRooms}/>;
 };
 
 export default ChatRoomList;

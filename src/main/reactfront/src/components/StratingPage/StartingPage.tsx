@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {useEffect, useState} from 'react';
+import './StartingPage.css';
 
 interface Post {
     id: number;
@@ -28,12 +29,12 @@ const StartingPage = () => {
     console.log(posts);
 
     return (
-        <div className=''>
+        <div className='form-wrapper'>
             {loading ? (
                 <div>Loading...</div>
             ) : (
-                <table className="table table-hover">
-                    <thead className="text-center">
+                <table className="table">
+                    <thead>
                     <tr>
                         <th>번호</th>
                         <th>제목</th>

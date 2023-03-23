@@ -16,14 +16,14 @@ import static jakarta.persistence.FetchType.LAZY;
 @AllArgsConstructor
 @Getter
 @Entity
-@Schema(description = "댓글")
+@Schema(description = "채팅 내용")
 public class ChatData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "chatroom")
+    @JoinColumn(name = "chatroom_id")
     private ChatRoom chatroom;
 
     private String writer;
