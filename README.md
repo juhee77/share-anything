@@ -16,7 +16,7 @@ Spring + React 이용 프로젝트
 - React
 - TypeScript
 - Stomp
-- JWT
+- SpringSecurity
 
 
 ### 프로젝트의 기능
