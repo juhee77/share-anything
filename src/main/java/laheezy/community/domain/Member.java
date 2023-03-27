@@ -61,6 +61,11 @@ public class Member {
     @OneToMany(fetch = LAZY, mappedBy = "member", cascade = CascadeType.ALL)
     private List<PostHeart> postHearts = new ArrayList<>();
 
+
+    @Builder.Default
+    @OneToMany(fetch = LAZY, mappedBy = "member", cascade = CascadeType.ALL)
+    private List<CommentHeart> commentHearts = new ArrayList<>();
+
     @Builder.Default
     @OneToMany(fetch = LAZY, mappedBy = "memberA", cascade = CascadeType.ALL)
     private List<Following> following = new ArrayList<>();

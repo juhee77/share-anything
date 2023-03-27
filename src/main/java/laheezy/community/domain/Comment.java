@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -33,7 +36,8 @@ public class Comment {
 
     private String text; //댓글내용
     private boolean isOpen; //공개 비공개
-    private int heart; // 좋아요
+
+    @CreationTimestamp
     private LocalDateTime writeDate; //댓글이 작성된 시간
 
     //연관관계 메서드
@@ -47,6 +51,10 @@ public class Comment {
         post.getComments().add(this);
     }
 
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentHeart> commentHearts = new ArrayList<>();
+
+
     //생성 메서드
     @Builder
     public Comment(Member member, Post post, String text, boolean isOpen) {
@@ -55,6 +63,5 @@ public class Comment {
         this.text = text;
         this.writeDate = LocalDateTime.now();
         this.isOpen = isOpen;
-        this.heart = 0;
     }
 }
