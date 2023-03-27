@@ -273,3 +273,4 @@ sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,react,intellij,visualstudiocode,java,jira,git
 /src/main/reactfront/src/test/
+/image/

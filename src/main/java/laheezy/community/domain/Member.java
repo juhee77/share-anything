@@ -3,6 +3,7 @@ package laheezy.community.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import laheezy.community.domain.file.Profile;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -35,6 +36,10 @@ public class Member {
     private String password;
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Builder.Default
+    @OneToOne(fetch = LAZY, mappedBy = "member")
+    private Profile profileImage = null;
 
     @CreationTimestamp
     private LocalDateTime joinDate;
@@ -102,5 +107,9 @@ public class Member {
 
     public void modifyPassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void setProfile(Profile file) {
+        profileImage = file;
     }
 }

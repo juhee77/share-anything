@@ -2,6 +2,7 @@ package laheezy.community.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import laheezy.community.domain.file.Postfile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +46,9 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostHeart> postHearts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Postfile> postfiles = new ArrayList<>();
 
     //연관관계 메서드
     public void setMember(Member member) {
