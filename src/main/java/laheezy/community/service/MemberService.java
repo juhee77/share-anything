@@ -42,9 +42,9 @@ public class MemberService {
         //validate
         //log.info("coupon:{}", coupon.getDiscount(),coupon.getDiscountType());
         validateDuplicateNickname(memberRequestDto);//중복 닉네임 확인
-        validateDuplicateEmail(memberRequestDto);//중복 닉네임 확인
-        validateDuplicateLoginId(memberRequestDto);//중복 닉네임 확인
-        log.info("log: {}", memberRequestDto.getNickname());
+        validateDuplicateEmail(memberRequestDto);//중복 이메일 확인
+        validateDuplicateLoginId(memberRequestDto);//중복 로그인아이디 확인
+        log.info("log: 회원 가입 성공 {}", memberRequestDto.getNickname());
 
         Member member = Member.builder()
                 .email(memberRequestDto.getEmail())
@@ -130,7 +130,7 @@ public class MemberService {
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
-        RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
+        RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());//RTR
         refreshTokenRepository.save(newRefreshToken);
 
         return tokenDto;
@@ -177,7 +177,7 @@ public class MemberService {
     }
 
     public void checkPassword(Member findMember, String exPassword) {
-        if(!passwordEncoder.matches(exPassword,findMember.getPassword()))
+        if (!passwordEncoder.matches(exPassword, findMember.getPassword()))
             throw new RequestRejectedException("직전 비밀번호가 잘못 입력되었습니다");
     }
 
@@ -185,5 +185,11 @@ public class MemberService {
     public void modifyPassword(Member findMember, String newPassword) {
         //token 삭제가 불가능 Redis로 변경하거나 JWT를 그냥 타임아웃하도록한다.
         findMember.modifyPassword(passwordEncoder.encode(newPassword));
+    }
+
+    @Transactional
+    public void dropProfileImage(Member member) {
+        //이미지 드랍
+        member.setProfile(null);
     }
 }

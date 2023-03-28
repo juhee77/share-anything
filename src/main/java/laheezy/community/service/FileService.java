@@ -10,10 +10,13 @@ import laheezy.community.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ import java.util.UUID;
 @Slf4j
 public class FileService {
     private final FileRepository fileRepository;
+    private final MemberService memberService;
 
     @Value("${file.dir}")
     private String fileDir;
@@ -29,18 +33,37 @@ public class FileService {
         return fileDir + filename;
     }
 
-    public File storeProFile(MultipartFile multipartFile, String caption, Member nowLogin, FileType profile) throws IOException {
-        if (multipartFile.isEmpty()) {
-            return null; //TODO: error 처리
+
+    //프로필 이미지 업로드기능(기존에 있는 경우 드랍후 새로운 이미지로 교체)
+    public Member storeProFile(MultipartFile profileImg, Member member) throws IOException {
+        log.info("파일 업로드 시도");
+
+        //기존이미지 드랍(1:1);
+        if (member.getProfileImage() != null) {
+            dropProfileImage(member.getProfileImage().getId());
+            memberService.dropProfileImage(member);
         }
-        String originalFilename = multipartFile.getOriginalFilename();
+
+        //새로운 이미지 업로드
+        //이미지 업로드 하지 않은 경우
+        if (profileImg.isEmpty()) {
+            return member;
+        }
+
+        //이미지 업로드를 한 경우에마 다시 업로드
+        String originalFilename = profileImg.getOriginalFilename();
         String storeFileName = createStoreFileName(originalFilename);
-        multipartFile.transferTo(new java.io.File(getFullPath(storeFileName)));
-        File file = new Profile().makeProfile(nowLogin, caption, originalFilename, storeFileName);
+        profileImg.transferTo(new java.io.File(getFullPath(storeFileName)));
+        File file = new Profile().makeProfile(member, originalFilename, storeFileName);
 
         fileRepository.save(file);
         log.info("파일 업로드 성공:{}", file.getOriginName());
-        return file;
+        return member;
+    }
+
+    @Transactional
+    public void dropProfileImage(Long id) {
+        fileRepository.deleteById(id);
     }
 
 
@@ -69,4 +92,15 @@ public class FileService {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
     }
+
+    public UrlResource convertToUrlResource(File file) {
+        String storeFileName = file.getStoreName();
+        try {
+            return new UrlResource("file:" + getFullPath(storeFileName));
+        }
+        catch (MalformedURLException e) {
+            throw new IllegalArgumentException("[ERROR] ConvertToUrl ");
+        }
+    }
+
 }

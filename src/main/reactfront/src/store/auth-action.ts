@@ -1,6 +1,6 @@
-import {GET, POST} from "./fetch-auth-action";
+import { GET, POST } from "./fetch-auth-action";
 
-const createTokenHeader = (token:string) => {
+const createTokenHeader = (token: string) => {
   return {
     headers: {
       'Authorization': 'Bearer ' + token
@@ -8,15 +8,15 @@ const createTokenHeader = (token:string) => {
   }
 }
 
-const calculateRemainingTime = (expirationTime:number) => {
+const calculateRemainingTime = (expirationTime: number) => {
   const currentTime = new Date().getTime();
   const adjExpirationTime = new Date(expirationTime).getTime();
   return adjExpirationTime - currentTime;
 };
 
-export const loginTokenHandler = (accessToken:string, refreshToken:string, expirationTime:number) => {
+export const loginTokenHandler = (accessToken: string, refreshToken: string, expirationTime: number) => {
   localStorage.setItem('token', accessToken);
-  localStorage.setItem('refreshToken',refreshToken)
+  localStorage.setItem('refreshToken', refreshToken)
   localStorage.setItem('expirationTime', String(expirationTime));
 
   return calculateRemainingTime(expirationTime);
@@ -29,7 +29,7 @@ export const retrieveStoredToken = () => {
 
   const remaingTime = calculateRemainingTime(+ storedExpirationDate);
 
-  if(remaingTime <= 1000) {
+  if (remaingTime <= 1000) {
     //TODO : reissued Token 
     localStorage.removeItem('token');
     localStorage.removeItem('expirationTime');
@@ -38,19 +38,24 @@ export const retrieveStoredToken = () => {
 
   return {
     token: storedToken,
-    refreshToken : refreshToken,
+    refreshToken: refreshToken,
     duration: remaingTime
   }
 }
 
-export const signupActionHandler = (email: string, password: string, nickname: string, loginId:string) => {
+export const signupActionHandler = (email: string, password: string, nickname: string, loginId: string, profileImg: File) => {
   const URL = '/auth/signup'
-  const signupObject = { email, password, nickname ,loginId};
+  const formData = new FormData();
+  formData.append('email', email);
+  formData.append('loginId', loginId);
+  formData.append('password', password);
+  formData.append('nickname', nickname);
+  formData.append('profileImg', profileImg);
 
-  return POST(URL, signupObject, {});
+  return POST(URL, formData, {});
 };
 
-export const loginActionHandler = (loginId:string, password: string) => {
+export const loginActionHandler = (loginId: string, password: string) => {
   const URL = '/auth/login';
   const loginObject = { loginId, password };
   return POST(URL, loginObject, {});
@@ -62,14 +67,14 @@ export const logoutActionHandler = () => {
   localStorage.removeItem('expirationTime');
 };
 
-export const getUserActionHandler = (token:string) => {
+export const getUserActionHandler = (token: string) => {
   const URL = '/me-profile';
   return GET(URL, createTokenHeader(token));
 }
 
-export const changeNicknameActionHandler = ( nickname:string, token: string) => {
+export const changeNicknameActionHandler = (nickname: string, token: string) => {
   const URL = '/member/modify/nickname';
-  const changeNicknameObj = { nickname : nickname };
+  const changeNicknameObj = { nickname: nickname };
   return POST(URL, changeNicknameObj, createTokenHeader(token));
 }
 
@@ -84,12 +89,12 @@ export const changePasswordActionHandler = (
 }
 
 export const addPostActionHandler = (
-  title : string,
-  text : string,
-  open : boolean,
-  token :string,
+  title: string,
+  text: string,
+  open: boolean,
+  token: string,
 ) => {
   const URL = '/post/add';
-  const postObj = {title, text, open};
+  const postObj = { title, text, open };
   return POST(URL, postObj, createTokenHeader(token));
 }

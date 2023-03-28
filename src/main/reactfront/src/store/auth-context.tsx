@@ -18,7 +18,7 @@ const AuthContext = React.createContext({
     isLoggedIn: false,
     isSuccess: false,
     isGetSuccess: false,
-    signup: (email: string, password: string, nickname: string, loginId: string) => {
+    signup: (email: string, password: string, nickname: string, loginId: string, profileImg: File) => {
     },
     login: (nickname: string, password: string) => {
     },
@@ -56,12 +56,13 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
     const userIsLoggedIn = !!token;
 
 
-    const signupHandler = (email: string, password: string, nickname: string, loginId: string) => {
+    const signupHandler = (email: string, password: string, nickname: string, loginId: string, profileImg: File) => {
         setIsSuccess(false);
-        console.log(email+" "+password+" ")
-        const response = authAction.signupActionHandler(email, password, nickname, loginId);
+        console.log(email+" signup")
+        const response = authAction.signupActionHandler(email, password, nickname, loginId,profileImg);
         response.then((result) => {
             if (result !== null) {
+                console.log("sign up success")
                 setIsSuccess(true);
             }
         });

@@ -32,13 +32,13 @@ public class FileController {
 
     @RequestMapping(value = "/profile/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "프로필 이미지 업로드")
-    public ResponseEntity<UrlResource> imageUpload(@RequestPart("multipartFile") MultipartFile multipartFile, @RequestParam("caption") String caption) throws IOException {
+    public ResponseEntity<UrlResource> imageUpload(@RequestPart("multipartFile") MultipartFile multipartFile) throws IOException {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
-        File uploadFile = fileService.storeProFile(multipartFile, caption, nowLogin, FileType.PROFILE);
+        nowLogin = fileService.storeProFile(multipartFile, nowLogin);
+        File uploadFile = nowLogin.getProfileImage();
 
-        String storeFileName = uploadFile.getStoreName();
         String uploadFileName = uploadFile.getOriginName();
-        UrlResource resource = new UrlResource("file:" + fileService.getFullPath(storeFileName));
+        UrlResource resource =  fileService.convertToUrlResource(uploadFile);
         log.info("uploadFileName={}", uploadFileName);
         String encodedUploadFileName = UriUtils.encode(uploadFileName, StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedUploadFileName + "\"";
@@ -53,9 +53,8 @@ public class FileController {
         Post post = postService.findById(id);
         File uploadFile = fileService.storePostFile(multipartFile, caption, post, FileType.POST);
 
-        String storeFileName = uploadFile.getStoreName();
         String uploadFileName = uploadFile.getOriginName();
-        UrlResource resource = new UrlResource("file:" + fileService.getFullPath(storeFileName));
+        UrlResource resource =  fileService.convertToUrlResource(uploadFile);
         log.info("uploadFileName={}", uploadFileName);
         String encodedUploadFileName = UriUtils.encode(uploadFileName, StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedUploadFileName + "\"";

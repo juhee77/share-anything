@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import laheezy.community.domain.Post;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @NoArgsConstructor
-@DiscriminatorValue(value = FileType.Purposes.PRO_FILE)
+@DiscriminatorValue(value = FileType.Purposes.POST_FILE)
 @Setter
 public class Postfile extends File {
     @JoinColumn(name = "post_id")
@@ -31,5 +32,8 @@ public class Postfile extends File {
         return postImg;
     }
 
-
+    @Override
+    public MultipartFile toMultiPartFile() {
+        return null;
+    }
 }

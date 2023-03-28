@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -28,4 +29,5 @@ public abstract class File {
     @CreationTimestamp
     private LocalDateTime create_date;
 
+    public abstract MultipartFile toMultiPartFile();
 }

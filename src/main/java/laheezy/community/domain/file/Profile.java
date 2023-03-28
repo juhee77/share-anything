@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import laheezy.community.domain.Member;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.core.io.UrlResource;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @NoArgsConstructor
@@ -18,10 +20,9 @@ public class Profile extends File {
         this.member.setProfile(this);
     }
 
-    public Profile makeProfile(Member member, String caption, String originName, String imagePath) {
+    public Profile makeProfile(Member member, String originName, String imagePath) {
         Profile profile = new Profile();
 
-        if (caption != null) profile.setCaption(caption);
         profile.setMember(member);
         profile.setMemberProfile();
         profile.setOriginName(originName);
@@ -30,5 +31,8 @@ public class Profile extends File {
         return profile;
     }
 
-
+    @Override
+    public MultipartFile toMultiPartFile() {
+        return null;
+    }
 }
