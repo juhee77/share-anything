@@ -33,5 +33,12 @@ public class MemberRequestDto {
     private String email;
 
     @Schema(description = "이미지" )
-    MultipartFile profileImg;
+    MultipartFile profileImg = null;
+
+    public MemberRequestDto(String password, String loginId, String nickname, String email) {
+        this.password = password;
+        this.loginId = loginId;
+        this.nickname = nickname;
+        this.email = email;
+    }
 }

@@ -38,7 +38,6 @@ public class JwtFilter extends GenericFilter {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             String trim = bearerToken.split(" ")[1].trim(); //.substring(7)
-            log.info("{}", trim);
             return trim;
         }
         return null;

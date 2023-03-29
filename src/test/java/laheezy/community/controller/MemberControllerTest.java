@@ -12,17 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@ActiveProfiles("test")
 class MemberControllerTest {
     //Mock객체 세팅
 
@@ -48,14 +52,18 @@ class MemberControllerTest {
 
     @Test
     public void 유저객체생성확인() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        MemberRequestDto userMakeDto = new MemberRequestDto("password", "loginId", "nick", "bo@google.com");
-        String requestBody = objectMapper.writeValueAsString(userMakeDto);
+        //이름에 넘길 파라미터 네임
+        MockMultipartFile file = new MockMultipartFile("profileImg", "image.jpg", "image/jpeg", "<<jeg data>>".getBytes(StandardCharsets.UTF_8));
+        MemberRequestDto userMakeDto = new MemberRequestDto("password", "loginId", "nick", "bo@google.com", file);
 
         //when
-        mockMvc.perform(post("/auth/signup")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(requestBody))
+        mockMvc.perform(multipart("/auth/signup")
+                        .file(file)
+                        .param("password", userMakeDto.getPassword())
+                        .param("loginId", userMakeDto.getLoginId())
+                        .param("nickname", userMakeDto.getNickname())
+                        .param("email", userMakeDto.getEmail())
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("loginId").value("loginId"))
                 .andExpect(jsonPath("nickname").value("nick"))
@@ -92,7 +100,8 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("nickname").value(member.getNickname()))
                 .andExpect(jsonPath("loginId").value(member.getLoginId()))
-                .andExpect(jsonPath("email").value(member.getEmail()));
+                .andExpect(jsonPath("email").value(member.getEmail()))
+                .andDo(print());
 
     }
 

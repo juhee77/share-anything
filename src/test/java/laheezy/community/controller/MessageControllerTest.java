@@ -1,16 +1,8 @@
 package laheezy.community.controller;
 
-import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+@ActiveProfiles("test")
 class MessageControllerTest {
 
-    @Test
-    void enter() {
-    }
-
-    @Test
-    void message() {
-    }
 }

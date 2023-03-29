@@ -48,8 +48,11 @@ public class MemberController {
 
     @NotNull
     private MemberController.MemberResponseDto convertToResponseDto(Member findMember) {
-        return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
+        if(findMember.getProfileImage()!=null) return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
                 findMember.getEmail(), "file:" + fileService.getFullPath(findMember.getProfileImage().getStoreName()));
+       //이미지가 없는 경우
+        return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
+                findMember.getEmail(), null);
     }
 
     @GetMapping("/me-profile")
