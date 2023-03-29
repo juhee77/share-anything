@@ -8,6 +8,7 @@ interface ChatMessage {
     roomId: string;
     writer: string;
     message: string;
+    time: string;
 }
 
 interface ChatRoom {
@@ -52,13 +53,15 @@ const ChatPage: React.FC<ChatRoom> = () => {
         client.current?.subscribe('/sub/chat/' + roomId, (body) => {
 
             const parsed_body = JSON.parse(body.body);
-            const {roomId, writer, message} = parsed_body; // 파싱된 정보를 추출
+            const {roomId, writer, message, time} = parsed_body; // 파싱된 정보를 추출
+            console.log(parsed_body);
             const nameM = writer + "님: " + message;
 
             const newMessage: ChatMessage = {
                 roomId: roomId,
                 writer: writer,
-                message: message
+                message: message,
+                time: time
             };
 
             console.log('subscribe ' + nameM);
@@ -170,6 +173,8 @@ const ChatPage: React.FC<ChatRoom> = () => {
                          className={`chat-bubble ${msg.writer === authCtx.userObj.nickname ? 'mine' : 'theirs'}`}>
                         <div
                             className={`chat-message-writer ${msg.writer === authCtx.userObj.nickname ? 'other' : 'me'}`}>{msg.writer}</div>
+                        <div>{msg.time}</div>
+
                         <div className="chat-bubble-message">{msg.message}</div>
                     </div>
                 ))}

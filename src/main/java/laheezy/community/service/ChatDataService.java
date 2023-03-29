@@ -24,12 +24,11 @@ public class ChatDataService {
         log.info("ChatRoom : {}원함 ", roomId);
         ChatRoom byChatRoom = chatRoomService.findRoomByRoomId(roomId);
 
-        //fetch lazy 에러, 직접 쿼리로 패치 조인해서 당경 와야함..
         List<ChatData> chatDataList = chatDataRepository.findAllChatByRoomId(byChatRoom);
         log.info("data size {}", chatDataList.size());
         List<ChatDataResponseDto> dtos = new ArrayList<>();
         for (ChatData chatData : chatDataList) {
-            dtos.add(new ChatDataResponseDto(chatData.getChatroom().getRoomId(), chatData.getWriter(), chatData.getMessage()));
+            dtos.add(new ChatDataResponseDto(chatData.getChatroom().getRoomId(), chatData.getWriter(), chatData.getMessage(), chatData.getSentTime().toString()));
         }
         return dtos;
     }
