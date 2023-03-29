@@ -1,8 +1,10 @@
 package laheezy.community.dto.member;
 
+import laheezy.community.domain.file.Profile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.core.io.UrlResource;
 
 import java.time.LocalDateTime;
 
@@ -14,4 +16,5 @@ public class MemberResponseDto {
     private String nickname;
     private String email;
     private LocalDateTime joinDateTime;
+    private UrlResource profileImage;
 }

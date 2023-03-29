@@ -48,7 +48,8 @@ public class MemberController {
 
     @NotNull
     private MemberController.MemberResponseDto convertToResponseDto(Member findMember) {
-        return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(), findMember.getEmail(), fileService.convertToUrlResource(findMember.getProfileImage()));
+        return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
+                findMember.getEmail(), "file:" + fileService.getFullPath(findMember.getProfileImage().getStoreName()));
     }
 
     @GetMapping("/me-profile")
@@ -94,6 +95,6 @@ public class MemberController {
         private String nickname;
         private String loginId;
         private String email;
-        private UrlResource file;
+        private String profileImageUrl;
     }
 }

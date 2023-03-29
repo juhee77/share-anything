@@ -4,7 +4,7 @@ import * as authAction from './auth-action';
 let logoutTimer: NodeJS.Timeout;
 
 type Props = { children?: React.ReactNode }
-type UserInfo = { loginId: string, nickname: string, email: string };
+type UserInfo = { loginId: string, nickname: string, email: string, profileImageUrl:string };
 type LoginToken = {
     grantType: string,
     accessToken: string,
@@ -14,7 +14,7 @@ type LoginToken = {
 
 const AuthContext = React.createContext({
     token: '',
-    userObj: {loginId: ' ', email: '', nickname: ''},
+    userObj: {loginId: ' ', email: '', nickname: '', profileImageUrl:''},
     isLoggedIn: false,
     isSuccess: false,
     isGetSuccess: false,
@@ -47,7 +47,8 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
     const [userObj, setUserObj] = useState({
         loginId: '',
         email: '',
-        nickname: ''
+        nickname: '',
+        profileImageUrl:''
     });
 
     const [isSuccess, setIsSuccess] = useState<boolean>(false);

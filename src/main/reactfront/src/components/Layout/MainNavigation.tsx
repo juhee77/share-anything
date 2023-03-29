@@ -9,11 +9,13 @@ const MainNavigation = () => {
 
     const authCtx = useContext(AuthContext);
     const [nickname, setNickname] = useState('');
+    const [profileImageUrl, setProfileImageUrl] = useState('');
     let isLogin = authCtx.isLoggedIn;
     let isGet = authCtx.isGetSuccess;
 
-    const callback = (str: string) => {
+    const callback = (str: string, url:string) => {
         setNickname(str);
+        setProfileImageUrl(url);
     }
 
     useEffect(() => {
@@ -26,7 +28,7 @@ const MainNavigation = () => {
     useEffect(() => {
         if (isGet) {
             console.log('MainNavigation get start -> ' + authCtx.userObj.nickname);
-            callback(authCtx.userObj.nickname);
+            callback(authCtx.userObj.nickname,authCtx.userObj.profileImageUrl);
         }
     }, [isGet]);
 
@@ -72,6 +74,7 @@ const MainNavigation = () => {
                         {isLogin && (
                             <>
                                 <li className="nav-item">
+                                    <img src = {profileImageUrl} alt="Profile Image" />
                                     <Link className="nav-link" to="/profile">
                                         {nickname}
                                     </Link>
