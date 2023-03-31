@@ -1,9 +1,9 @@
 package laheezy.community.service;
 
-import laheezy.community.domain.ChatRoom;
+import laheezy.community.domain.Chatroom;
 import laheezy.community.domain.Member;
 import laheezy.community.dto.chat.room.ChatRoomMakeDto;
-import laheezy.community.repository.ChatRoomRepository;
+import laheezy.community.repository.ChatroomRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.web.firewall.RequestRejectedException;
@@ -14,16 +14,16 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ChatRoomService {
-    private final ChatRoomRepository chatRoomRepository;
+public class ChatroomService {
+    private final ChatroomRepository chatRoomRepository;
 
-    public ChatRoom findRoomByRoomId(String id) {
+    public Chatroom findRoomByRoomId(String id) {
         return getRoomByRoomId(id);
     }
 
     @NotNull
-    private ChatRoom getRoomByRoomId(String id) {
-        Optional<ChatRoom> room = chatRoomRepository.findByRoomId(id);
+    private Chatroom getRoomByRoomId(String id) {
+        Optional<Chatroom> room = chatRoomRepository.findByRoomId(id);
 
         if (room.isPresent()) {
             return room.get();
@@ -31,13 +31,13 @@ public class ChatRoomService {
         throw new RequestRejectedException("없는 방 입니다");
     }
 
-    public List<ChatRoom> findAllRoom() {
+    public List<Chatroom> findAllRoom() {
         return chatRoomRepository.findAll();
     }
 
-    public ChatRoom createRoom(String name, Member member) {
+    public Chatroom createRoom(String name, Member member) {
         ChatRoomMakeDto dto = ChatRoomMakeDto.create(name);
-        ChatRoom chatRoom = ChatRoom.toChatRoom(name, dto.getRoomId(), member.getNickname());
+        Chatroom chatRoom = Chatroom.toChatRoom(name, dto.getRoomId(), member.getNickname());
         return chatRoomRepository.save(chatRoom);
     }
 

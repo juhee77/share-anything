@@ -1,6 +1,6 @@
 package laheezy.community.dto.chat.room;
 
-import laheezy.community.domain.ChatRoom;
+import laheezy.community.domain.Chatroom;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ public class ChatRoomDetailDto { //방을 만든다
     private String name;
     private String writer;
 
-    public static ChatRoomDetailDto chatRoomToDto(ChatRoom chatRoom) {
+    public static ChatRoomDetailDto chatRoomToDto(Chatroom chatRoom) {
         ChatRoomDetailDto roomResponseDto = new ChatRoomDetailDto();
 
         roomResponseDto.setWriter(chatRoom.getWriter());

@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import laheezy.community.domain.file.Profile;
 import lombok.*;
-import org.apache.catalina.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -80,9 +79,9 @@ public class Member {
     @OneToMany(fetch = LAZY, mappedBy = "memberB", cascade = CascadeType.ALL)
     private List<Following> follower = new ArrayList<>();
 
-//    @Builder.Default
-//    @OneToMany(mappedBy = "member")
-//    private List<MemberChatroom> chatrooms = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(fetch = LAZY, mappedBy = "member", cascade = CascadeType.ALL)
+    private List<MemberChatroom> memberChatRooms = new ArrayList<>();
 
     @Override
     public String toString() {

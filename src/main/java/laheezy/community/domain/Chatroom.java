@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Entity
-public class ChatRoom {
+public class Chatroom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,12 +25,14 @@ public class ChatRoom {
     private String writer;//생성한 사람 이름
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatroom") //연관관계의 주인을 지정
-    private List<ChatData> chatDataList = new ArrayList<>();
+    private List<Chatdata> chatDataList = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatroom")
+    private List<MemberChatroom> nowSubscriber = new ArrayList<>();
 
     //생성자
-    public static ChatRoom toChatRoom(String roomName, String roomId, String writer) {
-        ChatRoom chatRoom = new ChatRoom();
+    public static Chatroom toChatRoom(String roomName, String roomId, String writer) {
+        Chatroom chatRoom = new Chatroom();
         chatRoom.roomName = roomName;
         chatRoom.roomId = roomId;
         chatRoom.writer = writer;
