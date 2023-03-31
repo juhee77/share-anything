@@ -57,7 +57,7 @@ public class Post {
     }
 
     @Builder
-    public Post(Long id, Member member, boolean isOpen, long view, String title, String text, LocalDateTime writeDate, LocalDateTime lastModifiedTime) {
+    public Post(Long id, Member member, boolean isOpen, long view, String title, String text) {
         setMember(member);
         this.id = id;
         this.isOpen = isOpen;

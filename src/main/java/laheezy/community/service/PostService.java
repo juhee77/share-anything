@@ -3,7 +3,9 @@ package laheezy.community.service;
 import laheezy.community.domain.Following;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
+import laheezy.community.dto.post.PostResponseDto;
 import laheezy.community.repository.PostRepository;
+import laheezy.community.repository.PostRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final PostRepositoryImpl postRepositoryImpl;
 
     @Transactional
     public Post writePost(Post post) {
@@ -48,5 +51,9 @@ public class PostService {
 
     public List<Post> findAll() {
         return postRepository.findAll();
+    }
+
+    public List<PostResponseDto> findAllPostWithHeartCnt() {
+        return postRepositoryImpl.findAllPostWithHeartCnt();
     }
 }

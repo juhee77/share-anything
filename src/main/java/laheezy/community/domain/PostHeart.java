@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -32,7 +33,9 @@ public class PostHeart {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    private LocalDateTime date = LocalDateTime.now();
+
+    @CreationTimestamp
+    private LocalDateTime date;
 
     //이렇게 다 양방향 관계로 하는게 맞는걸까.
     //연관관계 메서드
