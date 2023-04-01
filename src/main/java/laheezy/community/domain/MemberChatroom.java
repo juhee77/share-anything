@@ -3,7 +3,10 @@ package laheezy.community.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -42,6 +45,7 @@ public class MemberChatroom {
         chatRoom.getNowSubscriber().add(this);
         this.chatroom = chatRoom;
     }
+
     public MemberChatroom(Member member, Chatroom chatRoom) {
         setMember(member);
         setChatroom(chatRoom);

@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.util.UUID;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 @Slf4j
 public class FileService {
@@ -35,6 +36,7 @@ public class FileService {
 
 
     //프로필 이미지 업로드기능(기존에 있는 경우 드랍후 새로운 이미지로 교체)
+    @Transactional
     public Member storeProFile(MultipartFile profileImg, Member member) throws IOException {
         log.info("파일 업로드 시도");
 
@@ -67,6 +69,7 @@ public class FileService {
     }
 
 
+    @Transactional
     public File storePostFile(MultipartFile multipartFile, String caption, Post post, FileType profile) throws IOException {
         if (multipartFile.isEmpty()) {
             return null; //TODO: error 처리
@@ -97,8 +100,7 @@ public class FileService {
         String storeFileName = file.getStoreName();
         try {
             return new UrlResource("file:" + getFullPath(storeFileName));
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new IllegalArgumentException("[ERROR] ConvertToUrl ");
         }
     }

@@ -10,5 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ChatdataRepository extends JpaRepository<Chatdata, Long> {
-    List<Chatdata> findChatAllChatByDateAndChatroom(Chatroom chatroom, LocalDateTime date);
+    List<Chatdata> findChatAllChatByDateAfterAndChatroom(LocalDateTime date, Chatroom chatroom);
+
+    List<Chatdata> findAllById(Long id);
 }

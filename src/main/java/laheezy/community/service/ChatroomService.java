@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ChatroomService {
     private final ChatroomRepository chatRoomRepository;
 
@@ -35,6 +37,7 @@ public class ChatroomService {
         return chatRoomRepository.findAll();
     }
 
+    @Transactional
     public Chatroom createRoom(String name, Member member) {
         ChatRoomMakeDto dto = ChatRoomMakeDto.create(name);
         Chatroom chatRoom = Chatroom.toChatRoom(name, dto.getRoomId(), member.getNickname());
@@ -45,4 +48,5 @@ public class ChatroomService {
         if (chatRoomRepository.findByRoomName(name).isPresent())
             throw new RequestRejectedException("중복된 이름의 채팅방이 이미 존재합니다.");
     }
+
 }
