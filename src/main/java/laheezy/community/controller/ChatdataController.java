@@ -34,7 +34,7 @@ public class ChatdataController {
     private final ChatdataService chatDataService;
     private final ChatroomService chatRoomService;
 
-    //pub
+    //pub으로 받고 sub로 보낸다
     @Transactional
     @MessageMapping("/chat/enter")
     public void enter(ChatDataRequestDto message) {
@@ -54,9 +54,10 @@ public class ChatdataController {
             }
 
             // 해당 사용자에게만 메시지 전송
-            //sendingOperations.convertAndSendToUser(member.getNickname(), "/chat/enter/" + message.getRoomId(), chatList);
-//            sendingOperations.convertAndSendToUser(message.getWriter(), "/chat/enter/", chatList); //해당 url을 구독하고 있는 사람들에게 전송
-            sendingOperations.convertAndSend("/sub/chat/enter/" + message.getRoomId(), chatList);
+            //String destination = "/sub/chat/enter/" + message.getRoomId();
+            //sendingOperations.convertAndSendToUser(member.getNickname(),destination, chatList);
+            sendingOperations.convertAndSend("/user/"+message.getWriter()+"/sub/chat/enter/"+ message.getRoomId(), chatList); //해당 url을 구독하고 있는 사람들에게 전송
+            //sendingOperations.convertAndSend("/sub/chat/enter/" + message.getRoomId(), chatList);
             log.info("지난 기록 전송 완료: {}", chatList);
         } else {
             //구독 하도록
@@ -86,11 +87,6 @@ public class ChatdataController {
     @MessageMapping("/chat/out")
     public void out(ChatDataRequestDto message) {
         log.info("out: {}", message);
-        message.setMessage(message.getWriter() + "님이 퇴장 하셨습니다");
-        Chatdata save = chatDataService.save(message);
-        ChatDataResponseDto chatDataResponseDto = convertToDto(save);
-
-        sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), chatDataResponseDto);
     }
 
 

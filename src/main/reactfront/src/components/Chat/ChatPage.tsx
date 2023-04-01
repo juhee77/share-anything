@@ -30,7 +30,7 @@ const ChatPage: React.FC<ChatRoom> = () => {
   useEffect(() => {
     console.log("testing" + roomId + " " + name);
     connect();
-    return () => disconnect();
+    //return () => disconnect();
   }, []);
 
   const connect = async () => {
@@ -47,42 +47,11 @@ const ChatPage: React.FC<ChatRoom> = () => {
     client.current?.activate();
   };
 
+  //const destination = "/user/" + authCtx.userObj.nickname + "/sub/chat/enter/" + roomId;
+  const destination = "/user/" + authCtx.userObj.nickname + "/sub/chat/enter/" + roomId;
   const subscribe = async () => {
-    // client.current?.subscribe("/user/sub/chat/enter/" + roomId, (body) => { //구독 했던 방을 들어온 경우 이전의 데이터를 받아오는 
-    //   //이전 기록 정보 리트 형태를 파싱한다.
-    //   const chatlist = JSON.parse(body.body);
-    //   console.log("과거기록 들어옴"+chatlist);
-
-    //   setMessages(
-    //     chatlist.map(
-    //       (chat: { roomId: any; writer: any; message: any; time: any }) => ({
-    //         roomId: chat.roomId,
-    //         writer: chat.writer,
-    //         message: chat.message,
-    //         time: chat.time,
-    //       })
-    //     )
-    //   );
-    // });
-
-    // client.current?.subscribe("/user/"+authCtx.userObj.nickname+"/chat/enter/" + roomId, (body) => { //구독 했던 방을 들어온 경우 이전의 데이터를 받아오는 
-    //   //이전 기록 정보 리트 형태를 파싱한다.
-    //   const chatlist = JSON.parse(body.body);
-    //   console.log("과거기록 들어옴"+chatlist);
-
-    //   setMessages(
-    //     chatlist.map(
-    //       (chat: { roomId: any; writer: any; message: any; time: any }) => ({
-    //         roomId: chat.roomId,
-    //         writer: chat.writer,
-    //         message: chat.message,
-    //         time: chat.time,
-    //       })
-    //     )
-    //   );
-    // });
-
-      client.current?.subscribe("/sub/chat/enter/"+ roomId, (body) => { 
+    console.log(destination);
+      client.current?.subscribe(destination, (body) => { 
       const chatlist = JSON.parse(body.body);
       console.log("과거기록 들어옴"+chatlist);
 
@@ -119,8 +88,14 @@ const ChatPage: React.FC<ChatRoom> = () => {
     });
   };
 
+  const subDisconnect = () => {
+    console.log("subDisconnect");
+    subcribeOutRoom();
+    client.current?.deactivate();
+  };
+
   const disconnect = () => {
-    console.log("disconnect");
+    console.log("subDisconnect");
     outRoom();
     client.current?.deactivate();
   };
@@ -145,10 +120,14 @@ const ChatPage: React.FC<ChatRoom> = () => {
   };
 
   const outRoom = () => {
+      setEnter(false);
+  };
+
+  const subcribeOutRoom = () => {
     if (!enter) {
       //처음 접속 한 경우에만
       client.current?.publish({
-        destination: "/pub/chat/out",
+        destination: "/pub/chat/subscribe/out",
         body: JSON.stringify({
           roomId: roomId ? roomId : "ERROR",
           writer: authCtx.userObj.nickname,
@@ -183,6 +162,12 @@ const ChatPage: React.FC<ChatRoom> = () => {
     navigate("/chat/all/rooms");
   };
 
+
+  const handleOutSubscribeChatRoom = () => {
+    subDisconnect();
+    navigate("/chat/all/rooms");
+  };
+
   useEffect(() => {
     if (messageContainerRef.current) {
       messageContainerRef.current.scrollTop =
@@ -190,25 +175,7 @@ const ChatPage: React.FC<ChatRoom> = () => {
     }
   }, [messages]);
 
-  // return (
-  //   <div className="chat-page-container">
-  //     <div className="chat-header">
-  //       <h1>{name}</h1>
-  //     </div>
-  //     <div className="chat-messages-container" ref={messageContainerRef}>
-  //       {messages.map((msg, index) => (
-  //         <div key={index} className={`chat-message ${msg.writer ===  authCtx.userObj.nickname? 'right' : 'left'}`}>
-  //           <div className={`chat-message-writer ${msg.writer ===  authCtx.userObj.nickname? 'other' : 'me'}`}>{msg.writer}</div>
-  //           <div className="message">{msg.message}</div>
-  //         </div>
-  //       ))}
-  //     </div>
-  //     <div className="chat-input-container">
-  //       <input type="text" placeholder="Type your message" value={message} onChange={handleMessageChange} />
-  //       <button onClick={handleSendMessage}>Send</button>
-  //     </div>
-  //   </div>
-  // );
+
   return (
     <div className="chat-page-container">
       <div className="chat-header">
@@ -237,6 +204,9 @@ const ChatPage: React.FC<ChatRoom> = () => {
       </div>
       <div>
         <button onClick={handleOutChatRoom}>채팅방 나가기</button>
+      </div>
+      <div>
+        <button onClick={handleOutSubscribeChatRoom}>구독 취소하고 나가기</button>
       </div>
       <div className="chat-input-container">
         <input
