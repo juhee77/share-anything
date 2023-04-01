@@ -1,9 +1,6 @@
 package laheezy.community.controller;
 
-import laheezy.community.domain.Chatdata;
-import laheezy.community.domain.Chatroom;
-import laheezy.community.domain.Member;
-import laheezy.community.domain.MemberChatroom;
+import laheezy.community.domain.*;
 import laheezy.community.dto.chat.data.ChatDataRequestDto;
 import laheezy.community.dto.chat.data.ChatDataResponseDto;
 import laheezy.community.service.ChatdataService;
@@ -18,7 +15,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +52,7 @@ public class ChatdataController {
             // 해당 사용자에게만 메시지 전송
             //String destination = "/sub/chat/enter/" + message.getRoomId();
             //sendingOperations.convertAndSendToUser(member.getNickname(),destination, chatList);
-            sendingOperations.convertAndSend("/user/"+message.getWriter()+"/sub/chat/enter/"+ message.getRoomId(), chatList); //해당 url을 구독하고 있는 사람들에게 전송
+            sendingOperations.convertAndSend("/user/" + message.getWriter() + "/sub/chat/enter/" + message.getRoomId(), chatList); //해당 url을 구독하고 있는 사람들에게 전송
             //sendingOperations.convertAndSend("/sub/chat/enter/" + message.getRoomId(), chatList);
             log.info("지난 기록 전송 완료: {}", chatList);
         } else {
@@ -65,7 +61,7 @@ public class ChatdataController {
             memberChatRoomService.subscribe(member, room);
 
             // 입장 메시지 추가
-            Chatdata save = chatDataService.save(message);
+            Chatdata save = chatDataService.save(message, MessageType.ENTER);
             ChatDataResponseDto nowEnter = convertToDto(save);
             sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), nowEnter);
         }
@@ -80,7 +76,7 @@ public class ChatdataController {
         String formatedNow = chatData.getDate().format(formatter);
 
         //현재 스트링 형태로 전송
-        return new ChatDataResponseDto(chatData.getChatroom().getRoomId(), chatData.getWriter(), chatData.getMessage(), formatedNow);
+        return new ChatDataResponseDto(chatData.getMessageType().toString(), chatData.getChatroom().getRoomId(), chatData.getWriter(), chatData.getMessage(), formatedNow);
     }
 
     //방을 나가는 경우 구독을 취소하는 경우
@@ -104,7 +100,7 @@ public class ChatdataController {
 
         //퇴장 문구
         message.setMessage(message.getWriter() + "님이 퇴장 하셨습니다");
-        Chatdata save = chatDataService.save(message);
+        Chatdata save = chatDataService.save(message, MessageType.EXIT);
         ChatDataResponseDto chatDataResponseDto = convertToDto(save);
         sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), chatDataResponseDto);
     }
@@ -112,7 +108,7 @@ public class ChatdataController {
     @MessageMapping(value = "/chat/send")
     public void message(ChatDataRequestDto message) {
         log.info("out: {}", message);
-        Chatdata save = chatDataService.save(message);
+        Chatdata save = chatDataService.save(message, MessageType.BASIC);
         ChatDataResponseDto chatDataResponseDto = convertToDto(save);
 
         sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), chatDataResponseDto);

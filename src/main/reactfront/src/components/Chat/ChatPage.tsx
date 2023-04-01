@@ -5,6 +5,7 @@ import AuthContext from "store/auth-context";
 import "./ChatPage.css";
 
 interface ChatMessage {
+  messageType : string;
   roomId: string;
   writer: string;
   message: string;
@@ -69,11 +70,12 @@ const ChatPage: React.FC<ChatRoom> = () => {
 
     client.current?.subscribe("/sub/chat/" + roomId, (body) => {
       const parsed_body = JSON.parse(body.body);
-      const { roomId, writer, message, time } = parsed_body; // 파싱된 정보를 추출
+      const { messageType, roomId, writer, message, time } = parsed_body; // 파싱된 정보를 추출
       console.log(parsed_body);
       const nameM = writer + "님: " + message;
 
       const newMessage: ChatMessage = {
+        messageType : messageType,
         roomId: roomId,
         writer: writer,
         message: message,
@@ -124,7 +126,7 @@ const ChatPage: React.FC<ChatRoom> = () => {
   };
 
   const subcribeOutRoom = () => {
-    if (!enter) {
+    if (enter) {
       //처음 접속 한 경우에만
       client.current?.publish({
         destination: "/pub/chat/subscribe/out",

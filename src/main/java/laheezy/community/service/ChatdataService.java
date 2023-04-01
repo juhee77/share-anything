@@ -2,6 +2,7 @@ package laheezy.community.service;
 
 import laheezy.community.domain.Chatdata;
 import laheezy.community.domain.Chatroom;
+import laheezy.community.domain.MessageType;
 import laheezy.community.dto.chat.data.ChatDataRequestDto;
 import laheezy.community.repository.ChatdataRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,12 @@ public class ChatdataService {
 
     //메세지를 저장
     @Transactional
-    public Chatdata save(ChatDataRequestDto message) {
-        return chatDataRepository.save(Chatdata.toChatData(message, chatRoomService.findRoomByRoomId(message.getRoomId())));
+    public Chatdata save(ChatDataRequestDto message, MessageType messageType) {
+        return chatDataRepository.save(Chatdata.toChatData(message, chatRoomService.findRoomByRoomId(message.getRoomId()), messageType));
     }
 
     public List<Chatdata> findAllChatByRoomIdAndDate(Chatroom chatRoom, LocalDateTime subscribeDateTime) {
-        return chatDataRepository.findChatAllChatByDateAfterAndChatroom(subscribeDateTime,chatRoom);
+        return chatDataRepository.findChatAllChatByDateAfterAndChatroom(subscribeDateTime, chatRoom);
     }
 
     public List<Chatdata> findAllChat(Chatroom chatroom) {

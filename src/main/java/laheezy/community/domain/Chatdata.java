@@ -29,12 +29,16 @@ public class Chatdata {
     private String writer;
     private String message;
 
+    @Enumerated(EnumType.STRING)
+    private MessageType messageType;
+
     @CreationTimestamp
     private LocalDateTime date;
 
     //생성자
-    public static Chatdata toChatData(ChatDataRequestDto chatDataDto, Chatroom chatRoom) {
+    public static Chatdata toChatData(ChatDataRequestDto chatDataDto, Chatroom chatRoom, MessageType messageType) {
         Chatdata chatData = new Chatdata();
+        chatData.messageType = messageType;
         chatData.chatroom = chatRoom;
         chatData.message = chatDataDto.getMessage();
         chatData.writer = chatDataDto.getWriter();
