@@ -7,6 +7,7 @@ type ChatRoom = {
     id: string;
     name: string;
     writer: string;
+    number: number;
 }
 
 const ChatRoomList: React.FC = () => {

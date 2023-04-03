@@ -12,13 +12,15 @@ public class ChatRoomDetailDto { //방을 만든다
     private String id; //만들어진 키
     private String name;
     private String writer;
+    private int number;
 
-    public static ChatRoomDetailDto chatRoomToDto(Chatroom chatRoom) {
+    public static ChatRoomDetailDto createRoom(Chatroom chatRoom) {
         ChatRoomDetailDto roomResponseDto = new ChatRoomDetailDto();
 
         roomResponseDto.setWriter(chatRoom.getWriter());
         roomResponseDto.setId(chatRoom.getRoomId());
         roomResponseDto.setName(chatRoom.getRoomName());
+        roomResponseDto.setNumber(0);
         return roomResponseDto;
     }
 }

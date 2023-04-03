@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,8 +22,7 @@ public class ChatroomController {
     @GetMapping("/rooms")
     public List<ChatRoomDetailDto> findAllRooms() {
         log.info("findAllRoom");
-        List<Chatroom> allRoom = chatService.findAllRoom();
-        return allRoom.stream().map(ChatRoomDetailDto::chatRoomToDto).collect(Collectors.toList());
+        return chatService.findAllRoomWithSubscriber();
     }
 
     @PostMapping("/room/create")
@@ -33,19 +31,19 @@ public class ChatroomController {
         chatService.checkingDuplicateRoom(name);
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         Chatroom room = chatService.createRoom(name, nowLogin);
-        return ChatRoomDetailDto.chatRoomToDto(room);
+        return ChatRoomDetailDto.createRoom(room);
     }
 
     @GetMapping("/room/enter/{roomId}")
     public ChatRoomDetailDto roomDetail(@PathVariable("roomId") String roomId) {
         log.info("findRoomDetail : {}", roomId);
-        return ChatRoomDetailDto.chatRoomToDto(chatService.findRoomByRoomId(roomId));
+        return chatService.findRoomByRoomIdWithSubscribe(roomId);
     }
 
     @GetMapping("/room/{roomId}")
     public ChatRoomDetailDto findRoomById(@PathVariable("roomId") String roomId) {
         log.info("findRoom: {}", roomId);
-        return ChatRoomDetailDto.chatRoomToDto(chatService.findRoomByRoomId(roomId));
+        return chatService.findRoomByRoomIdWithSubscribe(roomId);
     }
 
 }

@@ -8,6 +8,8 @@ type ChatRoom = {
     id: string;
     name: string;
     writer: string;
+    number: number;
+
 }
 
 type Props = {
@@ -83,6 +85,7 @@ const ChatRoomListForm: React.FC<Props> = ({chatRooms}) => {
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>SUBSCRIBER</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -90,6 +93,7 @@ const ChatRoomListForm: React.FC<Props> = ({chatRooms}) => {
                     <tr key={chatRoom.id} onClick={() => handleChatRoomClick(chatRoom)}>
                         <td>{index + 1}</td>
                         <td>{chatRoom.name}</td>
+                        <td>{chatRoom.number}</td>
                     </tr>
                 ))}
                 </tbody>

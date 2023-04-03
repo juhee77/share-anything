@@ -2,7 +2,9 @@ package laheezy.community.service;
 
 import laheezy.community.domain.Chatroom;
 import laheezy.community.domain.Member;
+import laheezy.community.dto.chat.room.ChatRoomDetailDto;
 import laheezy.community.dto.chat.room.ChatRoomMakeDto;
+import laheezy.community.repository.ChatRoomRepositoryImpl;
 import laheezy.community.repository.ChatroomRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -18,9 +20,14 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class ChatroomService {
     private final ChatroomRepository chatRoomRepository;
+    private final ChatRoomRepositoryImpl chatRoomRepositoryImpl;
 
     public Chatroom findRoomByRoomId(String id) {
         return getRoomByRoomId(id);
+    }
+
+    public ChatRoomDetailDto findRoomByRoomIdWithSubscribe(String id) {
+        return chatRoomRepositoryImpl.findRoomWithEnterSubscribeCnt(id);
     }
 
     @NotNull
@@ -35,6 +42,11 @@ public class ChatroomService {
 
     public List<Chatroom> findAllRoom() {
         return chatRoomRepository.findAll();
+    }
+
+
+    public List<ChatRoomDetailDto> findAllRoomWithSubscriber() {
+        return chatRoomRepositoryImpl.findAllRoomWithEnterSubscribeCnt();
     }
 
     @Transactional
