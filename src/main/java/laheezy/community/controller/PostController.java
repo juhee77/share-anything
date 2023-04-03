@@ -3,11 +3,13 @@ package laheezy.community.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import laheezy.community.domain.Board;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.post.PostForm;
 import laheezy.community.dto.post.PostResponseDto;
 import laheezy.community.exception.Fail;
+import laheezy.community.service.BoardService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class PostController {
     private final PostService postService;
     private final MemberService memberService;
+    private final BoardService boardService;
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.class)
@@ -40,23 +43,18 @@ public class PostController {
         log.info("post 생성");
 
         Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Board board = boardService.getBoardWithActive(postForm.getBoard());
         Post post = Post.builder()
                 .text(postForm.getText())
                 .title(postForm.getTitle())
                 .isOpen(postForm.isOpen())
                 .member(nowLogin)
+                .board(board)
                 .build();
 
         Post savedPost = postService.writePost(post);
 
-        return PostResponseDto.builder()
-                .postId(savedPost.getId())
-                .writer(savedPost.getMember().getNickname())
-                .title(savedPost.getTitle())
-                .text(savedPost.getText())
-                .text(savedPost.getText())
-                .writeDate(savedPost.getWriteDate())
-                .isOpen(savedPost.isOpen()).build();
+        return convertPostToResponseDTO(savedPost);
     }
 
     @GetMapping(value = "/my")
@@ -69,19 +67,12 @@ public class PostController {
         return getResponseDtos(myPost);
     }
 
-    @GetMapping(value = "/get/{postId}")
+    @GetMapping(value = "/get-postId/{postId}")
     @Operation(summary = "해당 포스트 자세히 보기", description = "postID포스트 확인")//페이징 기능 넣어야 한다.
     public PostResponseDto findEachPost(@PathVariable("postId") Long postId) {
         log.info("해당 포스트 자세히 확인 : {}", postId);
         Post post = postService.findById(postId);
-        return PostResponseDto.builder()
-                .postId(post.getId())
-                .writer(post.getMember().getNickname())
-                .title(post.getTitle())
-                .text(post.getText())
-                .text(post.getText())
-                .writeDate(post.getWriteDate())
-                .isOpen(post.isOpen()).build();
+        return convertPostToResponseDTO(post);
     }
 
     @GetMapping(value = "/follow")
@@ -103,8 +94,27 @@ public class PostController {
         // return getResponseDtos(postService.findAll());
     }
 
-    private List<PostResponseDto> getResponseDtos(List<Post> myPost) {
-        return myPost.stream().map(o -> new PostResponseDto(o.getId(), o.getMember().getNickname(), o.getTitle(), o.getText(), o.isOpen(), o.getView(), o.getWriteDate(), o.getPostHearts().size())).collect(Collectors.toList());
+    @GetMapping("/get-boardId/{boardName}/all-post")
+    public List<PostResponseDto> findAllPost(@PathVariable("boardName") String boardName) {
+        log.info("[BoardController] 해단 board의 post 조회 (공개 되어 있는것만) ");
+        boardService.getBoardWithActive(boardName); //board가 활성화 되어있는 board 인지, 사용중지 된 board가 아닌지
+        return postService.findAllOpenPostInBoard(boardName);
     }
 
+    private List<PostResponseDto> getResponseDtos(List<Post> myPost) {
+        return myPost.stream().map(o -> convertPostToResponseDTO(o)).collect(Collectors.toList());
+    }
+
+
+    private PostResponseDto convertPostToResponseDTO(Post post) {
+        return PostResponseDto.builder()
+                .postId(post.getId())
+                .writer(post.getMember().getNickname())
+                .title(post.getTitle())
+                .text(post.getText())
+                .text(post.getText())
+                .writeDate(post.getWriteDate())
+                .isOpen(post.isOpen())
+                .board(post.getBoard().getName()).build();
+    }
 }

@@ -56,4 +56,8 @@ public class PostService {
     public List<PostResponseDto> findAllPostWithHeartCnt() {
         return postRepositoryImpl.findAllPostWithHeartCnt();
     }
+
+    public List<PostResponseDto> findAllOpenPostInBoard(String boardName) {
+        return postRepositoryImpl.findEachBoardPostWithHeartCnt(boardName);
+    }
 }

@@ -18,4 +18,6 @@ public class PostForm {
     private String text;
     @ColumnDefault("false")
     private boolean open;
+    @NotEmpty
+    private String board;
 }

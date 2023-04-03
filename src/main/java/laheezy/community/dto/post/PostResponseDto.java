@@ -18,5 +18,6 @@ public class PostResponseDto {
     private long view; // 조회수
     private LocalDateTime writeDate; //작성 날짜
     private long heartCnt;
+    private String board;
 
 }

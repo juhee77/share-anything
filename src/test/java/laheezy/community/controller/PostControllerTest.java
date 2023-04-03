@@ -1,12 +1,14 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import laheezy.community.domain.Board;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.dto.post.PostForm;
+import laheezy.community.service.BoardService;
 import laheezy.community.service.FollowingService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
@@ -42,15 +44,20 @@ class PostControllerTest {
     private PostService postService;
     @Autowired
     private FollowingService followingService;
+    @Autowired
+    private BoardService boardService;
 
     private Member memberA, memberB;
     private TokenDto loginA, loginB;
+    private Board board;
 
     @Test
     public void 포스트객체생성확인() throws Exception {
         Member member = makeTestUser();
         ObjectMapper objectMapper = new ObjectMapper();
-        PostForm postForm = new PostForm("title", "text", true);
+        board = boardService.makeBoard(Board.builder().name("test").active(true).build());
+
+        PostForm postForm = new PostForm("title", "text", true, "test");
         TokenDto login = memberService.login(new LoginDto("loginId", "pass"));
 
         mockMvc.perform(post("/post/add")
