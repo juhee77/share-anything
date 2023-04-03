@@ -1,5 +1,6 @@
 package laheezy.community.service;
 
+import laheezy.community.domain.Board;
 import laheezy.community.domain.Comment;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
@@ -24,15 +25,19 @@ class CommentHeartServiceTest {
     CommentService commentService;
     @Autowired
     CommentHeartService commentHeartService;
+    @Autowired
+    BoardService boardService;
 
     private Member member;
     private Post post;
     private Comment comment;
+    private Board board;
 
     @BeforeEach
     void initMember() {
+        board = boardService.makeBoard(Board.builder().name("test").active(true).build());
         member = memberService.signup(new MemberRequestDto("pass", "loginId", "nick", "go@go.com"));
-        post = postService.writePost(Post.builder().member(member).title("post").isOpen(false).build());
+        post = postService.writePost(Post.builder().member(member).title("post").isOpen(false).board(board).build());
         comment = commentService.writeComment(Comment.builder().text("TEST").member(member).post(post).build());
     }
 

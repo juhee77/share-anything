@@ -1,6 +1,7 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import laheezy.community.domain.Board;
 import laheezy.community.domain.Comment;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
@@ -8,9 +9,11 @@ import laheezy.community.dto.comment.CommentRequestDto;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.service.BoardService;
 import laheezy.community.service.CommentService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,14 +42,19 @@ class CommentControllerTest {
     private PostService postService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private BoardService boardService;
+
+    Member member;
+    TokenDto login;
+    Board board;
+    Post post;
+
 
     @Test
     public void 댓글객체생성확인() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        Member member = makeTestUser();
-        TokenDto login = memberService.login(new LoginDto("loginId", "pass"));
 
-        Post post = postService.writePost(Post.builder().member(member).title("post").isOpen(false).build());
         CommentRequestDto commentDto = new CommentRequestDto(post.getId(), "text", true);
         String requestBody = objectMapper.writeValueAsString(commentDto);
 
@@ -64,9 +72,7 @@ class CommentControllerTest {
 
     @Test
     public void 본인작성댓글확인() throws Exception {
-        Member member = makeTestUser();
-        TokenDto login = memberService.login(new LoginDto("loginId", "pass"));
-        Post post = postService.writePost(Post.builder().member(member).title("post").isOpen(false).build());
+
         for (int i = 0; i < 3; i++) {
             commentService.writeComment(new Comment(member, post, "comment" + i, true));
         }
@@ -80,8 +86,13 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$[2].text", member.getComments().get(2).getText()).exists());
     }
 
-    private Member makeTestUser() {
-        return memberService.signup(new MemberRequestDto("pass", "loginId", "nick", "go@go.com"));
+    @BeforeEach
+    public void makeTestUser() {
+        member = memberService.signup(new MemberRequestDto("pass", "loginId", "nick", "go@go.com"));
+        login = memberService.login(new LoginDto("loginId", "pass"));
+        board = boardService.makeBoard(Board.builder().name("test").active(true).build());
+        post = postService.writePost(Post.builder().member(member).title("post").board(board).isOpen(false).build());
+
     }
 
 }

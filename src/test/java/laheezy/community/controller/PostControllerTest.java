@@ -55,7 +55,7 @@ class PostControllerTest {
     public void 포스트객체생성확인() throws Exception {
         Member member = makeTestUser();
         ObjectMapper objectMapper = new ObjectMapper();
-        board = boardService.makeBoard(Board.builder().name("test").active(true).build());
+        initBoard();
 
         PostForm postForm = new PostForm("title", "text", true, "test");
         TokenDto login = memberService.login(new LoginDto("loginId", "pass"));
@@ -74,8 +74,10 @@ class PostControllerTest {
     @Test
     public void 본인작성포스트확인() throws Exception {
         Member member = makeTestUser();
+        initBoard();
+
         for (int i = 0; i < 3; i++) {
-            postService.writePost(Post.builder().member(member).title("post" + i).isOpen(true).build());
+            postService.writePost(Post.builder().member(member).title("post" + i).isOpen(true).board(board).build());
         }
 
         TokenDto login = memberService.login(new LoginDto("loginId", "pass"));
@@ -92,13 +94,15 @@ class PostControllerTest {
     @Test
     public void 팔로잉하는사람의포스트확인() throws Exception {
         initMember();
+        initBoard();
+
         followingService.addFollowing(memberA, memberB);//memberA -> memberB를 팔로잉 한다.
 
         //비공개 포스트 하나 작성
-        postService.writePost(Post.builder().member(memberB).title("post").isOpen(false).build());
+        postService.writePost(Post.builder().member(memberB).title("post").isOpen(false).board(board).build());
         for (int i = 0; i < 3; i++) {
             //포스트 작성
-            postService.writePost(Post.builder().member(memberB).title("post" + i).isOpen(true).build());
+            postService.writePost(Post.builder().member(memberB).title("post" + i).isOpen(true).board(board).build());
         }
 
         log.info("member check:{}", memberB);
@@ -112,20 +116,26 @@ class PostControllerTest {
                 .andDo(print());
     }
 
+
     @Test
     public void 원하는postId의게시글확인() throws Exception {
         initMember();
+        initBoard();
 
-        Post post = postService.writePost(Post.builder().member(memberB).title("post").isOpen(true).build());
+        Post post = postService.writePost(Post.builder().member(memberB).title("post").isOpen(true).board(board).build());
 
 
-        mockMvc.perform(get("/post/get/" + post.getId())
+        mockMvc.perform(get("/post/get-postId/" + post.getId())
                         .header("Authorization", "Bearer " + loginA.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("postId").value(post.getId()))
                 .andExpect(jsonPath("title").value("post"))
                 .andExpect(jsonPath("heartCnt").value(0));
+    }
+
+    private void initBoard() {
+        board = boardService.makeBoard(Board.builder().name("test").active(true).build());
     }
 
     void initMember() {

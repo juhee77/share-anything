@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import static laheezy.community.domain.QBoard.board;
 import static laheezy.community.domain.QPost.post;
-import static org.hibernate.internal.util.NullnessHelper.coalesce;
 
 @Repository
 @Slf4j
@@ -30,13 +29,14 @@ public class BoardRepositoryImpl extends QuerydslRepositorySupport {
                 .select(board, post.id.count().coalesce(0L))
                 .from(board)
                 .leftJoin(board.posts, post)
-                .where(board.active.eq(true), post.isOpen.eq(true))
+                .where(board.active.eq(true), post.isOpen.eq(true).coalesce(true))
                 .groupBy(board)
                 .fetch();
 
+        log.info("{}", results);
         return results.stream().map(tuple -> {
             Board b = tuple.get(board);
-            long postCnt = tuple.get(post.id.count());
+            long postCnt = tuple.get(post.id.count().coalesce(0L));
             return new BoardResponseDto(b.getId(), b.getName(), b.getDateTime(), b.getLastmodified(), (int) postCnt);
         }).collect(Collectors.toList());
     }
