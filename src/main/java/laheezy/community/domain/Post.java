@@ -44,11 +44,15 @@ public class Post {
     @UpdateTimestamp
     private LocalDateTime lastModifiedTime;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<PostHeart> postHearts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Postfile> postfiles = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    Board board;
 
     //연관관계 메서드
     public void setMember(Member member) {
@@ -56,9 +60,16 @@ public class Post {
         member.getPosts().add(this);
     }
 
+
+    public void setBoard(Board board) {
+        this.board = board;
+        board.getPosts().add(this);
+    }
+
     @Builder
-    public Post(Long id, Member member, boolean isOpen, long view, String title, String text) {
+    public Post(Long id, Member member, Board board,boolean isOpen, long view, String title, String text) {
         setMember(member);
+        setBoard(board);
         this.id = id;
         this.isOpen = isOpen;
         this.view = view;
