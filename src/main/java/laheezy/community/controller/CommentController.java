@@ -8,13 +8,11 @@ import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.comment.CommentResponseDto;
 import laheezy.community.dto.comment.CommentRequestDto;
-import laheezy.community.exception.Fail;
 import laheezy.community.service.CommentService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,12 +27,6 @@ public class CommentController {
     private final CommentService commentService;
     private final PostService postService;
     private final MemberService memberService;
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public Fail checkLogin(Exception e) {
-        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
-    }
 
     @PostMapping("/add")
     @Operation(summary = "댓글 생성")

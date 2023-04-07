@@ -10,6 +10,7 @@ import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,13 +38,7 @@ public class FileController {
         nowLogin = fileService.storeProFile(multipartFile, nowLogin);
         File uploadFile = nowLogin.getProfileImage();
 
-        String uploadFileName = uploadFile.getOriginName();
-        UrlResource resource =  fileService.convertToUrlResource(uploadFile);
-        log.info("uploadFileName={}", uploadFileName);
-        String encodedUploadFileName = UriUtils.encode(uploadFileName, StandardCharsets.UTF_8);
-        String contentDisposition = "attachment; filename=\"" + encodedUploadFileName + "\"";
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition).body(resource);
-
+        return getUrlResourceResponseEntity(uploadFile);
         //return resource;//이진 파일로 나간다.
     }
 
@@ -51,14 +46,17 @@ public class FileController {
     @Operation(description = "포스트 이미지 업로드")
     public ResponseEntity<UrlResource> postFileUpload(@RequestPart("multipartFile") MultipartFile multipartFile, @RequestParam("caption") String caption, @RequestParam("postId") Long id) throws IOException {
         Post post = postService.findById(id);
-        File uploadFile = fileService.storePostFile(multipartFile, caption, post, FileType.POST);
+        File uploadFile = fileService.storePostFile(multipartFile, caption, post);
+        return getUrlResourceResponseEntity(uploadFile);
+    }
 
+    @NotNull
+    private ResponseEntity<UrlResource> getUrlResourceResponseEntity(File uploadFile) {
         String uploadFileName = uploadFile.getOriginName();
         UrlResource resource =  fileService.convertToUrlResource(uploadFile);
         log.info("uploadFileName={}", uploadFileName);
         String encodedUploadFileName = UriUtils.encode(uploadFileName, StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedUploadFileName + "\"";
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition).body(resource);
-
     }
 }

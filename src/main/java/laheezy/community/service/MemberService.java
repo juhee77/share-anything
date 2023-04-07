@@ -8,9 +8,13 @@ import laheezy.community.dto.jwt.RefreshToken;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.jwt.TokenRequestDto;
 import laheezy.community.dto.member.LoginDto;
+import laheezy.community.dto.member.MemberDto;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.exception.CustomException;
+import laheezy.community.exception.ErrorCode;
 import laheezy.community.jwt.TokenProvider;
 import laheezy.community.repository.MemberRepository;
+import laheezy.community.repository.MemberRepositoryImpl;
 import laheezy.community.repository.jwt.RefreshTokenRepository;
 import laheezy.community.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static laheezy.community.exception.ErrorCode.*;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -33,6 +39,7 @@ import java.util.Optional;
 public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
+    private final MemberRepositoryImpl memberRepositoryImpl;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -59,23 +66,24 @@ public class MemberService {
     }
 
     private void validateDuplicateLoginId(MemberRequestDto member) {
-        Optional<Member> byNickname = memberRepository.findByLoginId(member.getLoginId());
-        if (byNickname.isPresent()) {
-            throw new RuntimeException("이미 존재하는 아이디 입니다.");
+        Optional<Member> byLoginId = memberRepository.findByLoginId(member.getLoginId());
+        if (byLoginId.isPresent()) {
+            throw new CustomException(ErrorCode.ID_DUPLICATION);
         }
     }
 
     private void validateDuplicateEmail(MemberRequestDto member) {
-        Optional<Member> byNickname = memberRepository.findByEmail(member.getEmail());
-        if (byNickname.isPresent()) {
-            throw new RuntimeException("이미 존재하는 이메일 입니다.");
+        Optional<Member> byEmail = memberRepository.findByEmail(member.getEmail());
+        if (byEmail.isPresent()) {
+            throw new CustomException(ErrorCode.EMAIL_DUPLICATION);
         }
     }
 
     public void validateDuplicateNickname(MemberRequestDto member) {
         Optional<Member> byNickname = memberRepository.findByNickname(member.getNickname());
         if (byNickname.isPresent()) {
-            throw new RuntimeException("이미 존재하는 이름 입니다.");
+            throw new CustomException(ErrorCode.NICKNAME_DUPLICATION);
+
         }
     }
 
@@ -83,7 +91,7 @@ public class MemberService {
         Optional<Member> findMember = memberRepository.findByNickname(writerNickname);
         if (findMember.isEmpty()) {
             log.error("id = {}", writerNickname);
-            throw new RuntimeException("없는 회원입니다.");
+            throw new CustomException(ErrorCode.INVALID_MEMBER_NICKNAME);
         }
         return findMember.get();
     }
@@ -96,6 +104,11 @@ public class MemberService {
     //현재 시큐리티 컨텍스에 있는 유저정보와 권환 정보를 준다
     public Optional<Member> getMemberWithAuthorities() {
         return SecurityUtil.getCurrentUserLoginId().flatMap(memberRepository::findOneWithAuthoritiesByLoginId);
+    }
+
+
+    public MemberDto getMemberByLoginId(String loginId) {
+        return memberRepositoryImpl.findByLoginId(loginId);
     }
 
     @Transactional
@@ -116,16 +129,16 @@ public class MemberService {
     @Transactional
     public TokenDto reissue(TokenRequestDto tokenRequestDto) {
         if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
+            throw new CustomException(INVALID_TOKEN_INFO);
         }
 
         Authentication authentication = tokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
+                .orElseThrow(() -> new CustomException(ALREADY_LOGOUT));
 
         if (!refreshToken.getValue().equals(tokenRequestDto.getRefreshToken())) {
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+            throw new CustomException(INVALID_TOKEN_WITH_USER);
         }
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
@@ -159,10 +172,10 @@ public class MemberService {
     @Transactional
     public Member modifyNickname(Member findMember, String nickname) {
         if (findMember.getLoginId().equals(nickname)) {
-            throw new RequestRejectedException("현재 닉네임과 같은 네임으로는 수정이 불가능 합니다");
+            throw new CustomException(NICKNAME_SAME_BEFORE);
         }
         if (memberRepository.findByNickname(nickname).isPresent()) {
-            throw new RequestRejectedException("이미 사용되고 있는 닉네임 입니다");
+            throw new CustomException(NICKNAME_DUPLICATION);
         }
         findMember.modifyNickname(nickname); //더티 체킹 --> 트랜젝셔널 .. 제발 확인
 
@@ -173,12 +186,12 @@ public class MemberService {
     @Transactional
     public void setAdmin(Member admin) {
         admin.setAdmin();
-        log.info("ROLE이 변경 되었다 [ROLE_ADMIN]");
+        log.info("[ROLE_ADMIN] ROLE이 변경 되었다");
     }
 
     public void checkPassword(Member findMember, String exPassword) {
         if (!passwordEncoder.matches(exPassword, findMember.getPassword()))
-            throw new RequestRejectedException("직전 비밀번호가 잘못 입력되었습니다");
+            throw new CustomException(INVALID_BEFORE_PASSWORD);
     }
 
     @Transactional

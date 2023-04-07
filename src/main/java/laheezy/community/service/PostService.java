@@ -4,6 +4,8 @@ import laheezy.community.domain.Following;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.post.PostResponseDto;
+import laheezy.community.exception.CustomException;
+import laheezy.community.exception.ErrorCode;
 import laheezy.community.repository.PostRepository;
 import laheezy.community.repository.PostRepositoryImpl;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,7 @@ public class PostService {
     public Post findById(long id) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isEmpty()) {
-            throw new IllegalArgumentException("삭제 됐거나 없는 포스트 아이디 입니다.");
+            throw new CustomException(ErrorCode.INVALID_POST);
         }
         return post.get();
     }

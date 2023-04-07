@@ -1,8 +1,10 @@
 package laheezy.community.service;
 
-import laheezy.community.domain.Member;
 import laheezy.community.domain.Comment;
 import laheezy.community.domain.CommentHeart;
+import laheezy.community.domain.Member;
+import laheezy.community.exception.CustomException;
+import laheezy.community.exception.ErrorCode;
 import laheezy.community.repository.CommentHeartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,7 @@ public class CommentHeartService {
     @Transactional
     public CommentHeart addHeart(Member member, Comment comment) {
         if (checkAlreadyHeart(member, comment)) {
-            throw new IllegalArgumentException("이미 좋아요 된 댓글 입니다");
+            throw new CustomException(ErrorCode.ALREADY_COMMENT_HEART);
         }
         return CommentHeartRepository.save(new CommentHeart(member, comment));
     }
@@ -27,7 +29,7 @@ public class CommentHeartService {
     @Transactional
     public void deleteHeart(Member member, Comment comment) {
         if (!checkAlreadyHeart(member, comment)) {
-            throw new IllegalArgumentException("좋아요 하지 않은 댓글 입니다");
+            throw new CustomException(ErrorCode.INVALID_COMMENT_HEART);
         }
         CommentHeartRepository.deleteById(CommentHeartRepository.findByMemberAndComment(member, comment).get().getId());
     }

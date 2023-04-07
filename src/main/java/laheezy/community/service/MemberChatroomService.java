@@ -3,6 +3,7 @@ package laheezy.community.service;
 import laheezy.community.domain.Chatroom;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.MemberChatroom;
+import laheezy.community.exception.CustomException;
 import laheezy.community.repository.MemberChatroomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
+import static laheezy.community.exception.ErrorCode.INVALID_SUBSCRIBE;
 
 @Slf4j
 @Service
@@ -33,13 +36,11 @@ public class MemberChatroomService {
         if (memberChatRoom.isPresent()) {
             return memberChatRoom.get();
         }
-        throw new IllegalArgumentException("해당 채팅방을 구독하고 있지 않습니다.");
+        throw new CustomException(INVALID_SUBSCRIBE);
     }
 
     public boolean checkMemberChatroom(Member member, Chatroom room) {
-        if (memberChatRoomRepository.findByMemberAndChatroom(member, room).isPresent())
-            return true;
-        return false;
+        return memberChatRoomRepository.findByMemberAndChatroom(member, room).isPresent();
     }
 
 

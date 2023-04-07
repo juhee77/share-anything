@@ -3,9 +3,10 @@ package laheezy.community.service;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.domain.file.File;
-import laheezy.community.domain.file.FileType;
 import laheezy.community.domain.file.Postfile;
 import laheezy.community.domain.file.Profile;
+import laheezy.community.exception.CustomException;
+import laheezy.community.exception.ErrorCode;
 import laheezy.community.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.UUID;
+
+import static laheezy.community.exception.ErrorCode.INVALID_FILE_TO_TRANSFER;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -70,13 +73,17 @@ public class FileService {
 
 
     @Transactional
-    public File storePostFile(MultipartFile multipartFile, String caption, Post post, FileType profile) throws IOException {
+    public File storePostFile(MultipartFile multipartFile, String caption, Post post) {
         if (multipartFile.isEmpty()) {
-            return null; //TODO: error 처리
+            return null; //처리할 파일이 없음
         }
         String originalFilename = multipartFile.getOriginalFilename();
         String storeFileName = createStoreFileName(originalFilename);
-        multipartFile.transferTo(new java.io.File(getFullPath(storeFileName)));
+        try {
+            multipartFile.transferTo(new java.io.File(getFullPath(storeFileName)));
+        } catch (IOException e) {
+            throw new CustomException(INVALID_FILE_TO_TRANSFER);
+        }
         File file = new Postfile().makePostfile(post, caption, originalFilename, storeFileName);
 
         fileRepository.save(file);
@@ -101,7 +108,7 @@ public class FileService {
         try {
             return new UrlResource("file:" + getFullPath(storeFileName));
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("[ERROR] ConvertToUrl ");
+            throw new CustomException(ErrorCode.INVALID_FILE_TO_URL);
         }
     }
 

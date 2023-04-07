@@ -3,11 +3,15 @@ package laheezy.community.service;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.domain.PostHeart;
+import laheezy.community.exception.CustomException;
 import laheezy.community.repository.PostHeartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static laheezy.community.exception.ErrorCode.ALREADY_POST_HEART;
+import static laheezy.community.exception.ErrorCode.INVALID_POST_HEART;
 
 @Slf4j
 @Service
@@ -19,7 +23,7 @@ public class PostHeartService {
     @Transactional
     public PostHeart addHeart(Member member, Post post) {
         if (checkAlreadyHeart(member, post)) {
-            throw new IllegalArgumentException("이미 좋아요 된 게시글 입니다");
+            throw new CustomException(ALREADY_POST_HEART);
         }
         return postHeartRepository.save(new PostHeart(member, post));
     }
@@ -27,7 +31,7 @@ public class PostHeartService {
     @Transactional
     public void deleteHeart(Member member, Post post) {
         if (!checkAlreadyHeart(member, post)) {
-            throw new IllegalArgumentException("좋아요 하지 않은 게시글 입니다");
+            throw new CustomException(INVALID_POST_HEART);
         }
         postHeartRepository.deleteById(postHeartRepository.findByMemberAndPost(member, post).get().getId());
     }

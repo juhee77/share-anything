@@ -12,12 +12,10 @@ import laheezy.community.dto.jwt.TokenRequestDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.dto.member.MemberResponseDto;
-import laheezy.community.exception.Fail;
 import laheezy.community.service.FileService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +29,6 @@ import java.io.IOException;
 public class MemberAuthController {
     private final FileService fileService;
     private final MemberService memberService;
-
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public Fail checkLogin(Exception e) {
-        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
-    }
 
     @PostMapping(value = "/signup")
 //, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

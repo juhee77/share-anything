@@ -4,13 +4,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Board;
 import laheezy.community.domain.Member;
 import laheezy.community.dto.board.BoardResponseDto;
-import laheezy.community.exception.Fail;
 import laheezy.community.service.BoardService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -21,12 +22,6 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
     private final MemberService memberService;
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public Fail checkLogin(Exception e) {
-        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
-    }
 
     @PostMapping("/make/new-board")
     public BoardResponseDto makeBoard(@RequestParam("name") String name) {

@@ -3,7 +3,6 @@ package laheezy.community.controller.member;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Member;
-import laheezy.community.exception.Fail;
 import laheezy.community.service.FileService;
 import laheezy.community.service.MemberService;
 import lombok.AllArgsConstructor;
@@ -12,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,12 +28,6 @@ import java.util.Map;
 public class MemberController {
     private final MemberService memberService;
     private final FileService fileService;
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public Fail checkLogin(Exception e) {
-        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
-    }
 
     //admin권한에서 테스트 용
     @GetMapping("/user/{loginId}")

@@ -4,16 +4,19 @@ import laheezy.community.domain.Chatroom;
 import laheezy.community.domain.Member;
 import laheezy.community.dto.chat.room.ChatRoomDetailDto;
 import laheezy.community.dto.chat.room.ChatRoomMakeDto;
+import laheezy.community.exception.CustomException;
 import laheezy.community.repository.ChatRoomRepositoryImpl;
 import laheezy.community.repository.ChatroomRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static laheezy.community.exception.ErrorCode.DUPLICATION_CHATROOM_NAME;
+import static laheezy.community.exception.ErrorCode.INVALID_CHATROOM_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +40,7 @@ public class ChatroomService {
         if (room.isPresent()) {
             return room.get();
         }
-        throw new RequestRejectedException("없는 방 입니다");
+        throw new CustomException(INVALID_CHATROOM_ID);
     }
 
     public List<Chatroom> findAllRoom() {
@@ -58,7 +61,7 @@ public class ChatroomService {
 
     public void checkingDuplicateRoom(String name) {
         if (chatRoomRepository.findByRoomName(name).isPresent())
-            throw new RequestRejectedException("중복된 이름의 채팅방이 이미 존재합니다.");
+            throw new CustomException(DUPLICATION_CHATROOM_NAME);
     }
 
 }

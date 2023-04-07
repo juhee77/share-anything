@@ -2,11 +2,15 @@ package laheezy.community.service;
 
 import laheezy.community.domain.Following;
 import laheezy.community.domain.Member;
+import laheezy.community.exception.CustomException;
 import laheezy.community.repository.FollowingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static laheezy.community.exception.ErrorCode.ALREADY_FOLLOWING;
+import static laheezy.community.exception.ErrorCode.INVALID_FOLLOWING;
 
 @Slf4j
 @Service
@@ -18,7 +22,7 @@ public class FollowingService {
     @Transactional
     public Following addFollowing(Member memberA, Member memberB) {
         if (checkAlreadyFollowing(memberA, memberB)) {
-            throw new IllegalArgumentException("이미 팔로우 하셨습니다.");
+            throw new CustomException(ALREADY_FOLLOWING);
         }
         return followingRepository.save(new Following(memberA, memberB));
     }
@@ -26,7 +30,7 @@ public class FollowingService {
     @Transactional
     public void deleteFollowing(Member memberA, Member memberB) {
         if (!checkAlreadyFollowing(memberA, memberB)) {
-            throw new IllegalArgumentException("팔로우 되어있지 않습니다.");
+            throw new CustomException(INVALID_FOLLOWING);
         }
         followingRepository.delete(followingRepository.findByMemberAAndMemberB(memberA, memberB).get());
     }

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Following;
 import laheezy.community.domain.Member;
-import laheezy.community.exception.Fail;
 import laheezy.community.service.FollowingService;
 import laheezy.community.service.MemberService;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +26,6 @@ import java.util.stream.Collectors;
 public class FollowingController {
     private final MemberService memberService;
     private final FollowingService followingService;
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public Fail checkLogin(Exception e) {
-        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
-    }
 
     @PostMapping("/follow/{memberId}")
     @Operation(summary = "memberId를 팔로우 한다.")

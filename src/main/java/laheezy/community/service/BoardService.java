@@ -3,6 +3,7 @@ package laheezy.community.service;
 
 import laheezy.community.domain.Board;
 import laheezy.community.dto.board.BoardResponseDto;
+import laheezy.community.exception.CustomException;
 import laheezy.community.repository.BoardRepository;
 import laheezy.community.repository.BoardRepositoryImpl;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static laheezy.community.exception.ErrorCode.DUPLICATION_BOARD_NAME;
+import static laheezy.community.exception.ErrorCode.INVALID_BOARD_NAME;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +35,7 @@ public class BoardService {
         if (byName.isPresent()) {
             return byName.get();
         }
-        throw new IllegalArgumentException("없거나 삭제된 board 아이디 입니다.");
+        throw new CustomException(INVALID_BOARD_NAME);
     }
 
 
@@ -49,7 +53,7 @@ public class BoardService {
 
     private void validateDuplicateName(String name) {
         if (boardRepository.findByName(name).isPresent())
-            throw new IllegalArgumentException("해당 이름을 가진 board는 이미 존재합니다.");
+            throw new CustomException(DUPLICATION_BOARD_NAME);
     }
 
 

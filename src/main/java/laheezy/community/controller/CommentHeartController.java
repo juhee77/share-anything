@@ -5,13 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Comment;
 import laheezy.community.domain.CommentHeart;
-import laheezy.community.exception.Fail;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.CommentHeartService;
 import laheezy.community.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,12 +21,6 @@ public class CommentHeartController {
     private final CommentService commentService;
     private final MemberService memberService;
     private final CommentHeartService commentHeartService;
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public Fail checkLogin(Exception e) {
-        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
-    }
 
     @PostMapping(value = "/like/{commentId}")
     @Operation(summary = "댓글 좋아요", description = "댓글 좋아요")

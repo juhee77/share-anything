@@ -1,10 +1,11 @@
 package laheezy.community.service;
 
 import laheezy.community.domain.Comment;
+import laheezy.community.exception.CustomException;
+import laheezy.community.exception.ErrorCode;
 import laheezy.community.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class CommentService {
 
     public Comment findById(Long commentId) {
         if (commentRepository.findById(commentId).isEmpty()) {
-            throw new RequestRejectedException("없는 코멘트 입니다.");
+            throw new CustomException(ErrorCode.INVALID_COMMENT);
         }
         return commentRepository.findById(commentId).get();
     }

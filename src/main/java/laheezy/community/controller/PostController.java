@@ -8,13 +8,11 @@ import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.post.PostForm;
 import laheezy.community.dto.post.PostResponseDto;
-import laheezy.community.exception.Fail;
 import laheezy.community.service.BoardService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,12 +27,6 @@ public class PostController {
     private final PostService postService;
     private final MemberService memberService;
     private final BoardService boardService;
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public Fail checkLogin(Exception e) {
-        return new Fail(HttpStatus.NOT_FOUND, e.getMessage());
-    }
 
     //@PostMapping(value="/api/post-add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(value = "/add")
