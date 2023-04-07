@@ -1,5 +1,6 @@
 package laheezy.community.exception;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,12 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     // Common Errors
-
+    INVALID_JWT_AUTHORIZATION(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 JWT 서명입니다.", "COMMON_001"),
+    EXPIRED_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 JWT 서명입니다.", "COMMON_002"),
+    UNSUPPORTED_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 JWT 서명입니다.", "COMMON_003"),
+    INVALID_JWT_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 JWT 서명입니다.", "COMMON_004"),
+    NO_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "JWT 서명이 존재하지 않습니다.", "COMMON_005"),
+    NO_AUTHORIZATION_TOKEN(HttpStatus.FORBIDDEN, "권한이 맞지 않습니다.", "COMMON_006"),
 
     // Member Errors
     EMAIL_DUPLICATION(HttpStatus.CONFLICT, "이미 존재하는 이메일 입니다.", "MEMBER_001"),
@@ -57,9 +63,14 @@ public enum ErrorCode {
     //Token Errors
     INVALID_TOKEN_INFO(HttpStatus.BAD_REQUEST, "Refresh Token 이 유효하지 않습니다.", "REFRESH-TOKEN_001"),
     INVALID_TOKEN_WITH_USER(HttpStatus.UNAUTHORIZED, "토큰의 유저 정보가 일치하지 않습니다.", "REFRESH-TOKEN_002"),
+
     ;
     private final HttpStatus status; //http상태
     private final String message;
     private final String code;
+
+    public static ErrorResult of(ErrorCode errorCode) {
+        return new ErrorResult(errorCode.getStatus().toString(), errorCode.getMessage(), errorCode.getCode());
+    }
 }
 

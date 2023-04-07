@@ -1,12 +1,12 @@
 package laheezy.community.config.webSecurity;
 
+import laheezy.community.exception.ExceptionHandleFilter;
 import laheezy.community.jwt.JwtAccessDeniedHandler;
 import laheezy.community.jwt.JwtAuthenticationEntryPoint;
 import laheezy.community.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -25,6 +25,7 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final ExceptionHandleFilter exceptionHandleFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,8 +50,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // CSRF 설정 Disable
         http.csrf().disable()
-
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionHandleFilter, CorsFilter.class)
 
                 //exception handling
                 .exceptionHandling()

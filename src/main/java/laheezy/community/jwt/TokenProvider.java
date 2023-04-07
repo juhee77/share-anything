@@ -4,6 +4,8 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import laheezy.community.dto.jwt.TokenDto;
+import laheezy.community.exception.CustomSecurityException;
+import laheezy.community.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -122,17 +124,22 @@ public class TokenProvider implements InitializingBean {
             return true; //문제 없음
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
+            throw new CustomSecurityException(ErrorCode.INVALID_JWT_AUTHORIZATION);
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
+            throw new CustomSecurityException(ErrorCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
+            throw new CustomSecurityException(ErrorCode.UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다.");
+            throw new CustomSecurityException(ErrorCode.INVALID_JWT_TOKEN);
         }
-        return false;
+        //return false;
     }
 
     @Override
+
     public void afterPropertiesSet() throws Exception {
         byte[] decode = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(decode);
