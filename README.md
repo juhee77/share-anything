@@ -9,7 +9,7 @@ Spring + React 이용 프로젝트
 - 각 게시글에는 좋아요와 댓글을 달 수 있다.
 - 채티방 기능을 제공하여 다른 사용자들과 자유롭게 채팅 할 수 있다.
 
-### 사용한 기술
+## 사용한 기술
 - Spring boot 3.0.2(java 17)
 - Jpa
 - mariaDB
@@ -19,6 +19,9 @@ Spring + React 이용 프로젝트
 - SpringSecurity
 
 
-### 프로젝트의 기능
+## 프로젝트의 기능
 
+### ERD 다이어 그램
+<img width="1128" alt="image" src="https://user-images.githubusercontent.com/51548333/230779783-e1bd30e8-e77f-40b2-9f89-a76cfda1f591.png">
 
+### 관련 문제
