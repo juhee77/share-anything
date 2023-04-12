@@ -51,7 +51,7 @@ public class SecurityConfig {
         // CSRF 설정 Disable
         http.csrf().disable()
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(exceptionHandleFilter, CorsFilter.class)
+                .addFilterBefore(exceptionHandleFilter, UsernamePasswordAuthenticationFilter.class)
 
                 //exception handling
                 .exceptionHandling()
@@ -65,7 +65,7 @@ public class SecurityConfig {
 
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션을 사용하지 않기 때문에
 
                 // 로그인, 회원가입 API 는 토큰이 없는 상태에서 요청이 들어오기 때문에 permitAll 설정
                 .and()

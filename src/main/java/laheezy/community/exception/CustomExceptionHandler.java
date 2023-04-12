@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
+
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResult> checkLogin(CustomException e) {
-        log.error("[exceptionHandler-catchException] ex", e);
+        log.error("[전역 컨트롤러 예외처리에서 잡음] ex", e);
         ErrorCode errorCode = e.getErrorCode();
         ErrorResult errorResult = new ErrorResult(errorCode.getStatus().toString(), errorCode.getCode(), e.getMessage());
         //status 삭제 해야함

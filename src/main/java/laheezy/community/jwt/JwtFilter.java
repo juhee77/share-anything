@@ -33,7 +33,6 @@ public class JwtFilter extends GenericFilter {
 
         } else {
             log.info("유효한 JWT토큰이 없습니다, uri:{}", requestURI);
-            //throw new CustomSecurityException(ErrorCode.NO_JWT_TOKEN);
         }
         chain.doFilter(request, response);
     }

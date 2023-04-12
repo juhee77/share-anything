@@ -2,13 +2,13 @@ package laheezy.community.service;
 
 import laheezy.community.domain.Member;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,21 +61,7 @@ class MemberServiceTest {
     void checkPassword() {
         Member signup = memberService.signup(requestDto);
         memberService.checkPassword(signup, "PASS");
-        assertThrows(RequestRejectedException.class, () -> memberService.checkPassword(signup, "WRONGANS"));
+        assertThrows(CustomException.class, () -> memberService.checkPassword(signup, "WRONGANS"));
     }
-//    @Test
-//    void testGetMemberWithAuthorities1() {
-//        Member signup = memberService.signup(requestDto);
-//        //TokenDto login = memberService.login(new LoginDto(signup.getNickname(), "PASS"));
-//
-//        Member byNickname = memberService.getMemberWithAuthorities(signup.getNickname()).get();
-//    }
-//
-//    @Test
-//    void testGetMemberWithAuthorities2() {
-//        Member signup = memberService.signup(requestDto);
-//
-//        Member byNickname = memberService.findByNickname(signup.getNickname());
-//        assertThat(signup).isEqualTo(byNickname);
-//    }
+
 }
