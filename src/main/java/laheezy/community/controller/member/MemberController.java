@@ -31,7 +31,7 @@ public class MemberController {
 
     //admin권한에서 테스트 용
     @GetMapping("/user/{loginId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    //@PreAuthorize("hasAnyRole('ROLE_ADMIN')") --> spring security config 부분에서 처리
     public ResponseEntity<MemberResponseDto> getUserInfo(@PathVariable String loginId) {
         Member findMember = memberService.getMemberWithAuthorities(loginId).get();
         return ResponseEntity.ok(convertToResponseDto(findMember));
