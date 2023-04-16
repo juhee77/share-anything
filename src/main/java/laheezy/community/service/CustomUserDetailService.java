@@ -33,7 +33,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
         //활성화 되어있지 않다면(탈퇴한 멤버라면)
         if (!member.isActivated()) {
-            throw new CustomException(ErrorCode.INVALID_LOGIN_MEMBER);
+            throw new CustomException(ErrorCode.INVALID_NOW_MEMBER);
         }
         GrantedAuthority grantedAuthorities = new SimpleGrantedAuthority(member.getAuthority().toString());
 

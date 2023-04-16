@@ -1,6 +1,5 @@
 package laheezy.community.exception;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -25,6 +24,8 @@ public enum ErrorCode {
     ALREADY_LOGOUT(HttpStatus.UNAUTHORIZED, "로그아웃 된 사용자입니다.", "MEMBER_006"),
     INVALID_MEMBER_NICKNAME(HttpStatus.BAD_REQUEST, "존재하지 않는 회원 아이디입니다.", "MEMBER_007"),
     INVALID_BEFORE_PASSWORD(HttpStatus.BAD_REQUEST, "직전 비밀번호가 잘못 입력되었습니다", "MEMBER_008"),
+    INVALID_NOW_MEMBER(HttpStatus.BAD_REQUEST, "탈퇴한 멤버 입니다.", "MEMBER_009"),
+    INVALID_MEMBER_PROFILE(HttpStatus.BAD_REQUEST, "정보가 없는 회원입니다.(없는 로그인 아이디 입니다.)", "MEMBER_010"),
 
     //Post Errors
     INVALID_POST(HttpStatus.BAD_REQUEST, "유효하지 않은 포스트 아이디입니다.", "POST_001"),
