@@ -46,7 +46,7 @@ public class PostController {
 
         Post savedPost = postService.writePost(post);
 
-        return convertPostToResponseDTO(savedPost);
+        return PostResponseDto.toPostResponseDto(savedPost);
     }
 
     @GetMapping(value = "/my")
@@ -64,7 +64,7 @@ public class PostController {
     public PostResponseDto findEachPost(@PathVariable("postId") Long postId) {
         log.info("해당 포스트 자세히 확인 : {}", postId);
         Post post = postService.findById(postId);
-        return convertPostToResponseDTO(post);
+        return PostResponseDto.toPostResponseDto(post);
     }
 
     @GetMapping(value = "/follow")
@@ -94,19 +94,7 @@ public class PostController {
     }
 
     private List<PostResponseDto> getResponseDtos(List<Post> myPost) {
-        return myPost.stream().map(o -> convertPostToResponseDTO(o)).collect(Collectors.toList());
+        return myPost.stream().map(PostResponseDto::toPostResponseDto).collect(Collectors.toList());
     }
 
-
-    private PostResponseDto convertPostToResponseDTO(Post post) {
-        return PostResponseDto.builder()
-                .postId(post.getId())
-                .writer(post.getMember().getNickname())
-                .title(post.getTitle())
-                .text(post.getText())
-                .text(post.getText())
-                .writeDate(post.getWriteDate())
-                .isOpen(post.isOpen())
-                .board(post.getBoard().getName()).build();
-    }
 }

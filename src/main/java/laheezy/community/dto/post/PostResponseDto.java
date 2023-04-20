@@ -1,5 +1,6 @@
 package laheezy.community.dto.post;
 
+import laheezy.community.domain.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +21,15 @@ public class PostResponseDto {
     private long heartCnt;
     private String board;
 
+    public static PostResponseDto toPostResponseDto(Post post) {
+        return PostResponseDto.builder()
+                .postId(post.getId())
+                .writer(post.getMember().getNickname())
+                .title(post.getTitle())
+                .text(post.getText())
+                .text(post.getText())
+                .writeDate(post.getWriteDate())
+                .isOpen(post.isOpen())
+                .board(post.getBoard().getName()).build();
+    }
 }

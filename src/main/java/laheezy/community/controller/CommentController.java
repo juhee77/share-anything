@@ -6,8 +6,8 @@ import jakarta.validation.Valid;
 import laheezy.community.domain.Comment;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
-import laheezy.community.dto.comment.CommentResponseDto;
 import laheezy.community.dto.comment.CommentRequestDto;
+import laheezy.community.dto.comment.CommentResponseDto;
 import laheezy.community.service.CommentService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
@@ -39,8 +39,9 @@ public class CommentController {
                 .post(post)
                 .isOpen(requestMakeCommentDto.isOpen())
                 .build();
+
         Comment savedCost = commentService.writeComment(comment);
-        return new CommentResponseDto(savedCost.getMember().getLoginId(), savedCost.getPost().getId(), savedCost.getText(), savedCost.isOpen());
+        return CommentResponseDto.toCommentResponseDto(savedCost);
     }
 
     @GetMapping("/my")
@@ -53,7 +54,7 @@ public class CommentController {
 
 
     private List<CommentResponseDto> changeResponseCommentDtos(List<Comment> comments) {
-        return comments.stream().map(o -> new CommentResponseDto(o.getMember().getNickname(), o.getPost().getId(), o.getText(), o.isOpen())).collect(Collectors.toList());
+        return comments.stream().map(CommentResponseDto::toCommentResponseDto).collect(Collectors.toList());
     }
 
 }

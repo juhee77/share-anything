@@ -4,13 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Following;
 import laheezy.community.domain.Member;
+import laheezy.community.dto.following.MemberFollowingResponseDto;
 import laheezy.community.service.FollowingService;
 import laheezy.community.service.MemberService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.web.bind.annotation.*;
@@ -29,15 +28,14 @@ public class FollowingController {
 
     @PostMapping("/follow/{memberId}")
     @Operation(summary = "memberId를 팔로우 한다.")
-    public ResponseEntity<List<MemberResponseShortDto>> addFollwing(@PathVariable("memberId") Long memberId) {
+    public ResponseEntity<List<MemberFollowingResponseDto>> addFollwing(@PathVariable("memberId") Long memberId) {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         Member following = memberService.findById(memberId);
         checkSamePeople(nowLogin, following);
         followingService.addFollowing(nowLogin, following);
 
         List<Following> follow = nowLogin.getFollowing();
-        List<MemberResponseShortDto> shortDtos = follow.stream().map(o -> new MemberResponseShortDto(o.getMemberB().getLoginId(), o.getMemberB().getId()))
-                .collect(Collectors.toList());
+        List<MemberFollowingResponseDto> shortDtos = getCollect(follow);
 
         return ResponseEntity.ok(shortDtos);
     }
@@ -58,29 +56,26 @@ public class FollowingController {
 
     @GetMapping("/checkfollower")
     @Operation(summary = "나를 팔로잉 하는 사람 확인")
-    public ResponseEntity<List<MemberResponseShortDto>> getMyFollower() {
+    public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollower() {
         List<Following> follower = memberService.getMemberWithAuthorities().get().getFollower();
-        List<MemberResponseShortDto> shortDtos = follower.stream().map(o -> new MemberResponseShortDto(o.getMemberB().getLoginId(), o.getMemberB().getId()))
-                .collect(Collectors.toList());
+        List<MemberFollowingResponseDto> shortDtos = getCollect(follower);
         return ResponseEntity.ok(shortDtos);
     }
 
     @GetMapping("/checkfollowing")
     @Operation(summary = "내가 팔로우 하는 사람 확인")
-    public ResponseEntity<List<MemberResponseShortDto>> getMyFollowing() {
+    public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollowing() {
         List<Following> follow = memberService.getMemberWithAuthorities().get().getFollowing();
-        List<MemberResponseShortDto> shortDtos = follow.stream().map(o -> new MemberResponseShortDto(o.getMemberB().getLoginId(), o.getMemberB().getId()))
-                .collect(Collectors.toList());
+        List<MemberFollowingResponseDto> shortDtos = getCollect(follow);
 
         return ResponseEntity.ok(shortDtos);
     }
 
-    @Data
-    @ToString
-    @AllArgsConstructor
-    private static class MemberResponseShortDto {
-        private String nickname;
-        private Long userId;
+
+    //팔로우, 팔로잉 하는 사람들 리턴
+    private static List<MemberFollowingResponseDto> getCollect(List<Following> follow) {
+        return follow.stream().map(MemberFollowingResponseDto::toMemberResponseDto).collect(Collectors.toList());
     }
+
 
 }

@@ -32,12 +32,7 @@ public class BoardController {
                 .active(true)
                 .name(name).build());
 
-        return BoardResponseDto.builder()
-                .id(board.getId())
-                .name(board.getName())
-                .dateTime(board.getDateTime())
-                .lastmodified(board.getLastmodified())
-                .openPostCnt(0).build();
+        return BoardResponseDto.toBoardResponseDto(board);
     }
 
 
