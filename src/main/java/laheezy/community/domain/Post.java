@@ -3,6 +3,7 @@ package laheezy.community.domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import laheezy.community.domain.file.Postfile;
+import laheezy.community.dto.post.PostModifyDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,10 +45,10 @@ public class Post {
     @UpdateTimestamp
     private LocalDateTime lastModifiedTime;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostHeart> postHearts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Postfile> postfiles = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -67,7 +68,7 @@ public class Post {
     }
 
     @Builder
-    public Post(Long id, Member member, Board board,boolean isOpen, long view, String title, String text) {
+    public Post(Long id, Member member, Board board, boolean isOpen, long view, String title, String text) {
         setMember(member);
         setBoard(board);
         this.id = id;
@@ -91,4 +92,12 @@ public class Post {
                 '}';
     }
 
+
+    public void modify(PostModifyDto postModifyRequestForm) {
+        this.text = postModifyRequestForm.getText();
+        this.isOpen = postModifyRequestForm.isOpen();
+        this.title = postModifyRequestForm.getTitle();
+        this.setBoard(postModifyRequestForm.getBoard());
+        this.writeDate = postModifyRequestForm.getWriteDate();
+    }
 }
