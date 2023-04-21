@@ -3,6 +3,7 @@ package laheezy.community.service;
 import laheezy.community.domain.Following;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
+import laheezy.community.dto.post.PostModifyDto;
 import laheezy.community.dto.post.PostResponseDto;
 import laheezy.community.exception.CustomException;
 import laheezy.community.exception.ErrorCode;
@@ -31,6 +32,12 @@ public class PostService {
         //validate
         //log.info("coupon:{}", coupon.getDiscount(),coupon.getDiscountType());
         return postRepository.save(post);
+    }
+
+    @Transactional
+    public Post modifyPost(Post post, PostModifyDto postModifyRequestForm) {
+        post.modify(postModifyRequestForm);
+        return post;
     }
 
     public Post findById(long id) {
