@@ -63,7 +63,7 @@ class CommentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("writerNickname").value(member.getLoginId()))
+                .andExpect(jsonPath("writerNickname").value(member.getNickname()))
                 .andExpect(jsonPath("postId").value(post.getId()))
                 .andExpect(jsonPath("text").value("text"))
                 .andExpect(jsonPath("open").value(true));
