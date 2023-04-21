@@ -98,6 +98,5 @@ public class Post {
         this.isOpen = postModifyRequestForm.isOpen();
         this.title = postModifyRequestForm.getTitle();
         this.setBoard(postModifyRequestForm.getBoard());
-        this.writeDate = postModifyRequestForm.getWriteDate();
     }
 }
