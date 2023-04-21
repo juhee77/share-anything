@@ -8,11 +8,13 @@ import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.dto.post.PostForm;
+import laheezy.community.dto.post.PostModifyRequestForm;
 import laheezy.community.service.BoardService;
 import laheezy.community.service.FollowingService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,52 +52,64 @@ class PostControllerTest {
     private Member memberA, memberB;
     private TokenDto loginA, loginB;
     private Board board;
+    private Post post;
 
+    @BeforeEach
+    public void initSetting() {
+        initMember();
+        initBoard();
+        initPost();
+    }
     @Test
     public void 포스트객체생성확인() throws Exception {
-        Member member = makeTestUser();
         ObjectMapper objectMapper = new ObjectMapper();
-        initBoard();
-
         PostForm postForm = new PostForm("title", "text", true, "test");
-        TokenDto login = memberService.login(new LoginDto("loginId", "pass"));
 
-        mockMvc.perform(post("/post/add")
-                        .header("Authorization", "Bearer " + login.getAccessToken())
+        mockMvc.perform(post("/post")
+                        .header("Authorization", "Bearer " + loginA.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(postForm)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("writer").value(member.getNickname()))
+                .andExpect(jsonPath("writer").value(memberA.getNickname()))
                 .andExpect(jsonPath("title").value("title"))
                 .andExpect(jsonPath("text").value("text"))
                 .andExpect(jsonPath("open").value("true"));
     }
 
     @Test
+    public void 포스트객체수정확인() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        PostModifyRequestForm postModifyRequestForm = new PostModifyRequestForm("modify", "modify", true, board.getName());
+        mockMvc.perform(post("/post")
+                        .header("Authorization", "Bearer " + loginA.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(postModifyRequestForm)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("writer").value(memberA.getNickname()))
+                .andExpect(jsonPath("title").value("modify"))
+                .andExpect(jsonPath("text").value("modify"))
+                .andExpect(jsonPath("open").value("true"));
+    }
+
+    @Test
     public void 본인작성포스트확인() throws Exception {
-        Member member = makeTestUser();
-        initBoard();
 
         for (int i = 0; i < 3; i++) {
-            postService.writePost(Post.builder().member(member).title("post" + i).isOpen(true).board(board).build());
+            postService.writePost(Post.builder().member(memberA).title("post" + i).isOpen(true).board(board).build());
         }
 
-        TokenDto login = memberService.login(new LoginDto("loginId", "pass"));
-
-        mockMvc.perform(get("/post/my")
-                        .header("Authorization", "Bearer " + login.getAccessToken())
+        mockMvc.perform(get("/my/post")
+                        .header("Authorization", "Bearer " + loginA.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title", member.getPosts().get(0).getTitle()).exists())
-                .andExpect(jsonPath("$[1].title", member.getPosts().get(1).getTitle()).exists())
-                .andExpect(jsonPath("$[2].title", member.getPosts().get(2).getTitle()).exists());
+                .andExpect(jsonPath("$[0].title", memberA.getPosts().get(0).getTitle()).exists())
+                .andExpect(jsonPath("$[1].title", memberA.getPosts().get(1).getTitle()).exists())
+                .andExpect(jsonPath("$[2].title", memberA.getPosts().get(2).getTitle()).exists());
     }
 
     @Test
     public void 팔로잉하는사람의포스트확인() throws Exception {
-        initMember();
-        initBoard();
-
         followingService.addFollowing(memberA, memberB);//memberA -> memberB를 팔로잉 한다.
 
         //비공개 포스트 하나 작성
@@ -106,7 +120,7 @@ class PostControllerTest {
         }
 
         log.info("member check:{}", memberB);
-        mockMvc.perform(get("/post/follow")
+        mockMvc.perform(get("/follow/post")
                         .header("Authorization", "Bearer " + loginA.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -119,13 +133,7 @@ class PostControllerTest {
 
     @Test
     public void 원하는postId의게시글확인() throws Exception {
-        initMember();
-        initBoard();
-
-        Post post = postService.writePost(Post.builder().member(memberB).title("post").isOpen(true).board(board).build());
-
-
-        mockMvc.perform(get("/post/get-postId/" + post.getId())
+        mockMvc.perform(get("/post/" + post.getId())
                         .header("Authorization", "Bearer " + loginA.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -145,7 +153,8 @@ class PostControllerTest {
         loginB = memberService.login(new LoginDto("name2", "pass2"));
     }
 
-    private Member makeTestUser() {
-        return memberService.signup(new MemberRequestDto("pass", "loginId", "nick", "go@go"));
+    void initPost(){
+        post = postService.writePost(Post.builder().member(memberA).title("post").board(board).isOpen(false).build());
     }
+
 }
