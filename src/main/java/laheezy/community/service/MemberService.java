@@ -160,6 +160,11 @@ public class MemberService {
         }
     }
 
+    @Transactional
+    public void deleteMember(Member findMember) {
+        findMember.delete();
+    }
+
     public List<Post> getMyPost(Member member) {
         return member.getPosts();
     }

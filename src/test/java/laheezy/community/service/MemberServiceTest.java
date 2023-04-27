@@ -70,11 +70,24 @@ class MemberServiceTest {
 
     @Test
     @DisplayName("로그아웃시에 리프레시 토큰 삭제 확인")
-    void checkLogout(){
+    void checkLogout() {
         Member signup = memberService.signup(requestDto);
-        memberService.login(new LoginDto("NAME","PASS"));
+        memberService.login(new LoginDto("NAME", "PASS"));
         memberService.logout(signup);
 
         assertTrue(refreshTokenRepository.findByKey(signup.getLoginId()).isEmpty());
     }
+
+    @Test
+    @DisplayName("회원 탈퇴시에 activate 를 false로 변경") // 회원 정보 삭제( 30일 이후에 삭제 기능 추가)
+    void deleteMember() {
+        Member signup = memberService.signup(requestDto);
+        assertTrue(signup.isActivated());
+        memberService.login(new LoginDto("NAME", "PASS"));
+        memberService.deleteMember(signup);
+        assertFalse(signup.isActivated());
+    }
+
+
+
 }

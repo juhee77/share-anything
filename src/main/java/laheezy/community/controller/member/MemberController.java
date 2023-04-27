@@ -81,6 +81,12 @@ public class MemberController {
         memberService.logout(findMember);
     }
 
+    @DeleteMapping("/member/{loginId}")
+    public void DeleteUser(@PathVariable String loginId) {
+        Member findMember = memberService.getMemberWithAuthorities(loginId).get();
+        memberService.deleteMember(findMember);
+    }
+
     private MemberController.MemberResponseDto convertToResponseDto(Member findMember) {
         if (findMember.getProfileImage() != null)
             return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),

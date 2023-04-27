@@ -112,4 +112,8 @@ public class Member {
     public void setProfile(Profile file) {
         profileImage = file;
     }
+
+    public void delete() {
+        this.activated = false;
+    }
 }

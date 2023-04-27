@@ -124,8 +124,20 @@ class MemberControllerTest {
                 .andDo(print());
 
         assertTrue(refreshTokenRepository.findByKey(member.getLoginId()).isEmpty());
+    }
 
+    @Test
+    @DisplayName("member 탈퇴 확인")
+    public void 탈퇴확인() throws Exception {
+        initMember();
+        assertTrue(refreshTokenRepository.findByKey(member.getLoginId()).isPresent());
+        mockMvc.perform(delete("/member/"+member.getLoginId())
+                        .header("Authorization", "Bearer " + login.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(print());
 
+        assertFalse(member.isActivated());
     }
 
 
