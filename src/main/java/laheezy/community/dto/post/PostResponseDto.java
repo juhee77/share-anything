@@ -4,12 +4,14 @@ import laheezy.community.domain.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class PostResponseDto {
     private Long postId;
     private String writer;
@@ -21,7 +23,7 @@ public class PostResponseDto {
     private long heartCnt;
     private String board;
 
-    public static PostResponseDto toPostResponseDto(Post post) {
+    public PostResponseDto toPostResponseDto(Post post) {
         return PostResponseDto.builder()
                 .postId(post.getId())
                 .writer(post.getMember().getNickname())

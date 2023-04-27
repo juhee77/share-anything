@@ -74,7 +74,7 @@ public class FollowingController {
 
     //팔로우, 팔로잉 하는 사람들 리턴
     private static List<MemberFollowingResponseDto> getCollect(List<Following> follow) {
-        return follow.stream().map(MemberFollowingResponseDto::toMemberResponseDto).collect(Collectors.toList());
+        return follow.stream().map(new MemberFollowingResponseDto()::toMemberResponseDto).collect(Collectors.toList());
     }
 
 

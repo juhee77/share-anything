@@ -31,7 +31,7 @@ public class ChatroomController {
         chatService.checkingDuplicateRoom(name);
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         Chatroom room = chatService.createRoom(name, nowLogin);
-        return ChatRoomDetailDto.createRoom(room);
+        return new ChatRoomDetailDto().createRoom(room);
     }
 
     @GetMapping("/room/enter/{roomId}")

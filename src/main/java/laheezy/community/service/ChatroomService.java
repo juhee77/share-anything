@@ -54,7 +54,7 @@ public class ChatroomService {
 
     @Transactional
     public Chatroom createRoom(String name, Member member) {
-        ChatRoomMakeDto dto = ChatRoomMakeDto.create(name);
+        ChatRoomMakeDto dto = new ChatRoomMakeDto().create(name);
         Chatroom chatRoom = Chatroom.toChatRoom(name, dto.getRoomId(), member.getNickname());
         return chatRoomRepository.save(chatRoom);
     }

@@ -41,7 +41,7 @@ public class CommentController {
                 .build();
 
         Comment savedCost = commentService.writeComment(comment);
-        return CommentResponseDto.toCommentResponseDto(savedCost);
+        return new CommentResponseDto().toCommentResponseDto(savedCost);
     }
 
     @GetMapping("/my")
@@ -54,7 +54,7 @@ public class CommentController {
 
 
     private List<CommentResponseDto> changeResponseCommentDtos(List<Comment> comments) {
-        return comments.stream().map(CommentResponseDto::toCommentResponseDto).collect(Collectors.toList());
+        return comments.stream().map(new CommentResponseDto()::toCommentResponseDto).collect(Collectors.toList());
     }
 
 }

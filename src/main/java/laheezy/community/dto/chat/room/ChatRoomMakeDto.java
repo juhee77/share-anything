@@ -16,7 +16,7 @@ public class ChatRoomMakeDto { //방을 만든다
     private String roomId;
     private String name;
 
-    public static ChatRoomMakeDto create(String name) {
+    public ChatRoomMakeDto create(String name) {
         ChatRoomMakeDto room = new ChatRoomMakeDto();
 
         room.roomId = UUID.randomUUID().toString();

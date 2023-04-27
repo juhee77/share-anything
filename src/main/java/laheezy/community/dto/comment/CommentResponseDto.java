@@ -4,9 +4,11 @@ import laheezy.community.domain.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class CommentResponseDto {
     private String writerNickname; //게시글 작성자
@@ -14,7 +16,7 @@ public class CommentResponseDto {
     private String text;
     private boolean open;
 
-    public static CommentResponseDto toCommentResponseDto(Comment comment) {
+    public CommentResponseDto toCommentResponseDto(Comment comment) {
         return CommentResponseDto.builder().open(comment.isOpen())
                 .text(comment.getText())
                 .postId(comment.getPost().getId())

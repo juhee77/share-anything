@@ -14,7 +14,7 @@ public class ChatRoomDetailDto { //방을 만든다
     private String writer;
     private int number;
 
-    public static ChatRoomDetailDto createRoom(Chatroom chatRoom) {
+    public ChatRoomDetailDto createRoom(Chatroom chatRoom) {
         ChatRoomDetailDto roomResponseDto = new ChatRoomDetailDto();
 
         roomResponseDto.setWriter(chatRoom.getWriter());
