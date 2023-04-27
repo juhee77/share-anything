@@ -65,6 +65,16 @@ public class PostController {
         return new PostResponseDto().toPostResponseDto(savedPost);
     }
 
+    @DeleteMapping(value = "/post/{postId}")
+    @Operation(summary = "포스트 삭제", description = "post id 를 기준으로 포스트를 삭제한다.")
+    public void deletePost(@PathVariable Long postId) {
+        log.info("post 수정");
+
+        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Post post = postService.findById(postId);
+        postService.deletePost(post);
+    }
+
     @GetMapping(value = "/my/post")
     @Operation(summary = "본인의 작성 포스트 확인", description = "자신의 포스트 확인")//페이징 기능 넣어야 한다.
     public List<PostResponseDto> findMyPost() {

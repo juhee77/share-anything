@@ -40,6 +40,11 @@ public class PostService {
         return post;
     }
 
+    @Transactional
+    public void deletePost(Post post) {
+        postRepository.deleteById(post.getId());
+    }
+
     public Post findById(long id) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isEmpty()) {

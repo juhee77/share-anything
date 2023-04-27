@@ -24,8 +24,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,6 +60,7 @@ class PostControllerTest {
         initBoard();
         initPost();
     }
+
     @Test
     public void 포스트객체생성확인() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -90,6 +91,18 @@ class PostControllerTest {
                 .andExpect(jsonPath("title").value("modify"))
                 .andExpect(jsonPath("text").value("modify"))
                 .andExpect(jsonPath("open").value("true"));
+    }
+
+    @Test
+    public void 포스트객체삭제확인() throws Exception {
+        //when
+        mockMvc.perform(delete("/post/" + post.getId())
+                        .header("Authorization", "Bearer " + loginA.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(print());
+        //then
+        assertThrows(RuntimeException.class, () -> postService.findById(post.getId()));
     }
 
     @Test
@@ -153,7 +166,7 @@ class PostControllerTest {
         loginB = memberService.login(new LoginDto("name2", "pass2"));
     }
 
-    void initPost(){
+    void initPost() {
         post = postService.writePost(Post.builder().member(memberA).title("post").board(board).isOpen(false).build());
     }
 
