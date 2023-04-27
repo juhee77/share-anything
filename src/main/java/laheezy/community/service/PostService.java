@@ -29,8 +29,6 @@ public class PostService {
 
     @Transactional
     public Post writePost(Post post) {
-        //validate
-        //log.info("coupon:{}", coupon.getDiscount(),coupon.getDiscountType());
         return postRepository.save(post);
     }
 
@@ -58,7 +56,7 @@ public class PostService {
         List<Post> allPost = new ArrayList<>();
         for (Following following1 : following) {
             List<Post> posts = following1.getMemberB().getPosts();
-            allPost.addAll(posts.stream().filter(Post::isOpen).collect(Collectors.toList())); //오픈된것만 받아온다.
+            allPost.addAll(posts.stream().filter(Post::isOpen).toList()); //오픈된것만 받아온다.
         }
         return allPost;
     }

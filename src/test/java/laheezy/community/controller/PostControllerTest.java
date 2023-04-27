@@ -9,6 +9,7 @@ import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.dto.post.PostForm;
 import laheezy.community.dto.post.PostModifyRequestForm;
+import laheezy.community.exception.CustomException;
 import laheezy.community.service.BoardService;
 import laheezy.community.service.FollowingService;
 import laheezy.community.service.MemberService;
@@ -102,7 +103,7 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
         //then
-        assertThrows(RuntimeException.class, () -> postService.findById(post.getId()));
+        assertThrows(CustomException.class, () -> postService.findById(post.getId()));
     }
 
     @Test

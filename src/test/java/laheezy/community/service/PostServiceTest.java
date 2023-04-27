@@ -5,6 +5,7 @@ import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.dto.post.PostResponseDto;
+import laheezy.community.exception.CustomException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ class PostServiceTest {
         postService.deletePost(post);
 
         //then
-        assertThrows(RuntimeException.class, () -> postService.findById(post.getId()));
+        assertThrows(CustomException.class, () -> postService.findById(post.getId()));
 
     }
 

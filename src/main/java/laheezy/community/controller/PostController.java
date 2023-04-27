@@ -105,11 +105,10 @@ public class PostController {
     }
 
     @GetMapping(value = "/post")
-    @Operation(summary = "있는 포스트를 전부 가져온다")
+    @Operation(summary = "있는 포스트를 전부 가져온다")//페이징 기능 넣어야 한다.
     public List<PostResponseDto> findAllPost() {
         log.info("모든 post확인");
         return postService.findAllPostWithHeartCnt();
-        // return getResponseDtos(postService.findAll());
     }
 
     @GetMapping("/board/{boardName}")
