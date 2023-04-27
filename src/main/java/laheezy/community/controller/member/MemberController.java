@@ -12,7 +12,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -30,29 +29,14 @@ public class MemberController {
     private final FileService fileService;
 
     //admin권한에서 테스트 용
-    @GetMapping("/user/{loginId}")
+    @GetMapping("/member/{loginId}")
     //@PreAuthorize("hasAnyRole('ROLE_ADMIN')") --> spring security config 부분에서 처리
     public ResponseEntity<MemberResponseDto> getUserInfo(@PathVariable String loginId) {
         Member findMember = memberService.getMemberWithAuthorities(loginId).get();
         return ResponseEntity.ok(convertToResponseDto(findMember));
     }
 
-    @NotNull
-    private MemberController.MemberResponseDto convertToResponseDto(Member findMember) {
-        if(findMember.getProfileImage()!=null) return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
-                findMember.getEmail(), "file:" + fileService.getFullPath(findMember.getProfileImage().getStoreName()));
-       //이미지가 없는 경우
-        return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
-                findMember.getEmail(), null);
-    }
-
-    @GetMapping("/me-profile")
-    public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
-        Member findMember = memberService.getMemberWithAuthorities().get();
-        return ResponseEntity.ok(convertToResponseDto(findMember));
-    }
-
-    @GetMapping("/get-allmember")
+    @GetMapping("/member")
     public List<MemberResponseDto> findAll() {
         List<Member> allMember = memberService.findAllMember();
         List<MemberResponseDto> responseDto = new ArrayList<>();
@@ -62,8 +46,15 @@ public class MemberController {
         return responseDto;
     }
 
-    @PostMapping("/member/modify/nickname")
-    public ResponseEntity<MemberResponseDto> modifyNickname(@RequestBody Map<String, String> nickname) {
+    @GetMapping("/my/profile")
+    public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
+        Member findMember = memberService.getMemberWithAuthorities().get();
+        return ResponseEntity.ok(convertToResponseDto(findMember));
+    }
+
+
+    @PatchMapping("/member/{loginId}/nickname")
+    public ResponseEntity<MemberResponseDto> modifyNickname(@PathVariable String loginId, @RequestBody Map<String, String> nickname) {
         log.info("modifyName");
         Member findMember = memberService.getMemberWithAuthorities().get();
         Member modified = memberService.modifyNickname(findMember, nickname.get("nickname"));
@@ -71,10 +62,12 @@ public class MemberController {
         return ResponseEntity.ok(convertToResponseDto(modified));
     }
 
-    @PostMapping("/member/modify/password")
-    public void modifyPassword(@RequestBody Map<String, String> password) throws JsonProcessingException {
+    @PatchMapping("/member/{loginId}/password")
+    public void modifyPassword(@PathVariable String loginId, @RequestBody Map<String, String> password) {
         log.info("modifyPassword");
         Member findMember = memberService.getMemberWithAuthorities().get();
+        //TODO :: loginID와 현재 리프레시 토큰의 인증 정보를 비교(nick name도)
+
         //1. 비밀번호 일치 확인
         memberService.checkPassword(findMember, password.get("exPassword"));
 
@@ -82,10 +75,31 @@ public class MemberController {
         memberService.modifyPassword(findMember, password.get("newPassword"));
     }
 
+    @PostMapping("/member/{loginId}/logout")
+    public void logoutUser(@PathVariable String loginId) {
+        Member findMember = memberService.getMemberWithAuthorities(loginId).get();
+        memberService.logout(findMember);
+    }
+
+    @DeleteMapping("/member/{loginId}")
+    public void DeleteUser(@PathVariable String loginId) {
+        Member findMember = memberService.getMemberWithAuthorities(loginId).get();
+        memberService.deleteMember(findMember);
+    }
+
+    private MemberController.MemberResponseDto convertToResponseDto(Member findMember) {
+        if (findMember.getProfileImage() != null)
+            return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
+                    findMember.getEmail(), "file:" + fileService.getFullPath(findMember.getProfileImage().getStoreName()));
+        //이미지가 없는 경우
+        return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
+                findMember.getEmail(), null);
+    }
     @Data
     @ToString
     @AllArgsConstructor
     private static class MemberResponseDto {
+
         private String nickname;
         private String loginId;
         private String email;

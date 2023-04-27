@@ -39,6 +39,8 @@ dependencies {
 
     //mockito
     testImplementation group: 'org.mockito', name: 'mockito-all', version: '2.0.2-beta'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     //implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
 
@@ -64,6 +66,7 @@ dependencies {
     //h2 데이터 베이스 추가
     implementation 'com.h2database:h2:2.1.214'
 }
+
 
 //querydsl 추가 시작
 

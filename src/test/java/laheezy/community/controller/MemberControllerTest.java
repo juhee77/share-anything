@@ -1,11 +1,15 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.AssertTrue;
 import laheezy.community.domain.Member;
+import laheezy.community.dto.jwt.RefreshToken;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.repository.jwt.RefreshTokenRepository;
 import laheezy.community.service.MemberService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -49,6 +54,8 @@ class MemberControllerTest {
     private MemberService memberService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Test
     public void 유저객체생성확인() throws Exception {
@@ -81,7 +88,7 @@ class MemberControllerTest {
     @DisplayName("adimin 이름 검색 확인")
     public void findByLogin확인() throws Exception {
         initMember();
-        mockMvc.perform(get("/user/" + member.getLoginId())
+        mockMvc.perform(get("/member/" + member.getLoginId())
                         .header("Authorization", "Bearer " + loginAdmin.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -94,7 +101,7 @@ class MemberControllerTest {
     @DisplayName("my profile 확인")
     public void myProfile확인() throws Exception {
         initMember();
-        mockMvc.perform(get("/me-profile")
+        mockMvc.perform(get("/my/profile")
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -103,6 +110,34 @@ class MemberControllerTest {
                 .andExpect(jsonPath("email").value(member.getEmail()))
                 .andDo(print());
 
+    }
+
+    @Test
+    @DisplayName("member logout 확인")
+    public void logout확인() throws Exception {
+        initMember();
+        assertTrue(refreshTokenRepository.findByKey(member.getLoginId()).isPresent());
+        mockMvc.perform(post("/member/"+member.getLoginId()+"/logout")
+                        .header("Authorization", "Bearer " + login.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        assertTrue(refreshTokenRepository.findByKey(member.getLoginId()).isEmpty());
+    }
+
+    @Test
+    @DisplayName("member 탈퇴 확인")
+    public void 탈퇴확인() throws Exception {
+        initMember();
+        assertTrue(refreshTokenRepository.findByKey(member.getLoginId()).isPresent());
+        mockMvc.perform(delete("/member/"+member.getLoginId())
+                        .header("Authorization", "Bearer " + login.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        assertFalse(member.isActivated());
     }
 
 
@@ -117,7 +152,7 @@ class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(nick);
 
         //when
-        mockMvc.perform(post("/member/modify/nickname")
+        mockMvc.perform(patch("/member/"+member.getLoginId()+"/nickname")
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
@@ -143,7 +178,7 @@ class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(pass);
 
         //when
-        mockMvc.perform(post("/member/modify/password")
+        mockMvc.perform(patch("/member/"+member.getLoginId()+"/password")
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
