@@ -1,8 +1,11 @@
 package laheezy.community.service;
 
 import laheezy.community.domain.Member;
+import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.exception.CustomException;
+import laheezy.community.repository.jwt.RefreshTokenRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +16,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@Slf4j
 class MemberServiceTest {
     @Autowired
     private MemberService memberService;
     @Autowired
-    private AuthenticationManagerBuilder authenticationManagerBuilder;
+    private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -64,4 +67,14 @@ class MemberServiceTest {
         assertThrows(CustomException.class, () -> memberService.checkPassword(signup, "WRONGANS"));
     }
 
+
+    @Test
+    @DisplayName("로그아웃시에 리프레시 토큰 삭제 확인")
+    void checkLogout(){
+        Member signup = memberService.signup(requestDto);
+        memberService.login(new LoginDto("NAME","PASS"));
+        memberService.logout(signup);
+
+        assertTrue(refreshTokenRepository.findByKey(signup.getLoginId()).isEmpty());
+    }
 }

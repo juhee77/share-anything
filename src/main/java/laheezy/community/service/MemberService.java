@@ -149,6 +149,17 @@ public class MemberService {
         return tokenDto;
     }
 
+
+    @Transactional
+    public void logout(Member findMember) {
+        if (refreshTokenRepository.findByKey(findMember.getLoginId()).isPresent()) {
+            refreshTokenRepository.deleteByKey(findMember.getLoginId());
+
+        }else{
+            throw new CustomException(ALREADY_LOGOUT);
+        }
+    }
+
     public List<Post> getMyPost(Member member) {
         return member.getPosts();
     }
@@ -205,4 +216,5 @@ public class MemberService {
         //이미지 드랍
         member.setProfile(null);
     }
+
 }
