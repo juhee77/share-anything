@@ -26,9 +26,11 @@ Spring + React 이용 프로젝트
 <img width="1128" alt="image" src="https://user-images.githubusercontent.com/51548333/230779783-e1bd30e8-e77f-40b2-9f89-a76cfda1f591.png">
 
 ### 관련 문제
-[Query Dsl]JPA N+1 문제
-[Stomp]구독한 채팅방에 기존 채팅글 불러오는 기능 문제
-[Stomp]소켓통신시에 JWT 토큰 처리 방법
-예외처리
-테스트, 서버 데이터 베이스 분리
-Cors Origin 문제 
+[Query Dsl]JPA N+1 문제  
+[Stomp]구독한 채팅방에 기존 채팅글 불러오는 기능 문제  
+[Stomp]소켓통신시에 JWT 토큰 처리 방법  
+예외처리  
+테스트, 서버 데이터 베이스 분리  
+Cors Origin 문제   
+
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/51548333/235339281-6cd017db-196f-4590-8d04-526f0f2948e4.png"><img width="600" alt="image" src="https://user-images.githubusercontent.com/51548333/235339317-5743b589-cf12-4c4d-ab96-9228e7238be4.png">
