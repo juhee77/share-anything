@@ -5,7 +5,7 @@ import laheezy.community.domain.Comment;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.member.MemberRequestDto;
-import org.assertj.core.api.Assertions;
+import laheezy.community.repository.CommentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
@@ -28,6 +29,8 @@ class CommentServiceTest {
     CommentService commentService;
     @Autowired
     BoardService boardService;
+    @Autowired
+    CommentRepository commentRepository;
 
     private Member member;
     private Post post;
@@ -50,7 +53,7 @@ class CommentServiceTest {
         //when
         commentService.writeComment(test);
         //then
-        Assertions.assertThat(test).isEqualTo(commentService.findById(test.getId()));
+        assertThat(test).isEqualTo(commentService.findById(test.getId()));
     }
 
     @Test
@@ -65,4 +68,19 @@ class CommentServiceTest {
         assertThrows(RuntimeException.class, () -> commentService.findById(test.getId()));
     }
 
+    @Test
+    @DisplayName("댓글 수정")
+    public void modifyComment() {
+        // given
+        Comment comment = commentService.writeComment(Comment.builder().post(post).text("comment content").member(member).build());
+        Comment modifyComment = Comment.builder().post(post).text("modify comment content").member(member).build();
+
+        // when
+        Comment savedComment = commentRepository.findById(comment.getId()).orElseThrow(() -> new IllegalArgumentException("저장되지 않은 코멘트에러"));
+        Comment modifiedComment = commentService.modify(savedComment, modifyComment);
+
+        // then
+        assertThat(modifyComment.getText()).isEqualTo(modifiedComment.getText());
+        assertThat(modifyComment.isOpen()).isEqualTo(modifiedComment.isOpen());
+    }
 }

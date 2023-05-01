@@ -64,4 +64,9 @@ public class Comment {
         this.writeDate = LocalDateTime.now();
         this.isOpen = isOpen;
     }
+
+    public void modify(Comment comment) {
+        this.text = comment.text;
+        this.isOpen = comment.isOpen;
+    }
 }
