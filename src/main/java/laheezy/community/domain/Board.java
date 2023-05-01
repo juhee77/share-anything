@@ -38,4 +38,9 @@ public class Board {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board",orphanRemoval = true )
     @Builder.Default
     List<Post> posts = new ArrayList<>();
+
+    public void setInactive() {
+        active = false;
+    }
+
 }

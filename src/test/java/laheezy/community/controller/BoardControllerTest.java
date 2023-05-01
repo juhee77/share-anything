@@ -2,12 +2,14 @@ package laheezy.community.controller;
 
 import laheezy.community.domain.Board;
 import laheezy.community.domain.Member;
+import laheezy.community.domain.Post;
 import laheezy.community.dto.board.BoardResponseDto;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.service.BoardService;
 import laheezy.community.service.MemberService;
+import laheezy.community.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +23,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +44,8 @@ class BoardControllerTest {
     private MemberService memberService;
     @Autowired
     private BoardService boardService;
+    @Autowired
+    private PostService postService;
 
     Member member;
     TokenDto login;
@@ -56,7 +63,7 @@ class BoardControllerTest {
         String name = "music";
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/board/" + name)
+        mockMvc.perform(MockMvcRequestBuilders.post("/board/{name}", name)
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -89,5 +96,41 @@ class BoardControllerTest {
         //then
         List<BoardResponseDto> allBoardWithActive = boardService.findAllBoardWithActive();
         assertThat(allBoardWithActive.size()).isEqualTo(3);
+    }
+
+
+    @Test
+    @DisplayName("보드 삭제 - 게시글이 없는 경우")
+    void deleteBoardWithoutPost() throws Exception {
+        // given
+        String name = "test";
+        Board board = boardService.makeBoard(Board.builder().name(name).active(true).build());
+
+        // when
+        mockMvc.perform(delete("/board/{name}", name)
+                        .header("Authorization", "Bearer " + login.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        // then
+        assertThrows(NoSuchElementException.class, () -> boardService.getBoardByName(board.getName()));
+    }
+
+    @Test
+    @DisplayName("모드 삭제 - 게시글이 있는 경우(삭제 되지 않는다)")
+    void deleteBoardWithPost() throws Exception {
+        // given
+        String name = "test";
+        Board board = boardService.makeBoard(Board.builder().name(name).active(true).build());
+        Post post = postService.writePost(Post.builder().member(member).title("post").board(board).isOpen(false).build());
+
+        // when
+        mockMvc.perform(delete("/board/{name}", name)
+                        .header("Authorization", "Bearer " + login.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is4xxClientError());
+
+        // then
+        assertThat(boardService.getBoardByNameInActive(board.getName()).getName()).isEqualTo(name);
     }
 }

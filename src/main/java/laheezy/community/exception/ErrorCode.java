@@ -36,6 +36,7 @@ public enum ErrorCode {
     //Board Errors
     DUPLICATION_BOARD_NAME(HttpStatus.BAD_REQUEST, "해당 이름을 가진 board는 이미 존재합니다.", "BOARD_001"),
     INVALID_BOARD_NAME(HttpStatus.BAD_REQUEST, "없거나 삭제된 board 아이디 입니다.", "BOARD_002"),
+    INVALID_BOARD_COMMAND(HttpStatus.BAD_REQUEST, "일주일 이내에 사용된적이 있어 삭제 불가능한 보드 입니다.", "BOARD_003"),
 
     //Chatroom Errors
     DUPLICATION_CHATROOM_NAME(HttpStatus.BAD_REQUEST, "중복된 이름의 채팅방이 이미 존재합니다.", "CHATROOM_001"),
