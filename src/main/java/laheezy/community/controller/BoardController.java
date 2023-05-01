@@ -9,10 +9,7 @@ import laheezy.community.service.BoardService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,13 +34,16 @@ public class BoardController {
         return BoardResponseDto.toBoardResponseDto(board);
     }
 
-//    @DeleteMapping("/board/{name}")
-//    @Operation(summary = "board 제거(inacive하게 변경)")
-//    //-> post가 없는 경우에는 제거가능하고 post가 있는 경우에는 inactive하게 변경
-//    public void deleteBoard(@PathVariable("name") String name) {
-//        log.info("[BoardController] board 제거");
-//
-//    }
+    @DeleteMapping("/board/{name}")
+    @Operation(summary = "board 제거(inacive하게 변경)")
+    //-> post가 없는 경우에는 제거가능하고 post가 있는 경우에는 inactive하게 변경
+    public void deleteBoard(@PathVariable("name") String name) {
+        log.info("[BoardController] board 제거");
+
+        Board nowBoard = boardService.getBoardByNameInActive(name);
+        boardService.deleteBoard(nowBoard);
+
+    }
 
 
     @GetMapping("/board")

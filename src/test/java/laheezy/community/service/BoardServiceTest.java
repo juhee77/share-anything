@@ -5,6 +5,7 @@ import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.dto.board.BoardResponseDto;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.exception.CustomException;
 import laheezy.community.repository.BoardRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -48,7 +51,7 @@ class BoardServiceTest {
         //then
         assertThat(boardService.getBoardWithActive("test1").getId()).isEqualTo(save1.getId());
         assertThrows(RuntimeException.class, () -> boardService.getBoardWithActive("test2"));
-        assertThat(boardService.getBoardById("test2").getId()).isEqualTo(save2.getId());
+        assertThat(boardService.getBoardByName("test2").getId()).isEqualTo(save2.getId());
 
     }
 
@@ -118,6 +121,63 @@ class BoardServiceTest {
 
         //then(board네임은 중복되지 않는다)
         assertThat(allBoardWithActive.get(0).getOpenPostCnt()).isEqualTo(2);
+    }
+
+
+    @Test
+    @DisplayName("포스트가 없는 보드인 경우 ")
+    public void deleteBoardWithEmptyPosts() {
+        //given
+        Board board = Board.builder().name("test1").active(true).build();
+        boardRepository.save(board);
+
+        //when
+        assertDoesNotThrow(() -> boardService.deleteBoard(board));
+
+        //then
+        assertFalse(boardRepository.findById(board.getId()).isPresent());
+    }
+
+    @Test
+    @DisplayName("7일 이내에 사용된 적이 있는 보드인 경우 ")
+    public void deleteBoardWithRecentPosts() {
+        //given
+        Board board = boardService.makeBoard(Board.builder().name("test1").active(true).build());
+        Member member = memberService.signup(new MemberRequestDto("pass", "loginId", "nick", "go@go.com"));
+        Post post = postService.writePost(Post.builder().member(member).title("post").isOpen(true).board(board).build());
+
+        //when
+        assertThrows(CustomException.class, () -> boardService.deleteBoard(board));
+
+        //then
+        assertTrue(boardRepository.findById(board.getId()).isPresent());
+        assertTrue(board.isActive());
+    }
+
+    @Test
+    @DisplayName("7일 이내에 사용된 적이 없는 보드인 경우 -> inactive ")
+    public void deleteBoardWithOldPosts() throws NoSuchFieldException, IllegalAccessException {
+        //given
+        Member member = memberService.signup(new MemberRequestDto("pass", "loginId", "nick", "go@go.com"));
+        Board board = boardService.makeBoard(Board.builder().name("test1").active(true).build());
+        Post post = postService.writePost(Post.builder().member(member).title("post").isOpen(true).board(board).build());
+
+
+        // Reflections API를로 수정
+        Field field = Board.class.getDeclaredField("lastmodified");
+        field.setAccessible(true);
+        field.set(board, LocalDateTime.now().minusDays(8));
+
+        log.info("board time : {}",board.getLastmodified());
+        //when
+        assertDoesNotThrow(() -> {
+            boardService.deleteBoard(board);
+        });
+
+
+        //then
+        assertTrue(boardRepository.findById(board.getId()).isPresent());
+        assertFalse(board.isActive());
     }
 
 }

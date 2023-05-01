@@ -11,11 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static laheezy.community.exception.ErrorCode.DUPLICATION_BOARD_NAME;
-import static laheezy.community.exception.ErrorCode.INVALID_BOARD_NAME;
+import static laheezy.community.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class BoardService {
         return getBoardByNameInActive(board);
     }
 
-    private Board getBoardByNameInActive(String board) {
+    public Board getBoardByNameInActive(String board) {
         Optional<Board> byName = boardRepository.findByNameAndActiveIsTrue(board);
         if (byName.isPresent()) {
             return byName.get();
@@ -39,7 +40,7 @@ public class BoardService {
     }
 
 
-    public Board getBoardById(String board) {
+    public Board getBoardByName(String board) {
         log.info("find board by id : {}", board);
         return boardRepository.findByName(board).get();
     }
@@ -61,4 +62,17 @@ public class BoardService {
         return boardRepositoryImpl.findAllBoardWithActive();
     }
 
+    @Transactional
+    public void deleteBoard(Board nowBoard) {
+        if (nowBoard.getPosts().size() == 0) {
+            //그냥 제거
+            boardRepository.delete(nowBoard);
+        } else if (Duration.between(nowBoard.getLastmodified(), LocalDateTime.now()).toDays() <= 7) {
+            //7일 이내에 사용된적이 있으면 삭제 불가능
+            throw new CustomException(INVALID_BOARD_COMMAND);
+        } else {
+            //inactive 처리 => 7일 이내에 사용된적도 없음
+            nowBoard.setInactive();
+        }
+    }
 }
