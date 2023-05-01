@@ -9,6 +9,7 @@ import laheezy.community.dto.comment.CommentRequestDto;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.exception.CustomException;
 import laheezy.community.service.BoardService;
 import laheezy.community.service.CommentService;
 import laheezy.community.service.MemberService;
@@ -23,8 +24,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -100,6 +101,22 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$[0].text", member.getComments().get(0).getText()).exists())
                 .andExpect(jsonPath("$[1].text", member.getComments().get(1).getText()).exists())
                 .andExpect(jsonPath("$[2].text", member.getComments().get(2).getText()).exists());
+    }
+
+    @Test
+    public void 댓글삭제확인() throws Exception {
+        //given
+        Comment comment = commentService.writeComment(new Comment(member, post, "comment", true));
+
+        //when
+        mockMvc.perform(delete("/comment/{commentId}", post.getId())
+                        .header("Authorization", "Bearer " + login.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        //then
+        assertThrows(CustomException.class, () -> commentService.findById(comment.getId()));
+
     }
 
     @BeforeEach

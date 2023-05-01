@@ -61,6 +61,12 @@ public class CommentController {
         return changeResponseCommentDtos(postComments);
     }
 
+    @DeleteMapping("/comment/{commentId}")
+    @Operation(summary = "댓글을 삭제 한다.")
+    public void deleteComment(@PathVariable("commentId") Long commentId) {
+        commentService.removeComment(commentId);
+    }
+
 
     private List<CommentResponseDto> changeResponseCommentDtos(List<Comment> comments) {
         return comments.stream().map(new CommentResponseDto()::toCommentResponseDto).collect(Collectors.toList());
