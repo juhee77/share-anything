@@ -9,16 +9,16 @@ import laheezy.community.service.MemberChatroomService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static laheezy.community.dto.chat.data.ChatDataResponseDto.convertToDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class ChatdataController {
             MemberChatroom mcr = memberChatRoomService.findMemberChatroom(member, room);
             List<Chatdata> allChatList = chatDataService.findAllChatByRoomIdAndDate(room, mcr.getDate());
             if (allChatList != null) {
-                chatList = allChatList.stream().map(this::convertToDto).collect(Collectors.toList());
+                chatList = allChatList.stream().map(ChatDataResponseDto::convertToDto).collect(Collectors.toList());
             }
 
             // 해당 사용자에게만 메시지 전송
@@ -68,25 +68,14 @@ public class ChatdataController {
 
     }
 
-    @NotNull
-    private ChatDataResponseDto convertToDto(Chatdata chatData) {
-        // 포맷 정의
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm");
-        // 포맷 적용(후에 분리확인)
-        String formatedNow = chatData.getDate().format(formatter);
-
-        //현재 스트링 형태로 전송
-        return new ChatDataResponseDto(chatData.getMessageType().toString(), chatData.getChatroom().getRoomId(), chatData.getWriter(), chatData.getMessage(), formatedNow);
-    }
-
-    //방을 나가는 경우 구독을 취소하는 경우
+    //방을 나가는 경우 구독을 취소하지 않는 경우
     @MessageMapping("/chat/out")
     public void out(ChatDataRequestDto message) {
         log.info("out: {}", message);
     }
 
 
-    //프론트엔드에서 방을 나가는건지 아니면 그냥 이 방을 나간
+    //방을 나가면서 구독을 취소한 경우
     @MessageMapping("/chat/subscribe/out") //유저가 보낸 메세지를 받는다.
     public void subscribeOut(ChatDataRequestDto message) {
         log.info("out: {}", message);

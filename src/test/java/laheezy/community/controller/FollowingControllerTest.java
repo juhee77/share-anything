@@ -75,7 +75,7 @@ class FollowingControllerTest {
     void getMyFollower() throws Exception {
         followingService.addFollowing(memberA, memberB);
 
-        mockMvc.perform(get("/checkfollower")
+        mockMvc.perform(get("/my/follower")
                         .header("Authorization", "Bearer " + loginB.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -88,7 +88,7 @@ class FollowingControllerTest {
     void getMyFollowing() throws Exception {
         followingService.addFollowing(memberA, memberB);
 
-        mockMvc.perform(get("/checkfollowing")
+        mockMvc.perform(get("/my/following")
                         .header("Authorization", "Bearer " + loginA.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())

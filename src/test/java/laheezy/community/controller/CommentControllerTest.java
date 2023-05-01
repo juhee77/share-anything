@@ -58,7 +58,7 @@ class CommentControllerTest {
         CommentRequestDto commentDto = new CommentRequestDto(post.getId(), "text", true);
         String requestBody = objectMapper.writeValueAsString(commentDto);
 
-        mockMvc.perform(post("/comment/add")
+        mockMvc.perform(post("/comment")
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
@@ -77,7 +77,7 @@ class CommentControllerTest {
             commentService.writeComment(new Comment(member, post, "comment" + i, true));
         }
 
-        mockMvc.perform(get("/comment/my")
+        mockMvc.perform(get("/my/comment")
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())

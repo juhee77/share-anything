@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/commentheart")
+@RequestMapping("/api/comment")
 @Tag(name = "CommentHeart controller", description = "Comment 좋아요 기능을 관리합니다")
 @Slf4j
 @RequiredArgsConstructor

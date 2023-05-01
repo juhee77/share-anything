@@ -54,7 +54,7 @@ public class FollowingController {
         return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/checkfollower")
+    @GetMapping("/my/follower")
     @Operation(summary = "나를 팔로잉 하는 사람 확인")
     public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollower() {
         List<Following> follower = memberService.getMemberWithAuthorities().get().getFollower();
@@ -62,7 +62,7 @@ public class FollowingController {
         return ResponseEntity.ok(shortDtos);
     }
 
-    @GetMapping("/checkfollowing")
+    @GetMapping("/my/following")
     @Operation(summary = "내가 팔로우 하는 사람 확인")
     public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollowing() {
         List<Following> follow = memberService.getMemberWithAuthorities().get().getFollowing();

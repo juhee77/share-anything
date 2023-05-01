@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/comment")
+@RequestMapping
 @Tag(name = "CommentController", description = "댓글 API Document")
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class CommentController {
     private final PostService postService;
     private final MemberService memberService;
 
-    @PostMapping("/add")
+    @PostMapping("/comment")
     @Operation(summary = "댓글 생성")
     public CommentResponseDto makeComment(@Valid @RequestBody CommentRequestDto requestMakeCommentDto) {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
@@ -44,7 +44,7 @@ public class CommentController {
         return new CommentResponseDto().toCommentResponseDto(savedCost);
     }
 
-    @GetMapping("/my")
+    @GetMapping("/my/comment")
     @Operation(summary = "본인의 작성 댓글 확인", description = "자신의 댓글 확인")//페이징 기능 넣어야 한다.
     public List<CommentResponseDto> makePost() {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
