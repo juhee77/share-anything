@@ -34,4 +34,10 @@ public class CommentService {
     public void removeComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
+
+    @Transactional
+    public Comment modify(Comment savedComment, Comment comment) {
+        savedComment.modify(comment);
+        return savedComment;
+    }
 }

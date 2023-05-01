@@ -66,6 +66,22 @@ public class CommentController {
     public void deleteComment(@PathVariable("commentId") Long commentId) {
         commentService.removeComment(commentId);
     }
+    @PatchMapping("/post/{postId}/comment/{commentId}")
+    @Operation(summary = "댓글을 수정 한다.")
+    public CommentResponseDto modifyComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @Valid @RequestBody CommentRequestDto requestMakeCommentDto) {
+        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Post post = postService.findById(postId);
+        Comment comment = Comment.builder()
+                .member(nowLogin)
+                .text(requestMakeCommentDto.getText())
+                .post(post)
+                .isOpen(requestMakeCommentDto.isOpen())
+                .build();
+
+        Comment savedComment = commentService.findById(commentId);
+        Comment modify = commentService.modify(savedComment, comment);
+        return new CommentResponseDto().toCommentResponseDto(modify);
+    }
 
 
     private List<CommentResponseDto> changeResponseCommentDtos(List<Comment> comments) {

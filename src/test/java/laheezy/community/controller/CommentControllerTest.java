@@ -24,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -116,8 +117,32 @@ class CommentControllerTest {
 
         //then
         assertThrows(CustomException.class, () -> commentService.findById(comment.getId()));
-
     }
+
+    @Test
+    public void 댓글수정확인() throws Exception {
+        //given
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Comment comment = commentService.writeComment(new Comment(member, post, "comment", true));
+        CommentRequestDto modifyDto = new CommentRequestDto("modified comment", true);
+        String requestBody = objectMapper.writeValueAsString(modifyDto);
+
+        //when
+        mockMvc.perform(patch("/post/{postId}/comment/{commentId}", post.getId(), comment.getId())
+                        .header("Authorization", "Bearer " + login.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("postId").value(comment.getPost().getId()))
+                .andExpect(jsonPath("writerNickname").value(member.getNickname()))
+                .andExpect(jsonPath("text").value(modifyDto.getText()))
+                .andExpect(jsonPath("open").value(modifyDto.isOpen()));
+
+        //then
+        assertThat(commentService.findById(comment.getId()).getText()).isEqualTo(modifyDto.getText());
+    }
+
 
     @BeforeEach
     public void makeTestUser() {
