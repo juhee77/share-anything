@@ -28,11 +28,11 @@ public class CommentController {
     private final PostService postService;
     private final MemberService memberService;
 
-    @PostMapping("/comment")
+    @PostMapping("/post/{postId}/comment")
     @Operation(summary = "댓글 생성")
-    public CommentResponseDto makeComment(@Valid @RequestBody CommentRequestDto requestMakeCommentDto) {
+    public CommentResponseDto makeComment(@PathVariable("postId") Long postId, @Valid @RequestBody CommentRequestDto requestMakeCommentDto) {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
-        Post post = postService.findById(requestMakeCommentDto.getPostId());
+        Post post = postService.findById(postId);
         Comment comment = Comment.builder()
                 .member(nowLogin)
                 .text(requestMakeCommentDto.getText())
@@ -46,10 +46,19 @@ public class CommentController {
 
     @GetMapping("/my/comment")
     @Operation(summary = "본인의 작성 댓글 확인", description = "자신의 댓글 확인")//페이징 기능 넣어야 한다.
-    public List<CommentResponseDto> makePost() {
+    public List<CommentResponseDto> findMyComment() {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         List<Comment> myComments = memberService.getMyComment(nowLogin);
         return changeResponseCommentDtos(myComments);
+    }
+
+
+    @GetMapping("/post/{postId}/comment")
+    @Operation(summary = "포스트별 댓글을 확인한다.")
+    public List<CommentResponseDto> findPostComment(@PathVariable("postId") Long postId) {
+        Post post = postService.findById(postId);
+        List<Comment> postComments = post.getComments();
+        return changeResponseCommentDtos(postComments);
     }
 
 

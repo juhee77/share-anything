@@ -55,10 +55,10 @@ class CommentControllerTest {
     public void 댓글객체생성확인() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CommentRequestDto commentDto = new CommentRequestDto(post.getId(), "text", true);
+        CommentRequestDto commentDto = new CommentRequestDto("text", true);
         String requestBody = objectMapper.writeValueAsString(commentDto);
 
-        mockMvc.perform(post("/comment")
+        mockMvc.perform(post("/post/{postId}/comment", post.getId())
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
@@ -78,6 +78,22 @@ class CommentControllerTest {
         }
 
         mockMvc.perform(get("/my/comment")
+                        .header("Authorization", "Bearer " + login.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].text", member.getComments().get(0).getText()).exists())
+                .andExpect(jsonPath("$[1].text", member.getComments().get(1).getText()).exists())
+                .andExpect(jsonPath("$[2].text", member.getComments().get(2).getText()).exists());
+    }
+
+    @Test
+    public void 포스트댓글_확인() throws Exception {
+
+        for (int i = 0; i < 3; i++) {
+            commentService.writeComment(new Comment(member, post, "comment" + i, true));
+        }
+
+        mockMvc.perform(get("/post/{postId}/comment", post.getId())
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
