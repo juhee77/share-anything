@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
@@ -43,15 +45,24 @@ class CommentHeartServiceTest {
 
     @Test
     public void 하트추가() {
+        //when
         commentHeartService.addHeart(member, comment);
-        Assertions.assertTrue(commentHeartService.checkAlreadyHeart(member, comment));
+
+        //then
+        assertTrue(commentHeartService.checkAlreadyHeart(member, comment));
     }
 
     @Test
     public void 하트삭제() {
+        //given
         commentHeartService.addHeart(member, comment);
+        assertTrue(commentHeartService.checkAlreadyHeart(member, comment));
+
+        //when
         commentHeartService.deleteHeart(member, comment);
-        Assertions.assertTrue(commentHeartService.checkAlreadyHeart(member, comment));
+
+        //then
+        Assertions.assertFalse(commentHeartService.checkAlreadyHeart(member, comment));
     }
 
 }

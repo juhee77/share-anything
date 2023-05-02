@@ -33,7 +33,9 @@ public class PostHeartService {
         if (!checkAlreadyHeart(member, post)) {
             throw new CustomException(INVALID_POST_HEART);
         }
-        postHeartRepository.deleteById(postHeartRepository.findByMemberAndPost(member, post).get().getId());
+        PostHeart postHeart = postHeartRepository.findByMemberAndPost(member, post).get();
+        postHeart.delete(); //연관관계 제거
+        postHeartRepository.deleteById(postHeart.getId());
     }
 
     public boolean checkAlreadyHeart(Member member, Post post) {

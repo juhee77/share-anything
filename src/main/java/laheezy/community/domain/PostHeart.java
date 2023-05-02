@@ -58,4 +58,8 @@ public class PostHeart {
         setPost(post);
     }
 
+    public void delete() {
+        this.member.getPostHearts().remove(this);
+        this.post.getPostHearts().remove(this);
+    }
 }

@@ -2,18 +2,20 @@ package laheezy.community.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import laheezy.community.domain.Member;
 import laheezy.community.domain.Comment;
-import laheezy.community.domain.CommentHeart;
-import laheezy.community.service.MemberService;
+import laheezy.community.domain.Member;
+import laheezy.community.dto.commentHeart.CommentHeartResponseDto;
 import laheezy.community.service.CommentHeartService;
 import laheezy.community.service.CommentService;
+import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import static laheezy.community.dto.commentHeart.CommentHeartResponseDto.toConvertPostResponseDto;
+
 @RestController
-@RequestMapping("/api/comment")
+@RequestMapping()
 @Tag(name = "CommentHeart controller", description = "Comment 좋아요 기능을 관리합니다")
 @Slf4j
 @RequiredArgsConstructor
@@ -22,17 +24,17 @@ public class CommentHeartController {
     private final MemberService memberService;
     private final CommentHeartService commentHeartService;
 
-    @PostMapping(value = "/like/{commentId}")
+    @PostMapping(value = "/comment/{commentId}/like")
     @Operation(summary = "댓글 좋아요", description = "댓글 좋아요")
-    public CommentHeart addCommentHeart(@PathVariable("commentId") Long commentId) {
+    public CommentHeartResponseDto addCommentHeart(@PathVariable("commentId") Long commentId) {
         Comment heartComment = commentService.findById(commentId);
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         log.info("{}", nowLogin);
 
-        return commentHeartService.addHeart(nowLogin, heartComment);
+        return toConvertPostResponseDto(commentHeartService.addHeart(nowLogin, heartComment));
     }
 
-    @PostMapping(value = "/dislike/{commentId}")
+    @DeleteMapping(value = "/comment/{commentId}/like")
     @Operation(summary = "댓글 좋아요 삭제", description = "댓글 좋아요 삭제")
     public void deleteCommentHeart(@PathVariable("commentId") Long commentId) {
         Comment heartComment = commentService.findById(commentId);
@@ -40,7 +42,7 @@ public class CommentHeartController {
         commentHeartService.deleteHeart(nowLogin, heartComment);
     }
 
-    @PostMapping(value = "/checkHeart/{commentId}")
+    @GetMapping(value = "/comment/{commentId}/like")
     @Operation(summary = "댓글 좋아요 확인", description = "댓글 좋아요 확인")
     public boolean checkCommentHeart(@PathVariable("commentId") Long commentId) {
         Comment heartComment = commentService.findById(commentId);
