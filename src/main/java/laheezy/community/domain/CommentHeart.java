@@ -53,4 +53,8 @@ public class CommentHeart {
         setComment(Comment);
     }
 
+    public void delete() {
+        this.member.getCommentHearts().remove(this);
+        this.comment.getCommentHearts().remove(this);
+    }
 }

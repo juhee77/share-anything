@@ -16,14 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CommentHeartService {
-    private final CommentHeartRepository CommentHeartRepository;
+    private final CommentHeartRepository commentHeartRepository;
 
     @Transactional
     public CommentHeart addHeart(Member member, Comment comment) {
         if (checkAlreadyHeart(member, comment)) {
             throw new CustomException(ErrorCode.ALREADY_COMMENT_HEART);
         }
-        return CommentHeartRepository.save(new CommentHeart(member, comment));
+        return commentHeartRepository.save(new CommentHeart(member, comment));
     }
 
     @Transactional
@@ -31,11 +31,13 @@ public class CommentHeartService {
         if (!checkAlreadyHeart(member, comment)) {
             throw new CustomException(ErrorCode.INVALID_COMMENT_HEART);
         }
-        CommentHeartRepository.deleteById(CommentHeartRepository.findByMemberAndComment(member, comment).get().getId());
+        CommentHeart commentHeart = commentHeartRepository.findByMemberAndComment(member, comment).get();
+        commentHeart.delete();
+        commentHeartRepository.deleteById(commentHeart.getId());
     }
 
     public boolean checkAlreadyHeart(Member member, Comment comment) {
-        return CommentHeartRepository.findByMemberAndComment(member, comment).isPresent();
+        return commentHeartRepository.findByMemberAndComment(member, comment).isPresent();
     }
 
 }
