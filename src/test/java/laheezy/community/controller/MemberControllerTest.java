@@ -1,15 +1,12 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.constraints.AssertTrue;
 import laheezy.community.domain.Member;
-import laheezy.community.dto.jwt.RefreshToken;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.repository.jwt.RefreshTokenRepository;
 import laheezy.community.service.MemberService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +19,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -57,6 +55,9 @@ class MemberControllerTest {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
+    private Member member, admin;
+    private TokenDto login, loginAdmin;
+
     @Test
     public void 유저객체생성확인() throws Exception {
         //이름에 넘길 파라미터 네임
@@ -79,10 +80,9 @@ class MemberControllerTest {
         Member find = memberService.findByNickname("nick");
         assertTrue(passwordEncoder.matches("password", find.getPassword()));
         assertThat(find.getLoginId()).isEqualTo("loginId");
-    }
 
-    private Member member, admin;
-    private TokenDto login, loginAdmin;
+        cleanUp();
+    }
 
     @Test
     @DisplayName("adimin 이름 검색 확인")
@@ -117,7 +117,7 @@ class MemberControllerTest {
     public void logout확인() throws Exception {
         initMember();
         assertTrue(refreshTokenRepository.findByKey(member.getLoginId()).isPresent());
-        mockMvc.perform(post("/member/"+member.getLoginId()+"/logout")
+        mockMvc.perform(post("/member/" + member.getLoginId() + "/logout")
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -131,7 +131,7 @@ class MemberControllerTest {
     public void 탈퇴확인() throws Exception {
         initMember();
         assertTrue(refreshTokenRepository.findByKey(member.getLoginId()).isPresent());
-        mockMvc.perform(delete("/member/"+member.getLoginId())
+        mockMvc.perform(delete("/member/" + member.getLoginId())
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -152,7 +152,7 @@ class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(nick);
 
         //when
-        mockMvc.perform(patch("/member/"+member.getLoginId()+"/nickname")
+        mockMvc.perform(patch("/member/" + member.getLoginId() + "/nickname")
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
@@ -178,7 +178,7 @@ class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(pass);
 
         //when
-        mockMvc.perform(patch("/member/"+member.getLoginId()+"/password")
+        mockMvc.perform(patch("/member/" + member.getLoginId() + "/password")
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
@@ -196,6 +196,28 @@ class MemberControllerTest {
         memberService.setAdmin(admin);
         login = memberService.login(new LoginDto("name", "pass"));
         loginAdmin = memberService.login(new LoginDto("name2", "pass2"));
+    }
+
+    public void cleanUp() {
+        String filePath = "/Users/bagjuhui/IdeaProjects/share-anything/src/test/resources/static/uploads//";
+        deleteFolder(filePath);
+    }
+
+    public static void deleteFolder(String path) {
+        File folder = new File(path);
+        try {
+            if (folder.exists()) {
+                File[] folder_list = folder.listFiles(); //파일리스트
+
+                for (int i = 0; i < folder_list.length; i++) {
+                    if (folder_list[i].isFile()) {
+                        folder_list[i].delete();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.getStackTrace();
+        }
     }
 
 }

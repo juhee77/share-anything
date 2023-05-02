@@ -110,7 +110,7 @@ class CommentControllerTest {
         Comment comment = commentService.writeComment(new Comment(member, post, "comment", true));
 
         //when
-        mockMvc.perform(delete("/comment/{commentId}", post.getId())
+        mockMvc.perform(delete("/comment/{commentId}", comment.getId())
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
