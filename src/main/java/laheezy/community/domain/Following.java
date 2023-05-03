@@ -53,4 +53,8 @@ public class Following {
         setFollower(memberB);
     }
 
+    public void delete() {
+        memberB.getFollower().remove(this);
+        memberA.getFollowing().remove(this);
+    }
 }

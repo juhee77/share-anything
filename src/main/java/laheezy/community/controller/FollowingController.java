@@ -46,7 +46,7 @@ public class FollowingController {
         }
     }
 
-    @PostMapping("/disfollow/{memberId}")
+    @DeleteMapping("/follow/{memberId}")
     public ResponseEntity<String> removeFollowing(@PathVariable("memberId") Long memberId) {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         Member following = memberService.findById(memberId);
