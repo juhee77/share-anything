@@ -32,7 +32,9 @@ public class FollowingService {
         if (!checkAlreadyFollowing(memberA, memberB)) {
             throw new CustomException(INVALID_FOLLOWING);
         }
-        followingRepository.delete(followingRepository.findByMemberAAndMemberB(memberA, memberB).get());
+        Following following = followingRepository.findByMemberAAndMemberB(memberA, memberB).get();
+        following.delete();
+        followingRepository.delete(following);
     }
 
     public boolean checkAlreadyFollowing(Member memberA, Member memberB) {
