@@ -187,7 +187,7 @@ public class MemberService {
 
     @Transactional
     public Member modifyNickname(Member findMember, String nickname) {
-        if (findMember.getLoginId().equals(nickname)) {
+        if (findMember.getNickname().equals(nickname)) {
             throw new CustomException(NICKNAME_SAME_BEFORE);
         }
         if (memberRepository.findByNickname(nickname).isPresent()) {

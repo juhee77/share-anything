@@ -47,7 +47,7 @@ public class Member {
     private LocalDateTime lastModified;
 
     @JsonIgnore
-    private boolean activated; //현재 로그인 되어있는가(세션이 남아 있는가)
+    private boolean activated; //삭제된 user인가(회원 탈퇴)
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
