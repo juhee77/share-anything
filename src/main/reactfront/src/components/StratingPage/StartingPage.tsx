@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import './StartingPage.css';
 
 interface Post {
@@ -7,6 +7,7 @@ interface Post {
     title: string;
     writer: string;
     view: number;
+    board: string;
 }
 
 const StartingPage = () => {
@@ -19,7 +20,7 @@ const StartingPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            const response = await axios.get<Post[]>('/post/all');
+            const response = await axios.get<Post[]>('/post');
             setPosts(response.data);
             setLoading(false);
         };
@@ -35,22 +36,22 @@ const StartingPage = () => {
             ) : (
                 <table className="table">
                     <thead>
-                    <tr>
-                        <th>번호</th>
-                        <th>제목</th>
-                        <th>작성자</th>
-                        <th>조회수</th>
-                    </tr>
+                        <tr>
+                            <th>번호</th>
+                            <th>제목</th>
+                            <th>작성자</th>
+                            <th>조회수</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {posts.map((post, index) => (
-                        <tr key={post.id}>
-                            <td>{index + 1}</td>
-                            <td>{post.title}</td>
-                            <td>{post.writer}</td>
-                            <td>{post.view}</td>
-                        </tr>
-                    ))}
+                        {posts.map((post, index) => (
+                            <tr key={post.id}>
+                                <td>{index + 1}</td>
+                                <td>{post.title}</td>
+                                <td>{post.writer}</td>
+                                <td>{post.view}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             )}

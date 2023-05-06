@@ -28,7 +28,7 @@ function App() {
                 <Route path="/post/add" element={!authCtx.isLoggedIn ? <Navigate to='/' /> : <AddPostPage />} />
                 <Route path="/chat/all/rooms" element={!authCtx.isLoggedIn ? <Navigate to='/' /> : <ChatRoomList />} />
 
-                <Route path="/find/chat/:roomId/:name" element={<ChatPage id={''} name={''} />} />
+                <Route path="/chat/room/:roomId" element={<ChatPage id={''} />} />
             </Routes>
 
         </Layout>

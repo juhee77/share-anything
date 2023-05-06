@@ -1,10 +1,11 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import * as authAction from './auth-action';
+import { userInfo } from "os";
 
 let logoutTimer: NodeJS.Timeout;
 
 type Props = { children?: React.ReactNode }
-type UserInfo = { loginId: string, nickname: string, email: string, profileImageUrl:string };
+type UserInfo = { loginId: string, nickname: string, email: string, profileImageUrl: string };
 type LoginToken = {
     grantType: string,
     accessToken: string,
@@ -14,7 +15,7 @@ type LoginToken = {
 
 const AuthContext = React.createContext({
     token: '',
-    userObj: {loginId: ' ', email: '', nickname: '', profileImageUrl:''},
+    userObj: { loginId: ' ', email: '', nickname: '', profileImageUrl: '' },
     isLoggedIn: false,
     isSuccess: false,
     isGetSuccess: false,
@@ -30,7 +31,7 @@ const AuthContext = React.createContext({
     },
     changePassword: (exPassword: string, newPassword: string) => {
     },
-    addPost: (title: string,text: string, isPublic:boolean) => {}
+    addPost: (title: string, text: string, isPublic: boolean, board: string) => { }
 });
 
 
@@ -48,7 +49,7 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
         loginId: '',
         email: '',
         nickname: '',
-        profileImageUrl:''
+        profileImageUrl: ''
     });
 
     const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -59,8 +60,8 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
 
     const signupHandler = (email: string, password: string, nickname: string, loginId: string, profileImg: File) => {
         setIsSuccess(false);
-        console.log(email+" signup")
-        const response = authAction.signupActionHandler(email, password, nickname, loginId,profileImg);
+        console.log(email + " signup")
+        const response = authAction.signupActionHandler(email, password, nickname, loginId, profileImg);
         response.then((result) => {
             if (result !== null) {
                 console.log("sign up success")
@@ -117,7 +118,7 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
     const changeNicknameHandler = (nickname: string) => {
         setIsSuccess(false);
 
-        const data = authAction.changeNicknameActionHandler(nickname, token);
+        const data = authAction.changeNicknameActionHandler(nickname, token, userObj.loginId);
         data.then((result) => {
             if (result !== null) {
                 const userData: UserInfo = result.data;
@@ -129,7 +130,7 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
 
     const changePaswordHandler = (exPassword: string, newPassword: string) => {
         setIsSuccess(false);
-        const data = authAction.changePasswordActionHandler(exPassword, newPassword, token);
+        const data = authAction.changePasswordActionHandler(exPassword, newPassword, token, userObj.loginId);
         data.then((result) => {
             if (result !== null) {
                 setIsSuccess(true);
@@ -138,9 +139,9 @@ export const AuthContextProvider: React.FC<Props> = (props) => {
         });
     };
 
-    const addPostHandler =  (title: string, text: string, isPublic: boolean) => { 
+    const addPostHandler = (title: string, text: string, isPublic: boolean, board: string) => {
         setIsSuccess(false);
-        const data = authAction.addPostActionHandler(title,text,isPublic,token);
+        const data = authAction.addPostActionHandler(title, text, isPublic, board, token);
         data.then((result) => {
             if (result !== null) {
                 console.log("makePost");
