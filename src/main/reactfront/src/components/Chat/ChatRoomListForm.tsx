@@ -1,8 +1,8 @@
-import {useContext, useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useContext, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthContext from '../../store/auth-context';
 import './ChatRoomListForm.css';
-import {POST} from 'store/fetch-auth-action';
+import { POST } from 'store/fetch-auth-action';
 
 type ChatRoom = {
     id: string;
@@ -16,7 +16,7 @@ type Props = {
     chatRooms: ChatRoom[];
 };
 
-const ChatRoomListForm: React.FC<Props> = ({chatRooms}) => {
+const ChatRoomListForm: React.FC<Props> = ({ chatRooms }) => {
     const authCtx = useContext(AuthContext);
     const token = authCtx.token;
     const navigate = useNavigate(); // useNavigate hook 사용
@@ -32,7 +32,7 @@ const ChatRoomListForm: React.FC<Props> = ({chatRooms}) => {
             return;
         }
         console.log(chatRoom.name + '을 클릭함');
-        navigate(`/find/chat/${chatRoom.id}/${chatRoom.name}`);
+        navigate(`/chat/room/${chatRoom.id}`);
     };
 
 
@@ -58,13 +58,13 @@ const ChatRoomListForm: React.FC<Props> = ({chatRooms}) => {
     };
 
     const makeNewRoom = (name: string) => {
-        const URL = '/chat/room/create?name=' + name;
-        const data = {name}
+        const URL = '/chat/room/' + name;
+        const data = { name }
         POST(URL, data, createTokenHeader(authCtx.token)).then((result) => {
             if (result !== null) {
                 const chatRoom: ChatRoom = result.data;
                 console.log("makeRoom: " + chatRoom.id);
-                navigate(`/find/chat/${chatRoom.id}/${chatRoom.name}`);
+                navigate(`/chat/room/${chatRoom.id}`);
             }
         });
     }
@@ -82,20 +82,20 @@ const ChatRoomListForm: React.FC<Props> = ({chatRooms}) => {
             <h1>Chat Room List</h1>
             <table className="chat-room-list">
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>SUBSCRIBER</th>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>SUBSCRIBER</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {chatRooms.map((chatRoom, index) => (
-                    <tr key={chatRoom.id} onClick={() => handleChatRoomClick(chatRoom)}>
-                        <td>{index + 1}</td>
-                        <td>{chatRoom.name}</td>
-                        <td>{chatRoom.number}</td>
-                    </tr>
-                ))}
+                    {chatRooms.map((chatRoom, index) => (
+                        <tr key={chatRoom.id} onClick={() => handleChatRoomClick(chatRoom)}>
+                            <td>{index + 1}</td>
+                            <td>{chatRoom.name}</td>
+                            <td>{chatRoom.number}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
             {showInputBox ? (
@@ -103,7 +103,7 @@ const ChatRoomListForm: React.FC<Props> = ({chatRooms}) => {
                     <label>
                         New Room Name:
                         <input type="text" value={newRoomName} onChange={(event) => setNewRoomName(event.target.value)}
-                               ref={inputRef}/>
+                            ref={inputRef} />
                     </label>
                     <button type="submit">Create Room</button>
                 </form>

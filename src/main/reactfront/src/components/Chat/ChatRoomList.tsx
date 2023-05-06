@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AuthContext from 'store/auth-context';
 import ChatRoomListForm from './ChatRoomListForm';
 
@@ -21,7 +21,7 @@ const ChatRoomList: React.FC = () => {
         setLoading(true);
         const token = authCtx.token;
 
-        fetch('/chat/rooms', {
+        fetch('/chat/room', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ const ChatRoomList: React.FC = () => {
         return <div>{error}</div>;
     }
 
-    return <ChatRoomListForm chatRooms={chatRooms}/>;
+    return <ChatRoomListForm chatRooms={chatRooms} />;
 };
 
 export default ChatRoomList;

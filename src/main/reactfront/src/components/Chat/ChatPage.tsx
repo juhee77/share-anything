@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
-import {Params, useNavigate, useParams} from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Params, useNavigate, useParams } from "react-router-dom";
 import * as Stomp from "@stomp/stompjs";
 import AuthContext from "store/auth-context";
 import "./ChatPage.css";
@@ -20,20 +20,19 @@ type ChatRoom = {
 }
 type props = {
     id: string;
-    name: string;
 };
 
 const ChatPage: React.FC<props> = () => {
     const client = useRef<Stomp.Client | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const {roomId, name} = useParams<Params>();
+    const { roomId, name } = useParams<Params>();
     const [chatRoom, setChatRooms] = useState<ChatRoom>();
 
     const [message, setMessage] = useState<string>("");
     const authCtx = useContext(AuthContext);
     const messageContainerRef = useRef<HTMLDivElement>(null);
     const [enter, setEnter] = useState<boolean>(false);
-    const headers = {Authorization: "Bearer " + authCtx.token};
+    const headers = { Authorization: "Bearer " + authCtx.token };
     const navigate = useNavigate(); // useNavigate hook 사용
     const token = authCtx.token;
 
@@ -93,7 +92,7 @@ const ChatPage: React.FC<props> = () => {
 
         client.current?.subscribe("/sub/chat/" + roomId, (body) => {
             const parsed_body = JSON.parse(body.body);
-            const {messageType, roomId, writer, message, time} = parsed_body; // 파싱된 정보를 추출
+            const { messageType, roomId, writer, message, time } = parsed_body; // 파싱된 정보를 추출
             console.log(parsed_body);
             const nameM = writer + "님: " + message;
 
@@ -203,21 +202,19 @@ const ChatPage: React.FC<props> = () => {
     return (
         <div className="chat-page-container">
             <div className="chat-header">
-                <h1>{name}</h1>
+                <h1>{chatRoom?.name}</h1>
                 <div>{chatRoom?.number}</div>
             </div>
             <div className="chat-messages-container" ref={messageContainerRef}>
                 {messages.map((msg, index) => (
                     <div
                         key={index}
-                        className={`chat-bubble ${
-                            msg.writer === authCtx.userObj.nickname ? "mine" : "theirs"
-                        }`}
+                        className={`chat-bubble ${msg.writer === authCtx.userObj.nickname ? "mine" : "theirs"
+                            }`}
                     >
                         <div
-                            className={`chat-message-writer ${
-                                msg.writer === authCtx.userObj.nickname ? "other" : "me"
-                            }`}
+                            className={`chat-message-writer ${msg.writer === authCtx.userObj.nickname ? "other" : "me"
+                                }`}
                         >
                             {msg.writer}
                         </div>
