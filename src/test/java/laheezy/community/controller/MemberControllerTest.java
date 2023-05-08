@@ -1,6 +1,7 @@
 package laheezy.community.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import laheezy.community.domain.Member;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
@@ -54,6 +55,8 @@ class MemberControllerTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     private Member member, admin;
     private TokenDto login, loginAdmin;
@@ -129,7 +132,10 @@ class MemberControllerTest {
     @Test
     @DisplayName("member 탈퇴 확인")
     public void 탈퇴확인() throws Exception {
+        //given
         initMember();
+
+        //when
         assertTrue(refreshTokenRepository.findByKey(member.getLoginId()).isPresent());
         mockMvc.perform(delete("/member/" + member.getLoginId())
                         .header("Authorization", "Bearer " + login.getAccessToken())
@@ -137,7 +143,10 @@ class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
 
-        assertFalse(member.isActivated());
+        entityManager.flush();
+
+        //then
+        assertFalse(memberService.findById(member.getId()).isActivated());
     }
 
 

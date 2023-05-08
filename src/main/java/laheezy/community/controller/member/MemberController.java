@@ -1,6 +1,5 @@
 package laheezy.community.controller.member;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Member;
 import laheezy.community.service.FileService;
@@ -10,7 +9,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,8 +81,10 @@ public class MemberController {
 
     @DeleteMapping("/member/{loginId}")
     public void DeleteUser(@PathVariable String loginId) {
-        Member findMember = memberService.getMemberWithAuthorities(loginId).get();
-        memberService.deleteMember(findMember);
+        //Member member = memberService.getMemberWithAuthorities().get();
+        Member member = memberService.getMemberWithAuthorities(loginId).get();
+        //TODO 같은 사람인지 확인 (더블 체크 필요)
+        memberService.deleteMember(member);
     }
 
     private MemberController.MemberResponseDto convertToResponseDto(Member findMember) {
@@ -95,6 +95,7 @@ public class MemberController {
         return new MemberResponseDto(findMember.getNickname(), findMember.getLoginId(),
                 findMember.getEmail(), null);
     }
+
     @Data
     @ToString
     @AllArgsConstructor

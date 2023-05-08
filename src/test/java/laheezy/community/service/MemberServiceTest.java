@@ -1,16 +1,17 @@
 package laheezy.community.service;
 
+import jakarta.persistence.EntityManager;
 import laheezy.community.domain.Member;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.exception.CustomException;
+import laheezy.community.repository.MemberRepository;
 import laheezy.community.repository.jwt.RefreshTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,8 @@ class MemberServiceTest {
     private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MemberRepository memberRepository;
 
     private MemberRequestDto requestDto = new MemberRequestDto("PASS", "NAME", "NICKNAME", "EMAIL@naver.com");
 
@@ -79,15 +82,17 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원 탈퇴시에 activate 를 false로 변경") // 회원 정보 삭제( 30일 이후에 삭제 기능 추가)
+    @DisplayName("회원 탈퇴시에 activate 를 false로 변경")
     void deleteMember() {
+        //given
         Member signup = memberService.signup(requestDto);
         assertTrue(signup.isActivated());
-        memberService.login(new LoginDto("NAME", "PASS"));
+        //when
         memberService.deleteMember(signup);
-        assertFalse(signup.isActivated());
+
+        //then
+        assertFalse(memberRepository.findByLoginId(signup.getLoginId()).get().isActivated());
     }
-
-
+    //테스트시에는 새로운 객체를 기준으로 검사할것(객체 기준으로 하지 말자)
 
 }
