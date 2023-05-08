@@ -50,4 +50,9 @@ public class MemberChatroom {
         setMember(member);
         setChatroom(chatRoom);
     }
+
+    public void delete(MemberChatroom memberChatroom) {
+        memberChatroom.member.getMemberChatRooms().remove(this);
+        memberChatroom.chatroom.getNowSubscriber().remove(this);
+    }
 }

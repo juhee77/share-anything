@@ -65,6 +65,7 @@ public class ChatroomService {
 
     @Transactional
     public void deleteRoom(Chatroom chatroom) {
+        log.info("{} 방 제거. ", chatroom.getRoomId());
         chatRoomRepository.delete(chatroom);
     }
 

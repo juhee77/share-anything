@@ -28,7 +28,9 @@ public class MemberChatroomService {
 
     @Transactional
     public void disSubscribe(Member member, Chatroom room) {
-        memberChatRoomRepository.deleteById(findMemberChatroom(member, room).getId());
+        MemberChatroom memberChatroom = findMemberChatroom(member, room);
+        memberChatroom.delete(memberChatroom);
+        memberChatRoomRepository.deleteById(memberChatroom.getId());
     }
 
     public MemberChatroom findMemberChatroom(Member member, Chatroom room) {

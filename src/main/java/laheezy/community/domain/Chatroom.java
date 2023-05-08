@@ -24,7 +24,8 @@ public class Chatroom {
     private String roomName;//채팅방 이름
     private String writer;//생성한 사람 이름
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatroom") //연관관계의 주인을 지정
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatroom", cascade = CascadeType.ALL, orphanRemoval = true)
+    //연관관계의 주인을 지정
     private List<Chatdata> chatDataList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatroom")
