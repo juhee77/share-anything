@@ -76,6 +76,7 @@ public class ChatdataController {
 
 
     //방을 나가면서 구독을 취소한 경우
+    @Transactional
     @MessageMapping("/chat/subscribe/out") //유저가 보낸 메세지를 받는다.
     public void subscribeOut(ChatDataRequestDto message) {
         log.info("out: {}", message);
@@ -91,6 +92,11 @@ public class ChatdataController {
         message.setMessage(message.getWriter() + "님이 퇴장 하셨습니다");
         Chatdata save = chatDataService.save(message, MessageType.EXIT);
         ChatDataResponseDto chatDataResponseDto = convertToDto(save);
+
+        //해당 방에 사람이 없다면 방을 삭제하도록 한다
+        if (room.getNowSubscriber().size() == 0) {
+            chatRoomService.deleteRoom(room);
+        }
         sendingOperations.convertAndSend("/sub/chat/" + message.getRoomId(), chatDataResponseDto);
     }
 

@@ -37,6 +37,7 @@ public class ExceptionHandleFilter extends OncePerRequestFilter {
         try {
             String json = new ObjectMapper().writeValueAsString(ErrorCode.of(errorCode));
             log.info("json : {}", json);
+            response.setStatus(errorCode.getStatus().value()); //상태 코드로 변경
             response.getWriter().write(json);
 
         } catch (IOException e1) {
