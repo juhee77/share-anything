@@ -1,13 +1,12 @@
 package laheezy.community.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import laheezy.community.domain.file.Profile;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,8 +20,6 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @Schema(description = "유저")
 @Builder
-@SQLDelete(sql = "UPDATE member SET activated = false WHERE member_id = ?")
-@Where(clause = "activated = true")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +46,7 @@ public class Member {
     @UpdateTimestamp
     private LocalDateTime lastModified;
 
+    @JsonIgnore
     private boolean activated; //삭제된 user인가(회원 탈퇴)
 
     @Enumerated(EnumType.STRING)
@@ -115,4 +113,7 @@ public class Member {
         profileImage = file;
     }
 
+    public void delete() {
+        this.activated = false;
+    }
 }
