@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -147,8 +148,8 @@ class MemberControllerTest {
 
         entityManager.flush();
 
-        //then //soft delete테스트 domain에서 where조건 삭제시 동작 확인 가능
-        //assertFalse(memberRepository.findById(member.getId()).get().isActivated());
+        //then
+        assertFalse(memberRepository.findByIdWithDeleted(member.getId()).get().isActivated());
     }
 
 
