@@ -1,6 +1,5 @@
 package laheezy.community.service;
 
-import jakarta.persistence.EntityManager;
 import laheezy.community.domain.Member;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
@@ -16,8 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -83,6 +85,7 @@ class MemberServiceTest {
 
     @Test
     @DisplayName("회원 탈퇴시에 activate 를 false로 변경")
+        //soft delete 테스트 domain에서 where삭제시 동작
     void deleteMember() {
         //given
         Member signup = memberService.signup(requestDto);
@@ -91,7 +94,37 @@ class MemberServiceTest {
         memberService.deleteMember(signup);
 
         //then
-        assertFalse(memberRepository.findByLoginId(signup.getLoginId()).get().isActivated());
+        //assertFalse(memberRepository.findByLoginId(signup.getLoginId()).get().isActivated());
+    }
+
+    @Test
+    @DisplayName("조회시에 activate = ture인 멤버만 조회")
+    void findMember() {
+        //given
+        Member signup = memberService.signup(requestDto);
+        for (int i = 0; i < 5; i++) {
+            memberService.signup(new MemberRequestDto("pass" + i, "loginId" + i, "nick" + i, "email@go.c" + i));
+        }
+        assertThat(memberRepository.findAll().size()).isEqualTo(6);
+
+        //when
+        memberService.deleteMember(signup);
+
+        //then
+        assertThat(memberRepository.findAll().size()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("만약 삭제된 객체를 조회하면 반환하지 않는다. ")
+    void findOneMember() {
+        //given
+        Member signup = memberService.signup(requestDto);
+
+        //when
+        memberService.deleteMember(signup);
+
+        //then
+        assertThat(memberRepository.findById(signup.getId())).isEqualTo(Optional.empty());
     }
     //테스트시에는 새로운 객체를 기준으로 검사할것(객체 기준으로 하지 말자)
 

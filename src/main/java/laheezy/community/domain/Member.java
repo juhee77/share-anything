@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Schema(description = "유저")
 @Builder
 @SQLDelete(sql = "UPDATE member SET activated = false WHERE member_id = ?")
+@Where(clause = "activated = true")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

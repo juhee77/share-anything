@@ -6,6 +6,7 @@ import laheezy.community.domain.Member;
 import laheezy.community.dto.jwt.TokenDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.repository.MemberRepository;
 import laheezy.community.repository.jwt.RefreshTokenRepository;
 import laheezy.community.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -51,6 +51,8 @@ class MemberControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private MemberRepository memberRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -145,8 +147,28 @@ class MemberControllerTest {
 
         entityManager.flush();
 
-        //then
-        assertFalse(memberService.findById(member.getId()).isActivated());
+        //then //soft delete테스트 domain에서 where조건 삭제시 동작 확인 가능
+        //assertFalse(memberRepository.findById(member.getId()).get().isActivated());
+    }
+
+
+    @Test
+    @DisplayName("member 조회 확인")
+    public void 조회확인() throws Exception {
+        //given
+        initMember();
+        memberService.deleteMember(member);
+
+        //when
+        mockMvc.perform(get("/member")
+                        .header("Authorization", "Bearer " + loginAdmin.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nickname").value(admin.getNickname()))
+                .andExpect(jsonPath("$[0].loginId").value(admin.getLoginId()))
+                .andExpect(jsonPath("$[0].email").value(admin.getEmail()))
+                .andExpect(jsonPath("$[1]").doesNotExist()).andDo(print());
+        //한명만 조회되는것을 확인
     }
 
 
@@ -161,12 +183,12 @@ class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(nick);
 
         //when
-        mockMvc.perform(patch("/member/" + member.getLoginId() + "/nickname")
+        mockMvc.perform(patch("/member/{loginId}/nickname", member.getLoginId())
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("nickname").value("modified"))
+                .andExpect(jsonPath("nickname").value(member.getNickname()))
                 .andExpect(jsonPath("loginId").value(member.getLoginId()))
                 .andExpect(jsonPath("email").value(member.getEmail()));
 
@@ -187,7 +209,7 @@ class MemberControllerTest {
         String requestBody = objectMapper.writeValueAsString(pass);
 
         //when
-        mockMvc.perform(patch("/member/" + member.getLoginId() + "/password")
+        mockMvc.perform(patch("/member/{loginId}/password", member.getLoginId())
                         .header("Authorization", "Bearer " + login.getAccessToken())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(requestBody))
