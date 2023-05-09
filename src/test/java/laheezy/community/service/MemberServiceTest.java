@@ -18,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -85,7 +84,6 @@ class MemberServiceTest {
 
     @Test
     @DisplayName("회원 탈퇴시에 activate 를 false로 변경")
-        //soft delete 테스트 domain에서 where삭제시 동작
     void deleteMember() {
         //given
         Member signup = memberService.signup(requestDto);
@@ -94,7 +92,7 @@ class MemberServiceTest {
         memberService.deleteMember(signup);
 
         //then
-        //assertFalse(memberRepository.findByLoginId(signup.getLoginId()).get().isActivated());
+        assertFalse(memberRepository.findByIdWithDeleted(signup.getId()).get().isActivated());
     }
 
     @Test
