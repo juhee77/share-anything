@@ -4,16 +4,18 @@ import laheezy.community.domain.Member;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberRequestDto;
 import laheezy.community.exception.CustomException;
+import laheezy.community.repository.MemberRepository;
 import laheezy.community.repository.jwt.RefreshTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +31,8 @@ class MemberServiceTest {
     private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MemberRepository memberRepository;
 
     private MemberRequestDto requestDto = new MemberRequestDto("PASS", "NAME", "NICKNAME", "EMAIL@naver.com");
 
@@ -79,15 +83,47 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원 탈퇴시에 activate 를 false로 변경") // 회원 정보 삭제( 30일 이후에 삭제 기능 추가)
+    @DisplayName("회원 탈퇴시에 activate 를 false로 변경")
     void deleteMember() {
+        //given
         Member signup = memberService.signup(requestDto);
         assertTrue(signup.isActivated());
-        memberService.login(new LoginDto("NAME", "PASS"));
+        //when
         memberService.deleteMember(signup);
-        assertFalse(signup.isActivated());
+
+        //then
+        assertFalse(memberRepository.findByIdWithDeleted(signup.getId()).get().isActivated());
     }
 
+    @Test
+    @DisplayName("조회시에 activate = ture인 멤버만 조회")
+    void findMember() {
+        //given
+        Member signup = memberService.signup(requestDto);
+        for (int i = 0; i < 5; i++) {
+            memberService.signup(new MemberRequestDto("pass" + i, "loginId" + i, "nick" + i, "email@go.c" + i));
+        }
+        assertThat(memberRepository.findAll().size()).isEqualTo(6);
 
+        //when
+        memberService.deleteMember(signup);
+
+        //then
+        assertThat(memberRepository.findAll().size()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("만약 삭제된 객체를 조회하면 반환하지 않는다. ")
+    void findOneMember() {
+        //given
+        Member signup = memberService.signup(requestDto);
+
+        //when
+        memberService.deleteMember(signup);
+
+        //then
+        assertThat(memberRepository.findById(signup.getId())).isEqualTo(Optional.empty());
+    }
+    //테스트시에는 새로운 객체를 기준으로 검사할것(객체 기준으로 하지 말자)
 
 }
