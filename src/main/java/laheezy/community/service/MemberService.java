@@ -108,7 +108,7 @@ public class MemberService {
 
 
     public MemberDto getMemberByLoginId(String loginId) {
-        return memberRepositoryImpl.findByLoginIdWithProfile(loginId);
+        return memberRepositoryImpl.findByLoginId(loginId);
     }
 
     @Transactional
@@ -155,14 +155,14 @@ public class MemberService {
         if (refreshTokenRepository.findByKey(findMember.getLoginId()).isPresent()) {
             refreshTokenRepository.deleteByKey(findMember.getLoginId());
 
-        } else {
+        }else{
             throw new CustomException(ALREADY_LOGOUT);
         }
     }
 
     @Transactional
     public void deleteMember(Member findMember) {
-        memberRepository.delete(findMember);
+        findMember.delete();
     }
 
     public List<Post> getMyPost(Member member) {
