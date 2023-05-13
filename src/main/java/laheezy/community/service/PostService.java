@@ -3,6 +3,7 @@ package laheezy.community.service;
 import laheezy.community.domain.Following;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
+import laheezy.community.dto.post.PostListResponse;
 import laheezy.community.dto.post.PostModifyDto;
 import laheezy.community.dto.post.PostResponseDto;
 import laheezy.community.exception.CustomException;
@@ -11,13 +12,14 @@ import laheezy.community.repository.PostRepository;
 import laheezy.community.repository.PostRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,6 +43,23 @@ public class PostService {
     @Transactional
     public void deletePost(Post post) {
         postRepository.deleteById(post.getId());
+    }
+
+    public PostListResponse searchAll(Pageable pageable) {
+        log.info("pageable : {} ", pageable);
+        Page<Post> posts = postRepository.findAll(pageable);
+        List<PostResponseDto> postResponseDtos = getPostDtos(posts);
+        return new PostListResponse(postResponseDtos, pageable, posts);
+    }
+
+    private List<PostResponseDto> getPostDtos(Page<Post> posts) {
+        List<PostResponseDto> dtos = new ArrayList<>();
+
+        for (Post post : posts) {
+            PostResponseDto postResponseDto = PostResponseDto.toPostResponseDto(post);
+            dtos.add(postResponseDto);
+        }
+        return dtos;
     }
 
     public Post findById(long id) {
