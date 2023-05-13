@@ -33,4 +33,5 @@ Spring + React 이용 프로젝트
 테스트, 서버 데이터 베이스 분리  
 Cors Origin 문제   
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/51548333/235339281-6cd017db-196f-4590-8d04-526f0f2948e4.png"><img width="600" alt="image" src="https://user-images.githubusercontent.com/51548333/235339317-5743b589-cf12-4c4d-ab96-9228e7238be4.png">
+<img width="600" alt="image" src="https://github.com/juhee77/share-anything/assets/51548333/994cf71b-0782-4aa7-97ee-e7c15ad3bc94">
+<img width="600" alt="image" src="https://github.com/juhee77/share-anything/assets/51548333/116e6226-2a83-477a-a593-5729b1260924">
