@@ -23,7 +23,7 @@ public class PostResponseDto {
     private long heartCnt;
     private String board;
 
-    public PostResponseDto toPostResponseDto(Post post) {
+    public static PostResponseDto toPostResponseDto(Post post) {
         return PostResponseDto.builder()
                 .postId(post.getId())
                 .writer(post.getMember().getNickname())
