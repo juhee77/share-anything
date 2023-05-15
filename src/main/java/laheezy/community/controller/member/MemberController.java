@@ -1,5 +1,6 @@
 package laheezy.community.controller.member;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Member;
 import laheezy.community.service.FileService;
@@ -29,12 +30,14 @@ public class MemberController {
     //admin권한에서 테스트 용
     @GetMapping("/member/{loginId}")
     //@PreAuthorize("hasAnyRole('ROLE_ADMIN')") --> spring security config 부분에서 처리
+    @Operation(summary = "loginId 조회(한명의 유저 확인)", tags = {"admin"})
     public ResponseEntity<MemberResponseDto> getUserInfo(@PathVariable String loginId) {
         Member findMember = memberService.getMemberWithAuthorities(loginId).get();
         return ResponseEntity.ok(convertToResponseDto(findMember));
     }
 
     @GetMapping("/member")
+    @Operation(summary = "전체멤버 확인")
     public List<MemberResponseDto> findAll() {
         List<Member> allMember = memberService.findAllMember();
         List<MemberResponseDto> responseDto = new ArrayList<>();
@@ -45,6 +48,7 @@ public class MemberController {
     }
 
     @GetMapping("/my/profile")
+    @Operation(description = "profile 확인", tags = {"my"})
     public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
         Member findMember = memberService.getMemberWithAuthorities().get();
         return ResponseEntity.ok(convertToResponseDto(findMember));
@@ -52,6 +56,7 @@ public class MemberController {
 
 
     @PatchMapping("/member/{loginId}/nickname")
+    @Operation(summary = "전체멤버 확인")
     public ResponseEntity<MemberResponseDto> modifyNickname(@PathVariable String loginId, @RequestBody Map<String, String> nickname) {
         log.info("modifyName");
         Member findMember = memberService.getMemberWithAuthorities().get();
@@ -61,6 +66,7 @@ public class MemberController {
     }
 
     @PatchMapping("/member/{loginId}/password")
+    @Operation(summary = "패스워드 변경", tags = {"my"})
     public void modifyPassword(@PathVariable String loginId, @RequestBody Map<String, String> password) {
         log.info("modifyPassword");
         Member findMember = memberService.getMemberWithAuthorities().get();
@@ -74,12 +80,14 @@ public class MemberController {
     }
 
     @PostMapping("/member/{loginId}/logout")
+    @Operation(summary = "log out", tags = {"my"})
     public void logoutUser(@PathVariable String loginId) {
         Member findMember = memberService.getMemberWithAuthorities(loginId).get();
         memberService.logout(findMember);
     }
 
     @DeleteMapping("/member/{loginId}")
+    @Operation(summary = "회원 탈퇴", tags = {"my"})
     public void DeleteUser(@PathVariable String loginId) {
         //Member member = memberService.getMemberWithAuthorities().get();
         Member member = memberService.getMemberWithAuthorities(loginId).get();

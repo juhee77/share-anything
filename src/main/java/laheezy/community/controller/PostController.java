@@ -77,7 +77,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/my/post")
-    @Operation(summary = "본인의 작성 포스트 확인", description = "자신의 포스트 확인")//페이징 기능 넣어야 한다.
+    @Operation(summary = "본인의 작성 포스트 확인", description = "자신의 포스트 확인", tags = {"my"})//페이징 기능 넣어야 한다.
     public List<PostResponseDto> findMyPost() {
         log.info("자신의 포스트 확인");
 
@@ -121,6 +121,7 @@ public class PostController {
 //    }
 
     @GetMapping("/board/{boardName}")
+    @Operation(summary = "board 내에 포스트를 모두 조회한다.")
     public List<PostResponseDto> findAllPost(@PathVariable("boardName") String boardName) {
         log.info("[BoardController] 해단 board의 post 조회 (공개 되어 있는것만) ");
         boardService.getBoardWithActive(boardName); //board가 활성화 되어있는 board 인지, 사용중지 된 board가 아닌지

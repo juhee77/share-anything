@@ -45,7 +45,7 @@ public class CommentController {
     }
 
     @GetMapping("/my/comment")
-    @Operation(summary = "본인의 작성 댓글 확인", description = "자신의 댓글 확인")//페이징 기능 넣어야 한다.
+    @Operation(summary = "본인의 작성 댓글 확인", description = "자신의 댓글 확인", tags = {"my"})//페이징 기능 넣어야 한다.
     public List<CommentResponseDto> findMyComment() {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         List<Comment> myComments = memberService.getMyComment(nowLogin);
@@ -66,6 +66,7 @@ public class CommentController {
     public void deleteComment(@PathVariable("commentId") Long commentId) {
         commentService.removeComment(commentId);
     }
+
     @PatchMapping("/post/{postId}/comment/{commentId}")
     @Operation(summary = "댓글을 수정 한다.")
     public CommentResponseDto modifyComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @Valid @RequestBody CommentRequestDto requestMakeCommentDto) {

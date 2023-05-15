@@ -13,6 +13,7 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Component
+//@Order(Ordered.HIGHEST_PRECEDENCE + 99) //spring secutrity보다 인터셉터의 우선순위를 올린다.
 public class StompHandler implements ChannelInterceptor {
     private final TokenProvider tokenProvider;
 

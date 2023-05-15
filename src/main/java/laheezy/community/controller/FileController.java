@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import laheezy.community.domain.Member;
 import laheezy.community.domain.Post;
 import laheezy.community.domain.file.File;
-import laheezy.community.domain.file.FileType;
 import laheezy.community.service.FileService;
 import laheezy.community.service.MemberService;
 import laheezy.community.service.PostService;
@@ -53,7 +52,7 @@ public class FileController {
     @NotNull
     private ResponseEntity<UrlResource> getUrlResourceResponseEntity(File uploadFile) {
         String uploadFileName = uploadFile.getOriginName();
-        UrlResource resource =  fileService.convertToUrlResource(uploadFile);
+        UrlResource resource = fileService.convertToUrlResource(uploadFile);
         log.info("uploadFileName={}", uploadFileName);
         String encodedUploadFileName = UriUtils.encode(uploadFileName, StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedUploadFileName + "\"";

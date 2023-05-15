@@ -9,7 +9,6 @@ import laheezy.community.service.FollowingService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +46,7 @@ public class FollowingController {
     }
 
     @DeleteMapping("/follow/{memberId}")
+    @Operation(summary = "memberId 친구와의 팔로우를 해제한다.")
     public ResponseEntity<String> removeFollowing(@PathVariable("memberId") Long memberId) {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         Member following = memberService.findById(memberId);
@@ -55,7 +55,7 @@ public class FollowingController {
     }
 
     @GetMapping("/my/follower")
-    @Operation(summary = "나를 팔로잉 하는 사람 확인")
+    @Operation(summary = "나를 팔로잉 하는 사람 확인", tags = {"my"})
     public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollower() {
         List<Following> follower = memberService.getMemberWithAuthorities().get().getFollower();
         List<MemberFollowingResponseDto> shortDtos = getCollect(follower);
@@ -63,7 +63,7 @@ public class FollowingController {
     }
 
     @GetMapping("/my/following")
-    @Operation(summary = "내가 팔로우 하는 사람 확인")
+    @Operation(summary = "내가 팔로우 하는 사람 확인", tags = {"my"})
     public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollowing() {
         List<Following> follow = memberService.getMemberWithAuthorities().get().getFollowing();
         List<MemberFollowingResponseDto> shortDtos = getCollect(follow);

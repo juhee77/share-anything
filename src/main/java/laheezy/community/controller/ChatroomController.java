@@ -45,7 +45,7 @@ public class ChatroomController {
     }
 
     @DeleteMapping("/room/{roomId}")
-    @Operation(summary = "채팅 방 삭제", description = "admin권한에서만 삭제가능하도록 한다. ")
+    @Operation(summary = "채팅 방 삭제", description = "admin권한에서만 삭제가능하도록 한다. ", tags = "admin")
     public void deleteRoom(@PathVariable("roomId") String roomId) {
         Member nowLogin = memberService.getMemberWithAuthorities().get();
         log.info("deleteRoom : {}방을 {}가 삭제하길 요청", roomId, nowLogin.getNickname());
