@@ -2,8 +2,6 @@ package laheezy.community.jwt;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import laheezy.community.exception.CustomSecurityException;
-import laheezy.community.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -29,10 +27,10 @@ public class JwtFilter extends GenericFilter {
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("인증 정보를 저장했습니다 {}, uri: {}, role : {}", authentication.getName(), requestURI, authentication.getAuthorities());
+            log.info("인증 정보를 저장했습니다. name: {}, uri: {}, role : {}", authentication.getName(), requestURI, authentication.getAuthorities());
 
         } else {
-            log.info("유효한 JWT토큰이 없습니다, uri:{}", requestURI);
+            log.info("유효한 JWT토큰이 없습니다. uri:{}", requestURI);
         }
         chain.doFilter(request, response);
     }
@@ -40,8 +38,7 @@ public class JwtFilter extends GenericFilter {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            String trim = bearerToken.split(" ")[1].trim(); //.substring(7)
-            return trim;
+            return bearerToken.split(" ")[1].trim();
         }
         return null;
     }
