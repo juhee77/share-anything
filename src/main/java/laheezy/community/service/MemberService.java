@@ -10,6 +10,7 @@ import laheezy.community.dto.jwt.TokenRequestDto;
 import laheezy.community.dto.member.LoginDto;
 import laheezy.community.dto.member.MemberDto;
 import laheezy.community.dto.member.MemberRequestDto;
+import laheezy.community.dto.member.MemberResponseDto;
 import laheezy.community.exception.CustomException;
 import laheezy.community.exception.ErrorCode;
 import laheezy.community.jwt.TokenProvider;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static laheezy.community.exception.ErrorCode.*;
@@ -173,8 +175,11 @@ public class MemberService {
         return member.getComments();
     }
 
-    public List<Member> findAllMember() {
-        return memberRepository.findAll();
+    public List<MemberResponseDto> findAllMember() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponseDto::getInstance)
+                .toList();
     }
 
     public Member findById(Long memberId) {
@@ -222,4 +227,8 @@ public class MemberService {
         member.setProfile(null);
     }
 
+    public void updatePassword(Member findMember, Map<String, String> password) {
+        checkPassword(findMember, password.get("exPassword"));
+        modifyPassword(findMember, password.get("newPassword"));
+    }
 }

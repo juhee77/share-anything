@@ -31,48 +31,18 @@ public class MemberAuthController {
     private final MemberService memberService;
 
     @PostMapping(value = "/signup")
-//, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "회원가입", description = "회원 가입 API")
     @ApiResponse(responseCode = "200", description = "successfulOperation", content = @Content(schema = @Schema(implementation = MemberRequestDto.class)))
-    //@ApiResponse(responseCode = "400", description = "failOperation", content = @Content(schema = @Schema(implementation = MemberResponseDto.class)))
     public ResponseEntity<MemberResponseDto> signup(@ModelAttribute @Valid MemberRequestDto memberRequestDto) throws IOException {
-        log.info("회원가입 시도:{} ", memberRequestDto);
-        //회원 가입부분(이미지 업로드 전)
         Member savedMember = memberService.signup(memberRequestDto);
-        //회원 이미지 업로드 부분
         fileService.storeProFile(memberRequestDto.getProfileImg(), savedMember);
-
-        MemberResponseDto memberResponseDto = MemberResponseDto.builder()
-                .email(savedMember.getEmail())
-                .loginId(savedMember.getLoginId())
-                .nickname(savedMember.getNickname())
-                .joinDateTime(savedMember.getJoinDate())
-                //.profileImage(new UrlResource("file:" + fileService.getFullPath(savedMember.getProfileImage().getStoreName())))
-                .build();
-        log.info("회원가입 완료");
-        return ResponseEntity.ok(memberResponseDto);
+        return ResponseEntity.ok(MemberResponseDto.getInstance(savedMember));
     }
-
-
-//    @PostMapping("/authenticate")
-//    public ResponseEntity<String> authorize(@Valid @RequestBody LoginDto loginDto) {
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getLoginId(), loginDto.getPassword());
-//
-//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        String jwt = tokenProvider.createToken(authentication);
-//
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-//        return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
-//    }
 
     @PostMapping("/login")
     @Operation(summary = "로그인")
     public ResponseEntity<TokenDto> login(@Valid @RequestBody LoginDto loginDto) {
-        TokenDto loginResponse = memberService.login(loginDto);
-        return ResponseEntity.ok(loginResponse);
+        return ResponseEntity.ok(memberService.login(loginDto));
     }
 
     @PostMapping("/reissue")
