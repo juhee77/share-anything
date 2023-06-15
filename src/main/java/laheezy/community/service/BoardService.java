@@ -27,7 +27,6 @@ public class BoardService {
     private final BoardRepositoryImpl boardRepositoryImpl;
 
     public Board getBoardWithActive(String board) {
-        log.info("find board in acive : {}", board);
         return getBoardByNameInActive(board);
     }
 
@@ -41,13 +40,11 @@ public class BoardService {
 
 
     public Board getBoardByName(String board) {
-        log.info("find board by id : {}", board);
         return boardRepository.findByName(board).get();
     }
 
     @Transactional
     public Board makeBoard(Board board) {
-        log.info("save board : {}", board);
         validateDuplicateName(board.getName());
         return boardRepository.save(board);
     }
@@ -64,14 +61,11 @@ public class BoardService {
 
     @Transactional
     public void deleteBoard(Board nowBoard) {
-        if (nowBoard.getPosts().size() == 0) {
-            //그냥 제거
+        if (nowBoard.getPosts().size() == 0) {//그냥 제거
             boardRepository.delete(nowBoard);
-        } else if (Duration.between(nowBoard.getLastmodified(), LocalDateTime.now()).toDays() <= 7) {
-            //7일 이내에 사용된적이 있으면 삭제 불가능
+        } else if (Duration.between(nowBoard.getLastmodified(), LocalDateTime.now()).toDays() <= 7) {//7일 이내에 사용된적이 있으면 삭제 불가능
             throw new CustomException(INVALID_BOARD_COMMAND);
-        } else {
-            //inactive 처리 => 7일 이내에 사용된적도 없음
+        } else {//inactive 처리 => 7일 이내에 사용된적도 없음
             nowBoard.setInactive();
         }
     }
