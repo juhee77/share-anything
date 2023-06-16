@@ -81,19 +81,15 @@ public class ChatdataController {
     public void subscribeOut(ChatDataRequestDto message) {
         log.info("out: {}", message);
 
-        //방을 나가면 구독 자체를 취소하도록 한다.
         Member member = memberService.findByNickname(message.getWriter());
         Chatroom room = chatRoomService.findRoomByRoomId(message.getRoomId());
 
-        //구독 취소
         memberChatRoomService.disSubscribe(member, room);
 
-        //퇴장 문구
         message.setMessage(message.getWriter() + "님이 퇴장 하셨습니다");
         Chatdata save = chatDataService.save(message, MessageType.EXIT);
         ChatDataResponseDto chatDataResponseDto = convertToDto(save);
 
-        //해당 방에 사람이 없다면 방을 삭제하도록 한다
         if (room.getNowSubscriber().size() == 0) {
             chatRoomService.deleteRoom(room);
         }

@@ -28,16 +28,37 @@ public class FollowingController {
     @PostMapping("/follow/{memberId}")
     @Operation(summary = "memberId를 팔로우 한다.")
     public ResponseEntity<List<MemberFollowingResponseDto>> addFollwing(@PathVariable("memberId") Long memberId) {
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
         Member following = memberService.findById(memberId);
         checkSamePeople(nowLogin, following);
         followingService.addFollowing(nowLogin, following);
 
-        List<Following> follow = nowLogin.getFollowing();
-        List<MemberFollowingResponseDto> shortDtos = getCollect(follow);
-
-        return ResponseEntity.ok(shortDtos);
+        return ResponseEntity.ok(getMemberResponseDtoList(nowLogin.getFollowing()));
     }
+
+    @DeleteMapping("/follow/{memberId}")
+    @Operation(summary = "memberId 친구와의 팔로우를 해제한다.")
+    public ResponseEntity<Void> removeFollowing(@PathVariable("memberId") Long memberId) {
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
+        Member following = memberService.findById(memberId);
+        followingService.deleteFollowing(nowLogin, following);
+        return ResponseEntity.ok().body(null);
+    }
+
+    @GetMapping("/my/follower")
+    @Operation(summary = "나를 팔로잉 하는 사람 확인", tags = {"my"})
+    public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollower() {
+        List<Following> follower = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new).getFollower();
+        return ResponseEntity.ok(getMemberResponseDtoList(follower));
+    }
+
+    @GetMapping("/my/following")
+    @Operation(summary = "내가 팔로우 하는 사람 확인", tags = {"my"})
+    public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollowing() {
+        List<Following> follow = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new).getFollowing();
+        return ResponseEntity.ok(getMemberResponseDtoList(follow));
+    }
+
 
     private void checkSamePeople(Member follower, Member following) {
         if (follower == following) {
@@ -45,37 +66,9 @@ public class FollowingController {
         }
     }
 
-    @DeleteMapping("/follow/{memberId}")
-    @Operation(summary = "memberId 친구와의 팔로우를 해제한다.")
-    public ResponseEntity<String> removeFollowing(@PathVariable("memberId") Long memberId) {
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
-        Member following = memberService.findById(memberId);
-        followingService.deleteFollowing(nowLogin, following);
-        return ResponseEntity.ok("ok");
-    }
-
-    @GetMapping("/my/follower")
-    @Operation(summary = "나를 팔로잉 하는 사람 확인", tags = {"my"})
-    public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollower() {
-        List<Following> follower = memberService.getMemberWithAuthorities().get().getFollower();
-        List<MemberFollowingResponseDto> shortDtos = getCollect(follower);
-        return ResponseEntity.ok(shortDtos);
-    }
-
-    @GetMapping("/my/following")
-    @Operation(summary = "내가 팔로우 하는 사람 확인", tags = {"my"})
-    public ResponseEntity<List<MemberFollowingResponseDto>> getMyFollowing() {
-        List<Following> follow = memberService.getMemberWithAuthorities().get().getFollowing();
-        List<MemberFollowingResponseDto> shortDtos = getCollect(follow);
-
-        return ResponseEntity.ok(shortDtos);
-    }
-
-
     //팔로우, 팔로잉 하는 사람들 리턴
-    private static List<MemberFollowingResponseDto> getCollect(List<Following> follow) {
+    private static List<MemberFollowingResponseDto> getMemberResponseDtoList(List<Following> follow) {
         return follow.stream().map(new MemberFollowingResponseDto()::toMemberResponseDto).collect(Collectors.toList());
     }
-
 
 }

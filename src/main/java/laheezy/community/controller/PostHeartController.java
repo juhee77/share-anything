@@ -28,8 +28,7 @@ public class PostHeartController {
     @Operation(summary = "포스트 좋아요", description = "포스트 좋아요")
     public PostHeartResponseDto addPostHeart(@PathVariable("postId") Long postId) {
         Post heartPost = postService.findById(postId);
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
-        log.info("{}", nowLogin);
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
 
         return toConvertPostResponseDto(postHeartService.addHeart(nowLogin, heartPost));
     }
@@ -38,7 +37,8 @@ public class PostHeartController {
     @Operation(summary = "포스트 좋아요 삭제", description = "포스트 좋아요 삭제")
     public void deletePostHeart(@PathVariable("postId") Long postId) {
         Post heartPost = postService.findById(postId);
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
+
         postHeartService.deleteHeart(nowLogin, heartPost);
     }
 
@@ -46,7 +46,8 @@ public class PostHeartController {
     @Operation(summary = "포스트 좋아요 확인", description = "포스트 좋아요 확인")
     public Boolean checkPostHeart(@PathVariable("postId") Long postId) {
         Post heartPost = postService.findById(postId);
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
+
         return postHeartService.checkAlreadyHeart(nowLogin, heartPost);
     }
 }

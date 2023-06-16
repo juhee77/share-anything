@@ -18,8 +18,6 @@ public class CommentService {
 
     @Transactional
     public Comment writeComment(Comment comment) {
-        //validate
-        //log.info("coupon:{}", coupon.getDiscount(),coupon.getDiscountType());
         return commentRepository.save(comment);
     }
 

@@ -24,9 +24,8 @@ public class CustomUserDetailService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String loginId) {
         return memberRepository.findOneWithAuthoritiesByLoginId(loginId)
-                .map(member -> createUser(member))
+                .map(this::createUser)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_MEMBER_PROFILE));
-        // .orElseThrow(() -> new UsernameNotFoundException(loginId + " -> 데이터 베이스에서 찾을수 없습니다"));
     }
 
     private User createUser(Member member) {

@@ -28,8 +28,7 @@ public class CommentHeartController {
     @Operation(summary = "댓글 좋아요", description = "댓글 좋아요")
     public CommentHeartResponseDto addCommentHeart(@PathVariable("commentId") Long commentId) {
         Comment heartComment = commentService.findById(commentId);
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
-        log.info("{}", nowLogin);
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
 
         return toConvertPostResponseDto(commentHeartService.addHeart(nowLogin, heartComment));
     }
@@ -38,7 +37,8 @@ public class CommentHeartController {
     @Operation(summary = "댓글 좋아요 삭제", description = "댓글 좋아요 삭제")
     public void deleteCommentHeart(@PathVariable("commentId") Long commentId) {
         Comment heartComment = commentService.findById(commentId);
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
+
         commentHeartService.deleteHeart(nowLogin, heartComment);
     }
 
@@ -46,7 +46,8 @@ public class CommentHeartController {
     @Operation(summary = "댓글 좋아요 확인", description = "댓글 좋아요 확인")
     public boolean checkCommentHeart(@PathVariable("commentId") Long commentId) {
         Comment heartComment = commentService.findById(commentId);
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
+
         return commentHeartService.checkAlreadyHeart(nowLogin, heartComment);
     }
 }

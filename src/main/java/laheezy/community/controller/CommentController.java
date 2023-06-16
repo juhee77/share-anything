@@ -31,7 +31,7 @@ public class CommentController {
     @PostMapping("/post/{postId}/comment")
     @Operation(summary = "댓글 생성")
     public CommentResponseDto makeComment(@PathVariable("postId") Long postId, @Valid @RequestBody CommentRequestDto requestMakeCommentDto) {
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
         Post post = postService.findById(postId);
         Comment comment = Comment.builder()
                 .member(nowLogin)
@@ -47,18 +47,15 @@ public class CommentController {
     @GetMapping("/my/comment")
     @Operation(summary = "본인의 작성 댓글 확인", description = "자신의 댓글 확인", tags = {"my"})//페이징 기능 넣어야 한다.
     public List<CommentResponseDto> findMyComment() {
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
-        List<Comment> myComments = memberService.getMyComment(nowLogin);
-        return changeResponseCommentDtos(myComments);
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
+        return changeResponseCommentDtos(memberService.getMyComment(nowLogin));
     }
 
 
     @GetMapping("/post/{postId}/comment")
     @Operation(summary = "포스트별 댓글을 확인한다.")
     public List<CommentResponseDto> findPostComment(@PathVariable("postId") Long postId) {
-        Post post = postService.findById(postId);
-        List<Comment> postComments = post.getComments();
-        return changeResponseCommentDtos(postComments);
+        return changeResponseCommentDtos(postService.findById(postId).getComments());
     }
 
     @DeleteMapping("/comment/{commentId}")
@@ -70,7 +67,7 @@ public class CommentController {
     @PatchMapping("/post/{postId}/comment/{commentId}")
     @Operation(summary = "댓글을 수정 한다.")
     public CommentResponseDto modifyComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @Valid @RequestBody CommentRequestDto requestMakeCommentDto) {
-        Member nowLogin = memberService.getMemberWithAuthorities().get();
+        Member nowLogin = memberService.getMemberWithAuthorities().orElseThrow(RuntimeException::new);
         Post post = postService.findById(postId);
         Comment comment = Comment.builder()
                 .member(nowLogin)
@@ -79,8 +76,7 @@ public class CommentController {
                 .isOpen(requestMakeCommentDto.isOpen())
                 .build();
 
-        Comment savedComment = commentService.findById(commentId);
-        Comment modify = commentService.modify(savedComment, comment);
+        Comment modify = commentService.modify(commentService.findById(commentId), comment);
         return new CommentResponseDto().toCommentResponseDto(modify);
     }
 
