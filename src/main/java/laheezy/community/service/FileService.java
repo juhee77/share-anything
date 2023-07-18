@@ -28,7 +28,6 @@ import static laheezy.community.exception.ErrorCode.INVALID_FILE_TO_TRANSFER;
 @Slf4j
 public class FileService {
     private final FileRepository fileRepository;
-    private final MemberService memberService;
 
     @Value("${file.dir}")
     private String fileDir;
@@ -46,7 +45,7 @@ public class FileService {
         //기존이미지 드랍(1:1);
         if (member.getProfileImage() != null) {
             dropProfileImage(member.getProfileImage().getId());
-            memberService.dropProfileImage(member);
+            member.setProfile(null);
         }
 
         //새로운 이미지 업로드

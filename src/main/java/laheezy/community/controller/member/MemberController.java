@@ -5,12 +5,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import laheezy.community.domain.Member;
 import laheezy.community.dto.member.MemberResponseDto;
-import laheezy.community.service.FileService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,6 @@ import static laheezy.community.dto.member.MemberResponseDto.getInstance;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final FileService fileService;
 
     //admin
     @GetMapping("/member/{loginId}")
@@ -47,6 +47,13 @@ public class MemberController {
         return ResponseEntity.ok(getInstance(getNowContextMember()));
     }
 
+    //TODO 이미지 추가 기능
+    @PostMapping(value = "/member/{loginId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //TODODODO
+    public ResponseEntity<MemberResponseDto> uploadAvatar(
+            @PathVariable String loginId,
+            @RequestParam(value = "file") MultipartFile multipartFile) {
+        return ResponseEntity.ok(getInstance(memberService.uploadAvatar(loginId, multipartFile)));
+    }
 
     @PatchMapping("/member/{loginId}/nickname")
     @Operation(summary = "전체멤버 확인")

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import static laheezy.community.dto.commentHeart.CommentHeartResponseDto.toConvertPostResponseDto;
 
 @RestController
-@RequestMapping()
 @Tag(name = "CommentHeart controller", description = "Comment 좋아요 기능을 관리합니다")
 @Slf4j
 @RequiredArgsConstructor

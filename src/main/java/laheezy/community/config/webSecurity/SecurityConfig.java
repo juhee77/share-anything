@@ -73,7 +73,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/auth/**").permitAll() //인증 관련 모두 통과 시킨다.
                 .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/post").permitAll()
                 .requestMatchers(HttpMethod.GET, "/member", "/member/{loginId}").hasAnyAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE,"/chat/room/{roomId}").hasAnyAuthority("ROLE_ADMIN")

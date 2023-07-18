@@ -16,10 +16,12 @@ import laheezy.community.service.FileService;
 import laheezy.community.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,15 +29,13 @@ import java.io.IOException;
 @Tag(name = "Member Auth", description = "Member Auth Controller")
 @Slf4j
 public class MemberAuthController {
-    private final FileService fileService;
     private final MemberService memberService;
 
-    @PostMapping(value = "/signup")
+    @PostMapping(value = "/signup",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "회원가입", description = "회원 가입 API")
     @ApiResponse(responseCode = "200", description = "successfulOperation", content = @Content(schema = @Schema(implementation = MemberRequestDto.class)))
-    public ResponseEntity<MemberResponseDto> signup(@ModelAttribute @Valid MemberRequestDto memberRequestDto) throws IOException {
+    public ResponseEntity<MemberResponseDto> signup(@ModelAttribute @Valid MemberRequestDto memberRequestDto) throws MalformedURLException {
         Member savedMember = memberService.signup(memberRequestDto);
-        fileService.storeProFile(memberRequestDto.getProfileImg(), savedMember);
         return ResponseEntity.ok(MemberResponseDto.getInstance(savedMember));
     }
 

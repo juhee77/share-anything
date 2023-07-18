@@ -15,14 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,12 +31,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-//@ExtendWith(MockitoExtension.class)
-//@ExtendWith(SpringExtension.class)
-//@WebMvcTest
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-//AutoConfigureMockMvc
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -67,12 +59,10 @@ class MemberControllerTest {
     @Test
     public void 유저객체생성확인() throws Exception {
         //이름에 넘길 파라미터 네임
-        MockMultipartFile file = new MockMultipartFile("profileImg", "image.jpg", "image/jpeg", "<<jeg data>>".getBytes(StandardCharsets.UTF_8));
-        MemberRequestDto userMakeDto = new MemberRequestDto("password", "loginId", "nick", "bo@google.com", file);
+        MemberRequestDto userMakeDto = new MemberRequestDto("password", "loginId", "nick", "bo@google.com");
 
         //when
         mockMvc.perform(multipart("/auth/signup")
-                        .file(file)
                         .param("password", userMakeDto.getPassword())
                         .param("loginId", userMakeDto.getLoginId())
                         .param("nickname", userMakeDto.getNickname())

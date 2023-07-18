@@ -27,7 +27,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,6 +47,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final FileService fileService;
 
     @Transactional
     public Member signup(MemberRequestDto memberRequestDto) {
@@ -63,8 +66,8 @@ public class MemberService {
                 .activated(true)
                 .authority(Authority.ROLE_USER)
                 .nickname(memberRequestDto.getNickname()).build();
-
-        return memberRepository.save(member);
+        memberRepository.save(member);
+        return member;
     }
 
     private void validateDuplicateLoginId(MemberRequestDto member) {
@@ -198,7 +201,7 @@ public class MemberService {
         if (memberRepository.findByNickname(nickname).isPresent()) {
             throw new CustomException(NICKNAME_DUPLICATION);
         }
-        findMember.modifyNickname(nickname); //더티 체킹 --> 트랜젝셔널 .. 제발 확인
+        findMember.modifyNickname(nickname);
 
         log.info(findMember.getNickname() + " " + findMember.getLastModified() + " " + nickname);
         return memberRepository.findById(findMember.getId()).get();
@@ -225,6 +228,20 @@ public class MemberService {
     public void dropProfileImage(Member member) {
         //이미지 드랍
         member.setProfile(null);
+    }
+
+    @Transactional
+    public Member uploadAvatar(String loginId, MultipartFile multipartFile) {
+//        String currentLoginId = SecurityUtil.getCurrentUserLoginId().orElseThrow(IllegalStateException::new);
+//        if (!currentLoginId.equals(loginId)) {
+//            throw new CustomException(INVALID_MEMBER_PROFILE); // path 상의유저와 다른 유저가 요청
+//        }
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> new CustomException(INVALID_MEMBER_NICKNAME));
+        try {
+            return fileService.storeProFile(multipartFile, member);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void updatePassword(Member findMember, Map<String, String> password) {
